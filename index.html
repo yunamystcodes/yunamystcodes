@@ -39,6 +39,15 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   .copy,.iphone{font-size:11px;padding:8px 10px}
   .mobile-profile,.mobile-info{display:none!important}
 }
+/* MOBILE BUTTON FIX: keep COPY and  LINK compact without changing desktop */
+@media (max-width:600px){
+  .code .copy{width:88px;min-width:88px;max-width:88px;padding:9px 6px;font-size:10px;justify-self:start;text-align:center}
+  .code .iphone{width:96px;min-width:96px;max-width:96px;padding:9px 6px;font-size:10px;justify-self:start;text-align:center;overflow:visible;text-overflow:clip}
+}
+@media (max-width:380px){
+  .code .copy{width:82px;min-width:82px;max-width:82px;font-size:9px;padding:8px 4px}
+  .code .iphone{width:90px;min-width:90px;max-width:90px;font-size:9px;padding:8px 4px}
+}
 </style>
 </head>
 <body>
