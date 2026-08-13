@@ -1,555 +1,648 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YunaMyst - Códigos Summoners War</title>
-  
-  <style>
-    /* Reset & Variáveis */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YunaMyst • Códigos Summoners War</title>
 
-    body {
-      color: #ffffff;
-      background-color: #0b0612;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: relative;
-      overflow-x: hidden;
-    }
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-    /* Vídeo / Imagem de Fundo */
-    .bg-wrapper {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -2;
-      overflow: hidden;
-    }
+html {
+    scroll-behavior: smooth;
+}
 
-    .bg-video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      /* Imagem de fallback caso o vídeo não carregue */
-      background: url('https://image.com2us.com/hive/web/sw/skyarena_bg.jpg') center/cover no-repeat;
-    }
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #080412;
+    color: white;
+    min-height: 100vh;
+}
 
-    .bg-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle, rgba(16, 9, 30, 0.75) 0%, rgba(7, 4, 15, 0.95) 100%);
-      z-index: -1;
-    }
+/* FUNDO */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background:
+        linear-gradient(rgba(8,4,30,.28), rgba(8,4,30,.82)),
+        url("fundo-summoners-war.jpg") center center / cover no-repeat;
+    z-index: -2;
+}
 
-    /* Cabeçalho & Seleção de Idioma */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at center,
+        rgba(102,45,180,.25),
+        rgba(5,2,18,.78) 75%);
+    z-index: -1;
+}
+
+/* TOPO */
+header {
+    height: 110px;
+    background: rgba(8,2,25,.94);
+    border-bottom: 1px solid rgba(190,100,255,.3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5%;
+}
+
+.logo {
+    font-family: Georgia, serif;
+    font-size: 48px;
+    font-weight: bold;
+    letter-spacing: -2px;
+}
+
+.logo span {
+    display: block;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 7px;
+    color: #e8c877;
+    text-align: center;
+    margin-top: -5px;
+}
+
+.language {
+    border: 1px solid #a855f7;
+    border-radius: 20px;
+    padding: 14px 22px;
+    font-size: 18px;
+    background: rgba(20,5,40,.7);
+}
+
+/* CONTEÚDO */
+.container {
+    width: min(1100px, 94%);
+    margin: auto;
+}
+
+/* HERO */
+.hero {
+    text-align: center;
+    padding: 65px 15px 35px;
+}
+
+.community {
+    color: #d48cff;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 5px;
+    margin-bottom: 25px;
+}
+
+.hero h1 {
+    font-family: Georgia, serif;
+    font-size: clamp(48px, 7vw, 86px);
+    line-height: .92;
+    text-transform: uppercase;
+    background: linear-gradient(
+        180deg,
+        #fff,
+        #e7b5ff 55%,
+        #e6a54f
+    );
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.hero p {
+    font-size: 22px;
+    margin-top: 30px;
+    color: #eee;
+}
+
+/* WHATSAPP */
+.whatsapp {
+    margin: 30px auto;
+    max-width: 1000px;
+    border: 2px solid #9c3cff;
+    border-radius: 25px;
+    background: rgba(23,5,45,.9);
+    padding: 22px 30px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    box-shadow: 0 0 30px rgba(140,50,255,.18);
+}
+
+.whatsapp-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #18dc68;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    flex-shrink: 0;
+}
+
+.whatsapp h2 {
+    color: #39ef85;
+    font-size: 24px;
+}
+
+.whatsapp p {
+    margin-top: 5px;
+    color: #ccc;
+}
+
+.arrow {
+    margin-left: auto;
+    font-size: 30px;
+}
+
+/* CARTÃO */
+.card {
+    background: rgba(8,3,20,.92);
+    border: 1px solid #7c36b8;
+    border-radius: 25px;
+    margin-top: 30px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(70,20,120,.2);
+}
+
+.card-title {
+    padding: 25px;
+    border-bottom: 1px solid rgba(160,80,230,.25);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title h2 {
+    font-size: 26px;
+}
+
+.updated {
+    color: #d18aff;
+}
+
+/* CÓDIGO */
+.code {
+    position: relative;
+    margin: 25px;
+    padding: 25px;
+    border: 1px solid #7d32c0;
+    border-radius: 20px;
+    background: rgba(25,7,45,.8);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.new {
+    position: absolute;
+    left: -10px;
+    top: -13px;
+    background: #f23867;
+    padding: 9px 20px;
+    transform: rotate(-35deg);
+    font-weight: bold;
+}
+
+.gift {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #55219a;
+    border: 1px solid #c66cff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 35px;
+    flex-shrink: 0;
+}
+
+.code-info {
+    flex: 1;
+}
+
+.code-info strong {
+    display: block;
+    font-size: 24px;
+}
+
+.code-info small {
+    display: block;
+    color: #bbb;
+    margin-top: 8px;
+    font-size: 16px;
+}
+
+.buttons {
+    display: flex;
+    gap: 12px;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+    padding: 16px 24px;
+    border-radius: 13px;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.copy {
+    background: linear-gradient(#ffd45d,#d99722);
+    color: #241500;
+}
+
+.iphone {
+    background: #f5f5f5;
+    color: #111;
+}
+
+/* TODOS */
+.all {
+    text-align: center;
+    color: #f3c65a;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 15px 20px 30px;
+}
+
+/* DUAS COLUNAS */
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-top: 30px;
+}
+
+.info-card {
+    background: rgba(8,3,20,.94);
+    border: 1px solid #7136a5;
+    border-radius: 22px;
+    overflow: hidden;
+}
+
+.info-card h2 {
+    padding: 25px;
+    border-bottom: 1px solid rgba(160,80,230,.25);
+    font-size: 25px;
+}
+
+.info-content {
+    padding: 25px;
+}
+
+.step {
+    display: flex;
+    gap: 18px;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(180,100,240,.15);
+}
+
+.step:last-child {
+    border-bottom: 0;
+}
+
+.number {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #7325ae;
+    border: 1px solid #c56cff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.step h3 {
+    color: #d79aff;
+    margin-bottom: 5px;
+}
+
+.step p {
+    color: #bbb;
+    line-height: 1.5;
+}
+
+/* FAQ */
+.faq-item {
+    border-bottom: 1px solid rgba(180,100,240,.18);
+}
+
+.faq-question {
+    padding: 22px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+}
+
+.faq-answer {
+    display: none;
+    padding: 0 22px 22px;
+    color: #bbb;
+    line-height: 1.6;
+}
+
+.faq-item.active .faq-answer {
+    display: block;
+}
+
+.faq-item.active .faq-question {
+    color: #d58cff;
+}
+
+/* RODAPÉ */
+footer {
+    text-align: center;
+    color: #888;
+    padding: 45px 15px;
+}
+
+/* MOBILE */
+@media (max-width: 700px) {
+
     header {
-      width: 100%;
-      max-width: 500px;
-      padding: 20px 20px 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+        height: 100px;
+        padding: 0 20px;
     }
 
-    .brand-logo {
-      font-size: 1.8rem;
-      font-weight: 900;
-      background: linear-gradient(180deg, #ffffff 0%, #d2b3ff 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-transform: uppercase;
-      letter-spacing: -0.5px;
+    .logo {
+        font-size: 38px;
     }
 
-    .brand-logo span {
-      display: block;
-      font-size: 0.65rem;
-      letter-spacing: 3px;
-      color: #a78bfa;
-      -webkit-text-fill-color: initial;
-      font-weight: 700;
+    .language {
+        padding: 12px 16px;
+        font-size: 15px;
     }
 
-    .lang-switcher {
-      position: relative;
-    }
-
-    .lang-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #fff;
-      padding: 6px 14px;
-      border-radius: 20px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      backdrop-filter: blur(8px);
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    .lang-dropdown {
-      position: absolute;
-      right: 0;
-      top: 110%;
-      background: #180d2e;
-      border: 1px solid #4c1d95;
-      border-radius: 12px;
-      display: none;
-      flex-direction: column;
-      overflow: hidden;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-      z-index: 100;
-    }
-
-    .lang-dropdown.show {
-      display: flex;
-    }
-
-    .lang-option {
-      padding: 10px 16px;
-      background: transparent;
-      border: none;
-      color: white;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      text-align: left;
-      font-size: 0.9rem;
-      transition: background 0.2s;
-    }
-
-    .lang-option:hover {
-      background: #3b0764;
-    }
-
-    /* Content Area */
-    main {
-      width: 100%;
-      max-width: 500px;
-      padding: 10px 20px 40px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* Hero Section */
     .hero {
-      text-align: center;
-      margin-top: 10px;
+        padding-top: 45px;
     }
 
-    .badge {
-      color: #c084fc;
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 6px;
+    .community {
+        font-size: 14px;
+        letter-spacing: 3px;
     }
 
-    h1 {
-      font-size: 2.2rem;
-      font-weight: 900;
-      line-height: 1.1;
-      background: linear-gradient(180deg, #ffffff 30%, #a855f7 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 10px;
-      text-transform: uppercase;
+    .hero h1 {
+        font-size: 48px;
     }
 
-    p.hero-desc {
-      color: #d8b4fe;
-      font-size: 0.95rem;
-      opacity: 0.9;
+    .hero p {
+        font-size: 19px;
     }
 
-    /* Banner WhatsApp */
-    .whatsapp-card {
-      background: rgba(6, 78, 59, 0.4);
-      border: 1px solid #10b981;
-      border-radius: 20px;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      text-decoration: none;
-      color: white;
-      backdrop-filter: blur(10px);
-      transition: transform 0.2s, background 0.2s;
+    .whatsapp {
+        padding: 20px;
     }
 
-    .whatsapp-card:hover {
-      transform: translateY(-2px);
-      background: rgba(6, 78, 59, 0.6);
+    .whatsapp-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 30px;
     }
 
-    .wa-icon {
-      width: 48px;
-      height: 48px;
-      background: #10b981;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      flex-shrink: 0;
+    .whatsapp h2 {
+        font-size: 20px;
     }
 
-    .wa-text h4 {
-      font-size: 1rem;
-      font-weight: 800;
-      color: #34d399;
+    .code {
+        flex-wrap: wrap;
+        padding: 25px 18px;
     }
 
-    .wa-text p {
-      font-size: 0.82rem;
-      color: #e5e7eb;
-      margin-top: 2px;
+    .code-info {
+        min-width: 150px;
     }
 
-    /* Secção de Códigos */
-    .codes-container {
-      background: rgba(23, 15, 38, 0.65);
-      border: 1px solid rgba(168, 85, 247, 0.3);
-      border-radius: 24px;
-      padding: 20px;
-      backdrop-filter: blur(12px);
+    .buttons {
+        width: 100%;
     }
 
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 800;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #f3e8ff;
-      text-transform: uppercase;
+    button {
+        flex: 1;
+        padding: 14px 8px;
+        font-size: 13px;
     }
 
-    .code-card {
-      background: rgba(36, 19, 62, 0.7);
-      border: 1px solid #6b21a8;
-      border-radius: 16px;
-      padding: 16px;
-      margin-bottom: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    .info-grid {
+        grid-template-columns: 1fr;
     }
-
-    .code-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .code-title {
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      color: #fbbf24;
-    }
-
-    .code-reward {
-      font-size: 0.8rem;
-      color: #c084fc;
-      background: rgba(168, 85, 247, 0.15);
-      padding: 4px 8px;
-      border-radius: 6px;
-    }
-
-    .code-buttons {
-      display: flex;
-      gap: 8px;
-    }
-
-    .btn {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 10px;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-      text-decoration: none;
-      font-size: 0.85rem;
-      transition: all 0.2s;
-    }
-
-    .btn-copy {
-      background: #7e22ce;
-      color: white;
-    }
-
-    .btn-copy:hover {
-      background: #6b21a8;
-    }
-
-    .btn-hive {
-      background: #ea580c;
-      color: white;
-    }
-
-    .btn-hive:hover {
-      background: #c2410c;
-    }
-
-    /* Cards Informativos (Como funciona & FAQ) */
-    .info-box {
-      background: rgba(18, 10, 30, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 20px;
-      padding: 20px;
-      backdrop-filter: blur(8px);
-    }
-
-    .info-box h3 {
-      color: #e9d5ff;
-      margin-bottom: 12px;
-      font-size: 1.05rem;
-      font-weight: 700;
-    }
-
-    .info-box ol {
-      padding-left: 18px;
-      color: #d1d5db;
-      font-size: 0.88rem;
-      line-height: 1.6;
-    }
-
-    .faq-item {
-      margin-bottom: 12px;
-    }
-
-    .faq-item:last-child {
-      margin-bottom: 0;
-    }
-
-    .faq-q {
-      font-weight: 700;
-      color: #f3e8ff;
-      font-size: 0.9rem;
-      margin-bottom: 3px;
-    }
-
-    .faq-a {
-      color: #9ca3af;
-      font-size: 0.85rem;
-      line-height: 1.4;
-    }
-  </style>
+}
+</style>
 </head>
+
 <body>
 
-  <!-- Background Video/Image -->
-  <div class="bg-wrapper">
-    <video class="bg-video" autoplay loop muted playsinline poster="https://image.com2us.com/hive/web/sw/skyarena_bg.jpg">
-      <source src="https://assets.mixkit.co/videos/preview/mixkit-magical-abstract-particles-in-motion-41555-large.mp4" type="video/mp4">
-    </video>
-  </div>
-  <div class="bg-overlay"></div>
-
-  <!-- Header -->
-  <header>
-    <div class="brand-logo">
-      YunaMyst
-      <span>SUMMONERS WAR</span>
+<header>
+    <div class="logo">
+        YunaMyst
+        <span>SUMMONERS WAR</span>
     </div>
 
-    <div class="lang-switcher">
-      <button class="lang-btn" onclick="toggleLangDropdown()">
-        <span id="current-flag">🇵🇹</span> <span id="current-lang">PT</span> ▼
-      </button>
-      <div class="lang-dropdown" id="langDropdown">
-        <button class="lang-option" onclick="setLanguage('pt')">
-          <span>🇵🇹</span> PT
-        </button>
-        <button class="lang-option" onclick="setLanguage('en')">
-          <span>🇺🇸</span> EN
-        </button>
-      </div>
+    <div class="language">
+        🇵🇹 PT ▾
     </div>
-  </header>
+</header>
 
-  <main>
-    <!-- Hero Section -->
-    <div class="hero">
-      <div class="badge">✦ <span data-i18n="community">COMUNIDADE YUNAMYST</span> ✦</div>
-      <h1 data-i18n="mainTitle">CÓDIGOS DE SUMMONERS WAR 2026</h1>
-      <p class="hero-desc" data-i18n="mainDesc">Códigos novos e ativos para resgatar as tuas recompensas!</p>
+<main class="container">
+
+<section class="hero">
+    <div class="community">✦ COMUNIDADE YUNAMYST ✦</div>
+
+    <h1>
+        CÓDIGOS DE<br>
+        SUMMONERS<br>
+        WAR 2026
+    </h1>
+
+    <p>
+        Códigos novos e ativos para resgatar as tuas recompensas!
+    </p>
+</section>
+
+<a href="#" style="text-decoration:none;color:inherit;">
+<div class="whatsapp">
+    <div class="whatsapp-icon">☎</div>
+
+    <div>
+        <h2>ENTRA NO GRUPO DO WHATSAPP!</h2>
+        <p>Participa no grupo para não perder nenhum código!</p>
     </div>
 
-    <!-- WhatsApp Card -->
-    <a href="https://chat.whatsapp.com/" target="_blank" class="whatsapp-card">
-      <div class="wa-icon">📞</div>
-      <div class="wa-text">
-        <h4 data-i18n="waTitle">ENTRA NO GRUPO DO WHATSAPP!</h4>
-        <p data-i18n="waDesc">Participa no grupo para não perder nenhum código!</p>
-      </div>
-    </a>
+    <div class="arrow">›</div>
+</div>
+</a>
 
-    <!-- Active Codes List -->
-    <div class="codes-container">
-      <div class="section-title">
-        🎁 <span data-i18n="activeCodes">CÓDIGOS ATIVOS</span>
-      </div>
+<section class="card">
 
-      <!-- Item 1 -->
-      <div class="code-card">
-        <div class="code-header">
-          <span class="code-title">SW2026SUMMON</span>
-          <span class="code-reward">1x Mystical Scroll</span>
+    <div class="card-title">
+        <h2>🎁 CÓDIGOS ATIVOS</h2>
+        <div class="updated">⟳ Sempre atualizados!</div>
+    </div>
+
+    <div class="code">
+
+        <div class="new">NOVO</div>
+
+        <div class="gift">🎁</div>
+
+        <div class="code-info">
+            <strong>AUGSW2026V7N</strong>
+            <small>📅 Código de agosto 2026</small>
         </div>
-        <div class="code-buttons">
-          <button class="btn btn-copy" onclick="copyCode('SW2026SUMMON', this)" data-i18n="copyBtn">Copiar Código</button>
-          <a href="https://withhive.me/313/SW2026SUMMON" target="_blank" class="btn btn-hive" data-i18n="hiveIphone">Resgatar (iOS / Hive)</a>
-        </div>
-      </div>
 
-      <!-- Item 2 -->
-      <div class="code-card">
-        <div class="code-header">
-          <span class="code-title">SW2026NEWYEAR</span>
-          <span class="code-reward">200 Energy + 50k Mana</span>
+        <div class="buttons">
+            <button class="copy" onclick="copiarCodigo()">
+                ▣ COPIAR
+            </button>
+
+            <button class="iphone" onclick="iphoneLink()">
+                 LINK IPHONE
+            </button>
         </div>
-        <div class="code-buttons">
-          <button class="btn btn-copy" onclick="copyCode('SW2026NEWYEAR', this)" data-i18n="copyBtn">Copiar Código</button>
-          <a href="https://withhive.me/313/SW2026NEWYEAR" target="_blank" class="btn btn-hive" data-i18n="hiveIphone">Resgatar (iOS / Hive)</a>
-        </div>
-      </div>
+
     </div>
 
-    <!-- How it Works -->
-    <div class="info-box">
-      <h3 data-i18n="howTitle">📱 Como resgatar no iPhone (iOS)?</h3>
-      <ol>
-        <li data-i18n="step1">Clica no botão laranja <strong>"Resgatar (iOS / Hive)"</strong> ao lado do código pretendido.</li>
-        <li data-i18n="step2">O teu iPhone vai abrir automaticamente a aplicação do Summoners War e resgatar o prémio.</li>
-        <li data-i18n="step3">No Android, podes também copiar o código e colar dentro do jogo em Eventos &gt; Guia do Jogo.</li>
-      </ol>
+    <div class="all">
+        VER TODOS OS CÓDIGOS　⌄
     </div>
+
+</section>
+
+<div class="info-grid">
+
+    <!-- COMO FUNCIONA -->
+    <section class="info-card">
+
+        <h2>❓ COMO FUNCIONA</h2>
+
+        <div class="info-content">
+
+            <div class="step">
+                <div class="number">1</div>
+                <div>
+                    <h3>Copia o código</h3>
+                    <p>Clica em COPIAR no código desejado.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="number">2</div>
+                <div>
+                    <h3>Abre o jogo</h3>
+                    <p>Entra no Summoners War: Sky Arena.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="number">3</div>
+                <div>
+                    <h3>Resgata o código</h3>
+                    <p>Usa a área de códigos ou o link de resgate.</p>
+                </div>
+            </div>
+
+            <div class="step">
+                <div class="number">4</div>
+                <div>
+                    <h3>Aproveita!</h3>
+                    <p>Recebe as recompensas na tua caixa de entrada.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
 
     <!-- FAQ -->
-    <div class="info-box">
-      <h3 data-i18n="faqTitle">❓ Perguntas Frequentes (FAQ)</h3>
-      
-      <div class="faq-item">
-        <div class="faq-q" data-i18n="faq1Q">O código diz que expirou?</div>
-        <div class="faq-a" data-i18n="faq1A">Os códigos do Summoners War têm tempo limitado e número máximo de utilizações. Atualizamos a lista diariamente!</div>
-      </div>
+    <section class="info-card">
 
-      <div class="faq-item">
-        <div class="faq-q" data-i18n="faq2Q">Onde recebo os prémios?</div>
-        <div class="faq-a" data-i18n="faq2A">As recompensas são enviadas diretamente para a tua Caixa de Correio (Inbox) dentro do jogo.</div>
-      </div>
-    </div>
-  </main>
+        <h2>❔ FAQ</h2>
 
-  <script>
-    // Traduções PT e EN
-    const i18nData = {
-      pt: {
-        community: "COMUNIDADE YUNAMYST",
-        mainTitle: "CÓDIGOS DE SUMMONERS WAR 2026",
-        mainDesc: "Códigos novos e ativos para resgatar as tuas recompensas!",
-        waTitle: "ENTRA NO GRUPO DO WHATSAPP!",
-        waDesc: "Participa no grupo para não perder nenhum código!",
-        activeCodes: "CÓDIGOS ATIVOS",
-        copyBtn: "Copiar Código",
-        copied: "Copiado!",
-        hiveIphone: "Resgatar (iOS / Hive)",
-        howTitle: "📱 Como resgatar no iPhone (iOS)?",
-        step1: "Clica no botão laranja 'Resgatar (iOS / Hive)' ao lado do código pretendido.",
-        step2: "O teu iPhone vai abrir automaticamente a aplicação do Summoners War e resgatar o prémio.",
-        step3: "No Android, podes também copiar o código e colar dentro do jogo em Eventos > Guia do Jogo.",
-        faqTitle: "❓ Perguntas Frequentes (FAQ)",
-        faq1Q: "O código diz que expirou?",
-        faq1A: "Os códigos do Summoners War têm tempo limitado e número máximo de utilizações. Atualizamos a lista diariamente!",
-        faq2Q: "Onde recebo os prémios?",
-        faq2A: "As recompensas são enviadas diretamente para a tua Caixa de Correio (Inbox) dentro do jogo."
-      },
-      en: {
-        community: "YUNAMYST COMMUNITY",
-        mainTitle: "SUMMONERS WAR CODES 2026",
-        mainDesc: "New and active codes to claim your rewards!",
-        waTitle: "JOIN OUR WHATSAPP GROUP!",
-        waDesc: "Join the group so you never miss a code!",
-        activeCodes: "ACTIVE CODES",
-        copyBtn: "Copy Code",
-        copied: "Copied!",
-        hiveIphone: "Redeem (iOS / Hive)",
-        howTitle: "📱 How to redeem on iPhone (iOS)?",
-        step1: "Click the orange 'Redeem (iOS / Hive)' button next to the code.",
-        step2: "Your iPhone will automatically open Summoners War and claim your reward.",
-        step3: "On Android, you can also copy the code and paste it in-game under Events > Game Guide.",
-        faqTitle: "❓ Frequently Asked Questions (FAQ)",
-        faq1Q: "Does the code say expired?",
-        faq1A: "Summoners War codes have limited time and uses. We update the list daily!",
-        faq2Q: "Where do I receive my rewards?",
-        faq2A: "Rewards are delivered directly to your in-game Inbox."
-      }
-    };
+        <div class="faq-item">
+            <div class="faq-question">
+                Onde coloco os códigos?
+                <span>＋</span>
+            </div>
+            <div class="faq-answer">
+                Podes utilizar a área de resgate de códigos do Summoners War.
+            </div>
+        </div>
 
-    let currentLang = 'pt';
+        <div class="faq-item">
+            <div class="faq-question">
+                Os códigos expiram?
+                <span>＋</span>
+            </div>
+            <div class="faq-answer">
+                Sim. Os códigos podem deixar de funcionar depois de algum tempo.
+            </div>
+        </div>
 
-    function toggleLangDropdown() {
-      document.getElementById('langDropdown').classList.toggle('show');
-    }
+        <div class="faq-item">
+            <div class="faq-question">
+                Posso usar o código no iPhone?
+                <span>＋</span>
+            </div>
+            <div class="faq-answer">
+                Sim. Usa o botão LINK IPHONE para abrir diretamente o link de resgate.
+            </div>
+        </div>
 
-    function setLanguage(lang) {
-      currentLang = lang;
-      document.getElementById('current-flag').innerText = lang === 'pt' ? '🇵🇹' : '🇺🇸';
-      document.getElementById('current-lang').innerText = lang.toUpperCase();
-      document.getElementById('langDropdown').classList.remove('show');
+        <div class="faq-item">
+            <div class="faq-question">
+                Os códigos são atualizados?
+                <span>＋</span>
+            </div>
+            <div class="faq-answer">
+                Sim. A página pode ser atualizada sempre que aparecerem novos códigos.
+            </div>
+        </div>
 
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (i18nData[lang][key]) {
-          el.innerText = i18nData[lang][key];
-        }
-      });
-    }
+    </section>
 
-    function copyCode(codeText, buttonEl) {
-      navigator.clipboard.writeText(codeText).then(() => {
-        const originalText = i18nData[currentLang].copyBtn;
-        buttonEl.innerText = i18nData[currentLang].copied;
-        buttonEl.style.background = '#16a34a';
+</div>
 
-        setTimeout(() => {
-          buttonEl.innerText = originalText;
-          buttonEl.style.background = '#7e22ce';
-        }, 2000);
-      });
-    }
+</main>
 
-    // Fechar menu ao clicar fora
-    window.onclick = function(e) {
-      if (!e.target.matches('.lang-btn') && !e.target.matches('.lang-btn *')) {
-        const dropdown = document.getElementById('langDropdown');
-        if (dropdown && dropdown.classList.contains('show')) {
-          dropdown.classList.remove('show');
-        }
-      }
-    };
-  </script>
+<footer>
+    YunaMyst • Códigos Summoners War: Sky Arena • Site de comunidade independente
+</footer>
+
+<script>
+
+function copiarCodigo() {
+    navigator.clipboard.writeText("AUGSW2026V7N");
+    alert("Código copiado!");
+}
+
+function iphoneLink() {
+    window.location.href =
+        "https://event.withhive.com/ci/smonwar/evt_redeem";
+}
+
+document.querySelectorAll(".faq-question").forEach(function(question) {
+
+    question.addEventListener("click", function() {
+
+        const item = this.parentElement;
+
+        item.classList.toggle("active");
+
+    });
+
+});
+
+</script>
+
 </body>
 </html>
