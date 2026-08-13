@@ -25,6 +25,17 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 @media(max-width:850px){.menu{display:none}.layout{grid-template-columns:1fr}.left,.right{display:none}.mobile-profile,.mobile-info{display:block}.mobile-profile{margin:18px 0}.mobile-info{margin-top:18px}.code{grid-template-columns:46px minmax(0,1fr) auto auto}.hero{padding-top:35px}.whats{margin-left:0;margin-right:0}}
 @media(max-width:600px){.container{width:calc(100% - 18px)}.nav{height:76px}.logo{font-size:31px}.lang{padding:10px 12px;font-size:14px}.hero{padding-top:28px}.kicker{font-size:12px;letter-spacing:3px}h1{font-size:48px}.hero p{font-size:17px;line-height:1.4;padding:0 12px}.whats{padding:18px 16px;border-radius:20px}.wicon{width:60px;height:60px;font-size:30px}.whats b{font-size:19px}.whats span{font-size:14px;line-height:1.45}.panel h2{font-size:19px}.code{grid-template-columns:44px minmax(0,1fr);gap:10px;padding:18px 12px}.gift{width:44px;height:44px}.cinfo strong{font-size:17px}.cinfo small{font-size:11px}.copy,.iphone{font-size:12px;padding:11px 10px}.code .copy{grid-column:1 / 2}.code .iphone{grid-column:2 / 3}.more{font-size:17px}.mobile-profile .about{margin-top:0}.mobile-info .step{padding:16px}}
 @keyframes zoom{from{transform:scale(1.04)}to{transform:scale(1.12)}}
+/* DESKTOP FIX */
+@media (min-width:851px){
+  .container{width:min(1280px,calc(100% - 56px))}
+  .hero{padding:34px 0 12px}
+  .hero h1{font-size:clamp(54px,5.6vw,76px);max-width:1000px;margin:10px auto}
+  .hero p{font-size:18px}
+  .whats{max-width:900px;margin:18px auto 16px;padding:14px 20px}
+  .layout{grid-template-columns:250px minmax(0,1fr) 310px;gap:18px}
+  .code{grid-template-columns:52px minmax(150px,1fr) 58px 58px 58px auto auto}
+  .mobile-profile,.mobile-info{display:none!important}
+}
 </style>
 </head>
 <body>
@@ -34,75 +45,47 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 <nav class="menu"><a href="#inicio">⌂ INÍCIO</a><a href="#codigos">🎁 CÓDIGOS</a><a href="#como">❔ COMO USAR</a><a href="#faq">❔ FAQ</a></nav>
 <div class="lang">🇵🇹 PT⌄</div>
 </div></header>
-
 <section class="hero container" id="inicio">
 <div class="kicker">✦ COMUNIDADE YUNAMYST ✦</div>
 <h1>CÓDIGOS DE<br class="mobile-break"> SUMMONERS WAR 2026</h1>
 <p>Códigos novos e ativos para resgatar as tuas recompensas!</p>
 <a class="whats" href="#" onclick="return false;"><div class="wicon">☏</div><div><b>ENTRA NO GRUPO DO WHATSAPP!</b><span>Participa no grupo para não perder nenhum código!</span></div><strong>›</strong></a>
 </section>
-
 <main class="container layout">
 <aside class="left">
 <div class="panel profile"><div class="avatar">YM</div><h3>♛ YUNAMYST ♛</h3><p>Conteúdo diário de<br>Summoners War!</p><div class="social"><span>◉</span><span>▶</span><span>♪</span><span>◎</span></div></div>
 <div class="panel about"><b>✦ SOBRE O SITE</b><br><br>Aqui encontras os <b>códigos ativos de Summoners War: Sky Arena</b>.<br><br>💜 Guarda o site e volta sempre!</div>
 </aside>
-
 <section class="panel" id="codigos">
 <h2>🎁 CÓDIGOS ATIVOS <span style="float:right;color:#d99cff;font-size:13px">⟳ Sempre atualizados!</span></h2>
 <div class="codes">
-<article class="code">
-<span class="ribbon">NOVO</span><div class="gift">🎁</div>
+<article class="code"><span class="ribbon">NOVO</span><div class="gift">🎁</div>
 <div class="cinfo"><strong>AUGSW2026V7N</strong><small>📅 Código de agosto 2026</small></div>
 <div class="reward"><div class="ico"><span class="scroll"></span></div><b>3</b><small>MS</small></div>
 <div class="reward"><div class="ico"><span class="energy">⚡</span></div><b>100</b><small>Energia</small></div>
 <div class="reward"><div class="ico"><span class="mana"></span></div><b>—</b><small>Mana</small></div>
 <button class="copy" onclick="copiarCodigo('AUGSW2026V7N',this)">▣ COPIAR</button>
-<a class="iphone" href="https://withhive.me/313/000000000" target="_blank" rel="noopener"> LINK IPHONE</a>
-</article>
+<a class="iphone" href="https://withhive.me/313/000000000" target="_blank" rel="noopener"> LINK IPHONE</a></article>
 </div>
 <div class="more">VER TODOS OS CÓDIGOS　⌄</div>
 </section>
-
 <aside class="right" id="como">
 <section class="panel"><h2>❓ COMO USAR</h2>
 <div class="step"><div class="num">1</div><div><b>Copie o código</b>Clique em COPIAR no código desejado.</div></div>
 <div class="step"><div class="num">2</div><div><b>Abra o jogo</b>Entre em Summoners War: Sky Arena.</div></div>
 <div class="step"><div class="num">3</div><div><b>Resgate o código</b>Use o link de resgate ou a área de códigos do jogo.</div></div>
 <div class="step"><div class="num">4</div><div><b>Aproveite!</b>Recebe as recompensas na tua caixa de entrada.</div></div>
-<div class="gamebox"><strong>SUMMONERS WAR</strong>Sky Arena<br><br>Os códigos podem expirar. Volta ao site para ver as novidades.</div>
-</section>
+<div class="gamebox"><strong>SUMMONERS WAR</strong>Sky Arena<br><br>Os códigos podem expirar. Volta ao site para ver as novidades.</div></section>
 <section class="panel faq" id="faq"><h2>❔ FAQ</h2>
 <div class="faq-item"><div class="faq-q">Onde coloco os códigos?<span>＋</span></div><div class="faq-a">Copia o código e usa a área de resgate do Summoners War ou o link indicado.</div></div>
 <div class="faq-item"><div class="faq-q">Os códigos expiram?<span>＋</span></div><div class="faq-a">Sim. Um código pode deixar de funcionar quando a validade termina ou quando é desativado.</div></div>
 <div class="faq-item"><div class="faq-q">Posso usar no iPhone?<span>＋</span></div><div class="faq-a">Sim. O botão LINK IPHONE abre o link de resgate diretamente.</div></div>
 <div class="faq-item"><div class="faq-q">Posso adicionar novos códigos?<span>＋</span></div><div class="faq-a">Sim. Basta duplicar o bloco do código no index.html e alterar o código, data e link.</div></div>
-</section>
-</aside>
-</main>
-
-<div class="container mobile-profile">
-<div class="panel profile"><div class="avatar">YM</div><h3>♛ YUNAMYST ♛</h3><p>Conteúdo diário de Summoners War!</p><div class="social"><span>◉</span><span>▶</span><span>♪</span><span>◎</span></div></div>
-<div class="panel about"><b>✦ SOBRE O SITE</b><br><br>Aqui encontras os códigos ativos de Summoners War: Sky Arena.<br><br>💜 Guarda o site e volta sempre!</div>
-</div>
-
-<div class="container mobile-info">
-<section class="panel" id="mobile-como"><h2>❓ COMO USAR</h2>
-<div class="step"><div class="num">1</div><div><b>Copie o código</b>Clique em COPIAR no código desejado.</div></div>
-<div class="step"><div class="num">2</div><div><b>Abra o jogo</b>Entre em Summoners War: Sky Arena.</div></div>
-<div class="step"><div class="num">3</div><div><b>Resgate o código</b>Use o link de resgate ou a área de códigos do jogo.</div></div>
-<div class="step"><div class="num">4</div><div><b>Aproveite!</b>Recebe as recompensas na tua caixa de entrada.</div></div>
-</section>
-<section class="panel faq" id="mobile-faq"><h2>❔ FAQ</h2>
-<div class="faq-item"><div class="faq-q">Onde coloco os códigos?<span>＋</span></div><div class="faq-a">Copia o código e usa a área de resgate do Summoners War ou o link indicado.</div></div>
-<div class="faq-item"><div class="faq-q">Os códigos expiram?<span>＋</span></div><div class="faq-a">Sim. Um código pode deixar de funcionar quando a validade termina ou quando é desativado.</div></div>
-<div class="faq-item"><div class="faq-q">Posso usar no iPhone?<span>＋</span></div><div class="faq-a">Sim. O botão LINK IPHONE abre o link de resgate diretamente.</div></div>
-</section>
-</div>
+</section></aside></main>
+<div class="container mobile-profile"><div class="panel profile"><div class="avatar">YM</div><h3>♛ YUNAMYST ♛</h3><p>Conteúdo diário de Summoners War!</p><div class="social"><span>◉</span><span>▶</span><span>♪</span><span>◎</span></div></div><div class="panel about"><b>✦ SOBRE O SITE</b><br><br>Aqui encontras os códigos ativos de Summoners War: Sky Arena.<br><br>💜 Guarda o site e volta sempre!</div></div>
+<div class="container mobile-info"><section class="panel" id="mobile-como"><h2>❓ COMO USAR</h2>
+<div class="step"><div class="num">1</div><div><b>Copie o código</b>Clique em COPIAR no código desejado.</div></div><div class="step"><div class="num">2</div><div><b>Abra o jogo</b>Entre em Summoners War: Sky Arena.</div></div><div class="step"><div class="num">3</div><div><b>Resgate o código</b>Use o link de resgate ou a área de códigos do jogo.</div></div><div class="step"><div class="num">4</div><div><b>Aproveite!</b>Recebe as recompensas na tua caixa de entrada.</div></div></section>
+<section class="panel faq" id="mobile-faq"><h2>❔ FAQ</h2><div class="faq-item"><div class="faq-q">Onde coloco os códigos?<span>＋</span></div><div class="faq-a">Copia o código e usa a área de resgate do Summoners War ou o link indicado.</div></div><div class="faq-item"><div class="faq-q">Os códigos expiram?<span>＋</span></div><div class="faq-a">Sim. Um código pode deixar de funcionar quando a validade termina ou quando é desativado.</div></div><div class="faq-item"><div class="faq-q">Posso usar no iPhone?<span>＋</span></div><div class="faq-a">Sim. O botão LINK IPHONE abre o link de resgate diretamente.</div></div></section></div>
 <footer>YunaMyst • Códigos Summoners War: Sky Arena • Site de comunidade independente</footer>
-
-<script>
-function copiarCodigo(codigo,botao){navigator.clipboard?.writeText(codigo).then(()=>{const old=botao.textContent;botao.textContent='✓ COPIADO!';setTimeout(()=>botao.textContent=old,1500)}).catch(()=>{alert('Código: '+codigo)})}
-document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>q.parentElement.classList.toggle('active')))
-</script>
-</body>
+<script>function copiarCodigo(codigo,botao){navigator.clipboard?.writeText(codigo).then(()=>{const old=botao.textContent;botao.textContent='✓ COPIADO!';setTimeout(()=>botao.textContent=old,1500)}).catch(()=>{alert('Código: '+codigo)})}document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>q.parentElement.classList.toggle('active')))</script>
+</body></html>
