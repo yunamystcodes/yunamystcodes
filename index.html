@@ -230,7 +230,14 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   .code .copy{left:10px!important;width:82px!important;min-width:82px!important;max-width:82px!important;font-size:9px!important;padding:8px 5px!important}
   .code .iphone{left:102px!important;width:90px!important;min-width:90px!important;max-width:90px!important;font-size:9px!important;padding:8px 5px!important}
 }
-</style></head>
+</style>
+<style id="mobile-button-final-fix">
+@media (max-width:600px){
+  .code .copy{grid-column:1 / 2!important;width:88px!important;min-width:88px!important;max-width:88px!important;margin:0!important;justify-self:start!important}
+  .code .iphone{grid-column:2 / 3!important;width:96px!important;min-width:96px!important;max-width:96px!important;margin:0 0 0 8px!important;justify-self:start!important}
+}
+</style>
+</head>
 <body>
 <div class="bg"></div>
 <audio autoplay="" id="yunaBgMusic" loop="" playsinline="" preload="auto" src="assets/One%20More%20Scroll.mp3"></audio>
