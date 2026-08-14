@@ -1,4 +1,4 @@
-name: Fix background music
+name: Fix background music and page title
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fix desktop and mobile background music
+      - name: Restore music autoplay and remove 2026 from heading
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -24,6 +24,12 @@ jobs:
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
 
+          # Remove the year from the visible page heading and metadata.
+          s = re.sub(r'(>\s*CÓDIGOS DE SUMMONERS WAR)\s+2026(\s*<)', r'\1\2', s, flags=re.I)
+          s = re.sub(r'(Summoners War)\s+2026(\s*\|)', r'\1\2', s, flags=re.I)
+          s = re.sub(r'(Summoners War[^<]*?)\s+2026(,|\.|\s|<)', r'\1\2', s, flags=re.I)
+
+          # Keep the audio element simple and valid for desktop and mobile.
           audio = '<audio id="yunaBgMusic" loop preload="auto" autoplay playsinline src="assets/One%20More%20Scroll.mp3"></audio>'
           s = re.sub(r'<audio id="yunaBgMusic"[^>]*></audio>', audio, s, count=1)
 
@@ -38,9 +44,9 @@ jobs:
           const audioMute=document.getElementById("audioMute");
           if(bgMusic&&audioMute){
             const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
+            bgMusic.volume=0.08;
             bgMusic.autoplay=true;
             bgMusic.playsInline=true;
-            bgMusic.volume=0.08;
 
             const syncAudio=()=>{
               const muted=userMuted();
@@ -53,28 +59,16 @@ jobs:
               if(userMuted()) return Promise.resolve(false);
               bgMusic.muted=false;
               bgMusic.volume=0.08;
-              const promise=bgMusic.play();
-              if(promise&&typeof promise.then==='function'){
-                return promise.then(()=>true).catch(()=>false);
-              }
-              return Promise.resolve(true);
-            };
-
-            const showPlayState=()=>{
-              if(userMuted()) return;
-              audioMute.textContent="▶️";
-              audioMute.title="Tocar música";
-              audioMute.setAttribute("aria-label","Tocar música");
+              return Promise.resolve(bgMusic.play()).then(()=>true).catch(()=>false);
             };
 
             const attemptAutoplay=()=>{
               if(userMuted()) return;
-              bgMusic.autoplay=true;
               bgMusic.muted=false;
               bgMusic.volume=0.08;
+              bgMusic.load();
               playAudio().then(ok=>{
                 if(ok) syncAudio();
-                else showPlayState();
               });
             };
 
@@ -100,10 +94,12 @@ jobs:
               attemptAutoplay();
             }
             window.addEventListener("load",attemptAutoplay,{once:true});
+            bgMusic.addEventListener("canplay",attemptAutoplay,{once:true});
             window.addEventListener("pageshow",attemptAutoplay,{once:true});
 
-            /* Fallback only when the browser blocks autoplay. One normal page
-               interaction starts the music; no mute -> unmute is required. */
+            /* Browser fallback: if autoplay is blocked, the first ordinary
+               interaction starts the music. This is required by browsers that
+               prohibit audible autoplay on a fresh page. */
             const unlockOnce=()=>{
               if(userMuted()||!bgMusic.paused) return;
               playAudio().then(ok=>{ if(ok) syncAudio(); });
@@ -121,8 +117,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           if git diff --cached --quiet; then
-            echo "No music changes needed."
+            echo "No site changes needed."
           else
-            git commit -m "Restore desktop music autoplay"
+            git commit -m "Fix music autoplay and remove year from heading"
             git push
           fi
