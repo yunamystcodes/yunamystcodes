@@ -82,11 +82,12 @@ def reward_icons(reward):
     ]
     items = []
     for kind, pattern, icon in patterns:
-        before = re.search(r"(\d[\d,.]*)\s*(?:x|×)?\s*(?:\+)?\s*" + pattern, text)
-        after = re.search(pattern + r"\s*(?:x|×)?\s*(\d[\d,.]*)", text)
+        grouped = rf"(?:{pattern})"
+        before = re.search(rf"(\d[\d,.]*)\s*(?:x|×)?\s*(?:\+)?\s*{grouped}", text)
+        after = re.search(rf"{grouped}\s*(?:x|×)?\s*(\d[\d,.]*)", text)
         match = before or after
-        if match:
-            qty = match.group(1)
+        if match and match.group(1):
+            qty = match.group(1).rstrip(",.")
             items.append((kind, icon, qty))
     if not items:
         return '<span class="reward-unknown">?</span>'
