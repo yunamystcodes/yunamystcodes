@@ -48,6 +48,11 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   .code .copy{width:82px;min-width:82px;max-width:82px;font-size:9px;padding:8px 4px}
   .code .iphone{width:90px;min-width:90px;max-width:90px;font-size:9px;padding:8px 4px}
 }
+
+.social-links{display:flex;justify-content:center;gap:6px;margin-top:15px}
+.social-links a{width:30px;height:30px;border:1px solid #5c397b;border-radius:8px;display:grid;place-items:center;background:#17102a;color:#fff;text-decoration:none;font-size:14px;font-weight:900;transition:.2s}
+.social-links a:hover{transform:translateY(-2px);border-color:#a85cff;background:#24113d}
+@media(max-width:600px){.social-links{gap:5px}.social-links a{width:28px;height:28px;font-size:13px}}
 </style>
 </head>
 <body>
@@ -65,7 +70,11 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 </section>
 <main class="container layout">
 <aside class="left">
-<div class="panel profile"><div class="avatar">YM</div><h3 data-i18n="yunamyst">♛ YUNAMYST ♛</h3><p data-i18n="daily">Conteúdo diário de<br>Summoners War!</p><div class="social"><span>◉</span><span>▶</span><span>♪</span><span>◎</span></div></div>
+<div class="panel profile"><div class="avatar">YM</div><h3 data-i18n="yunamyst">♛ YUNAMYST ♛</h3><p data-i18n="daily">Conteúdo diário de<br>Summoners War!</p><div class="social social-links">
+  <a href="https://www.twitch.tv/YunaMyst" target="_blank" rel="noopener" aria-label="Twitch">◉</a>
+  <a href="https://www.youtube.com/@YunaMyst" target="_blank" rel="noopener" aria-label="YouTube">▶</a>
+  <a href="https://www.tiktok.com/@yunamyst_" target="_blank" rel="noopener" aria-label="TikTok">♪</a>
+</div></div>
 <div class="panel about" data-i18n="aboutDesktop">✦ SOBRE O SITE<br><br>Aqui encontras os <b>códigos ativos de Summoners War: Sky Arena</b>.<br><br>💜 Guarda o site e volta sempre!</div>
 </aside>
 <section class="panel" id="codigos">
@@ -94,7 +103,11 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 <div class="faq-item"><div class="faq-q"><span data-i18n="faq3Q">Posso usar no iPhone?</span><span>＋</span></div><div class="faq-a" data-i18n="faq3A">Sim. O botão LINK IPHONE abre o link de resgate diretamente.</div></div>
 <div class="faq-item"><div class="faq-q"><span data-i18n="faq4Q">Posso adicionar novos códigos?</span><span>＋</span></div><div class="faq-a" data-i18n="faq4A">Sim. Basta duplicar o bloco do código no index.html e alterar o código, data e link.</div></div>
 </section></aside></main>
-<div class="container mobile-profile"><div class="panel profile"><div class="avatar">YM</div><h3 data-i18n="yunamyst">♛ YUNAMYST ♛</h3><p><span data-i18n="dailyMobile">Conteúdo diário de Summoners War!</span></p><div class="social"><span>◉</span><span>▶</span><span>♪</span><span>◎</span></div></div><div class="panel about"><b data-i18n="aboutTitle">✦ SOBRE O SITE</b><br><br><span data-i18n="aboutMobile">Aqui encontras os códigos ativos de Summoners War: Sky Arena.<br><br>💜 Guarda o site e volta sempre!</span></div></div>
+<div class="container mobile-profile"><div class="panel profile"><div class="avatar">YM</div><h3 data-i18n="yunamyst">♛ YUNAMYST ♛</h3><p><span data-i18n="dailyMobile">Conteúdo diário de Summoners War!</span></p><div class="social social-links">
+  <a href="https://www.twitch.tv/YunaMyst" target="_blank" rel="noopener" aria-label="Twitch">◉</a>
+  <a href="https://www.youtube.com/@YunaMyst" target="_blank" rel="noopener" aria-label="YouTube">▶</a>
+  <a href="https://www.tiktok.com/@yunamyst_" target="_blank" rel="noopener" aria-label="TikTok">♪</a>
+</div></div><div class="panel about"><b data-i18n="aboutTitle">✦ SOBRE O SITE</b><br><br><span data-i18n="aboutMobile">Aqui encontras os códigos ativos de Summoners War: Sky Arena.<br><br>💜 Guarda o site e volta sempre!</span></div></div>
 <div class="container mobile-info"><section class="panel" id="mobile-como"><h2>❓ <span data-i18n="howTitle">COMO USAR</span></h2>
 <div class="step"><div class="num">1</div><div><b data-i18n="step1Title">Copie o código</b><span data-i18n="step1Text">Clique em COPIAR no código desejado.</span></div></div><div class="step"><div class="num">2</div><div><b data-i18n="step2Title">Abra o jogo</b><span data-i18n="step2Text">Entre em Summoners War: Sky Arena.</span></div></div><div class="step"><div class="num">3</div><div><b data-i18n="step3Title">Resgate o código</b><span data-i18n="step3Text">Use o link de resgate ou a área de códigos do jogo.</span></div></div><div class="step"><div class="num">4</div><div><b data-i18n="step4Title">Aproveite!</b><span data-i18n="step4Text">Recebe as recompensas na tua caixa de entrada.</span></div></div></section>
 <section class="panel faq" id="mobile-faq"><h2>❔ <span data-i18n="faqTitle">FAQ</span></h2><div class="faq-item"><div class="faq-q"><span data-i18n="faq1Q">Onde coloco os códigos?</span><span>＋</span></div><div class="faq-a" data-i18n="faq1A">Copia o código e usa a área de resgate do Summoners War ou o link indicado.</div></div><div class="faq-item"><div class="faq-q"><span data-i18n="faq2Q">Os códigos expiram?</span><span>＋</span></div><div class="faq-a" data-i18n="faq2A">Sim. Um código pode deixar de funcionar quando a validade termina ou quando é desativado.</div></div><div class="faq-item"><div class="faq-q"><span data-i18n="faq3Q">Posso usar no iPhone?</span><span>＋</span></div><div class="faq-a" data-i18n="faq3A">Sim. O botão LINK IPHONE abre o link de resgate diretamente.</div></div></section></div>
