@@ -14,6 +14,14 @@ EXTRA_CODES = {
     "INVOCATEUREU26": "100,000 Mana + 2 Mystical Scrolls",
 }
 
+# Recompensas conhecidas para os códigos que aparecem atualmente no site.
+REWARD_ITEMS = {
+    "INVOCATEUREU26": [("mana", "🔵", "100,000"), ("mystic", "📜", "2")],
+    "SWCTICKET2HAMBURG": [("mystic", "📜", "1")],
+    "AUGSW2026V7N": [("energy", "⚡", "100"), ("fire", "🔥", "1")],
+    "SWXFRIEREN2026": [("energy", "⚡", "100"), ("mana", "🔵", "300,000"), ("mystic", "📜", "3")],
+}
+
 
 def clean(text):
     return re.sub(r"\s+", " ", html.unescape(text or "")).strip()
@@ -51,14 +59,6 @@ def fetch_codes():
         reward = cells[1] if len(cells) > 1 else "Recompensas não informadas"
         found.append({"code": code, "reward": reward[:180]})
 
-    reward_overrides = {
-        "AUGSW2026V7N": "100 Energy + 1 Fire Scroll",
-        "SWXFRIEREN2026": "100 Energy + 300,000 Mana + 3 Mystical Scrolls",
-    }
-    for item in found:
-        if item["code"] in reward_overrides:
-            item["reward"] = reward_overrides[item["code"]]
-
     for code, reward in EXTRA_CODES.items():
         if code not in seen:
             found.insert(0, {"code": code, "reward": reward})
@@ -69,7 +69,7 @@ def fetch_codes():
     return found
 
 
-def reward_icons(reward):
+def parse_reward_items(reward):
     text = clean(reward).lower()
     patterns = [
         ("mystic", r"(?:scroll\s*)?mystical|mystic(?:al)?\s*scroll|pergaminho\s*m[íi]stico|scroll\s*mystical", "📜"),
@@ -89,6 +89,11 @@ def reward_icons(reward):
         if match and match.group(1):
             qty = match.group(1).rstrip(",.")
             items.append((kind, icon, qty))
+    return items
+
+
+def reward_icons(code, reward):
+    items = REWARD_ITEMS.get(code) or parse_reward_items(reward or "")
     if not items:
         return '<span class="reward-unknown">?</span>'
     return "".join(
@@ -100,7 +105,7 @@ def reward_icons(reward):
 
 def card(item):
     code = html.escape(item["code"])
-    rewards = reward_icons(item["reward"] or "")
+    rewards = reward_icons(item["code"], item["reward"] or "")
     return (
         f'<article class="code" data-code="{code}">'
         f'<div class="gift">🎁</div>'
@@ -124,18 +129,8 @@ STYLE_PATCH = '''
 
 def update_index(codes):
     text = INDEX.read_text(encoding="utf-8")
-    text = re.sub(
-        r'\n/\* Ajustes de leitura dos códigos e recompensas \*/.*?(?=\n</style>)',
-        '',
-        text,
-        flags=re.S,
-    )
-    text = re.sub(
-        r'\n/\* Recompensas: apenas símbolo \+ quantidade \*/.*?(?=\n</style>)',
-        '',
-        text,
-        flags=re.S,
-    )
+    text = re.sub(r'\n/\* Ajustes de leitura dos códigos e recompensas \*/.*?(?=\n</style>)', '', text, flags=re.S)
+    text = re.sub(r'\n/\* Recompensas: apenas símbolo \+ quantidade \*/.*?(?=\n</style>)', '', text, flags=re.S)
     text = text.replace('</style>', STYLE_PATCH + '</style>', 1)
 
     marker = '<div class="codes" id="activeCodesList">'
