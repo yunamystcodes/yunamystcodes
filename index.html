@@ -62,7 +62,7 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 </head>
 <body>
 <div class="bg"></div>
-<audio id="yunaBgMusic" loop preload="auto" src="assets/One%20More%20Scroll.mp3"></audio>
+<audio id="yunaBgMusic" loop preload="auto" autoplay playsinline src="assets/One%20More%20Scroll.mp3"></audio>
 <header class="topbar"><div class="container nav">
 <div class="logo">YunaMyst<small>SUMMONERS WAR</small></div>
 <nav class="menu"><a href="#inicio" data-i18n="home">⌂ INÍCIO</a><a href="#codigos" data-i18n="codesNav">🎁 CÓDIGOS</a><a href="#como" data-i18n="howNav">❔ COMO USAR</a><a href="#faq" data-i18n="faqNav">❔ FAQ</a></nav>
@@ -196,7 +196,7 @@ const bgMusic=document.getElementById("yunaBgMusic");
         if(bgMusic&&audioMute){
           const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
           bgMusic.volume=0.08;
-          bgMusic.muted=true;
+          bgMusic.playsInline=true;
           const syncAudio=()=>{
             const muted=userMuted();
             audioMute.textContent=muted?"🔇":"🔊";
@@ -209,6 +209,9 @@ const bgMusic=document.getElementById("yunaBgMusic");
             bgMusic.volume=0.08;
             const p=bgMusic.play();
             if(p&&typeof p.catch==='function') p.catch(()=>{});
+          };
+          const tryAutoplay=()=>{
+            if(!userMuted()) playAudio();
           };
           const unlockAudio=()=>playAudio();
           audioMute.addEventListener("click",e=>{
@@ -223,5 +226,10 @@ const bgMusic=document.getElementById("yunaBgMusic");
             document.addEventListener(evt,unlockAudio,{capture:true,passive:true});
           });
           syncAudio();
+          if(document.readyState==="loading"){
+            document.addEventListener("DOMContentLoaded",tryAutoplay,{once:true});
+          }else{
+            tryAutoplay();
+          }
         }</script>
 </body></html>
