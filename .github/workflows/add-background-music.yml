@@ -19,6 +19,7 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
 
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
@@ -27,12 +28,18 @@ jobs:
               audio = '<audio id="yunaBgMusic" loop preload="auto" src="assets/One%20More%20Scroll.mp3"></audio>'
               s = s.replace('<div class="bg"></div>', '<div class="bg"></div>\n' + audio, 1)
 
-              s = s.replace(
-                  '.lang-wrap{position:relative}',
-                  '.lang-wrap{position:relative;display:flex;align-items:center;gap:8px}',
-                  1
+          if 'id="audioMute"' not in s:
+              old = '<div class="lang-wrap"><button class="lang" id="langBtn" type="button">'
+              new = (
+                  '<div class="lang-wrap">'
+                  '<button class="audio-mute" id="audioMute" type="button" '
+                  'aria-label="Mutar música" title="Mutar música">🔊</button>'
+                  '<button class="lang" id="langBtn" type="button">'
               )
+              if old in s:
+                  s = s.replace(old, new, 1)
 
+          if '.audio-mute{' not in s:
               css = (
                   '\n.audio-mute{width:42px;height:42px;border:1px solid #a85cff;'
                   'border-radius:10px;background:#0c0a18;color:#fff;cursor:pointer;'
@@ -40,49 +47,54 @@ jobs:
                   'box-shadow:0 0 12px rgba(168,92,255,.12)}'
                   '\n.audio-mute:hover{background:#24113d;border-color:#c17cff}'
                   '\n@media(max-width:600px){.audio-mute{width:38px;height:38px;'
-                  'border-radius:9px;font-size:18px}}'
-                  '\n'
+                  'border-radius:9px;font-size:18px}}\n'
               )
               s = s.replace('</style>', css + '</style>', 1)
 
-              old = '<div class="lang-wrap"><button class="lang" id="langBtn" type="button">'
-              new = (
-                  '<div class="lang-wrap">'
-                  '<button class="audio-mute" id="audioMute" type="button" '
-                  'aria-label="Mutar música" title="Mutar música">🔇</button>'
-                  '<button class="lang" id="langBtn" type="button">'
-              )
-              if old not in s:
-                  raise SystemExit("language control not found")
-              s = s.replace(old, new, 1)
+          # Replace the old music controller with a mobile-safe version.
+          start = s.find('const bgMusic=document.getElementById("yunaBgMusic");')
+          end = s.find('\n}', start) if start != -1 else -1
+          if start != -1:
+              # Find the closing brace of the controller block by using the next script tag.
+              script_end = s.find('</script>', start)
+              block = s[start:script_end]
+              if 'const syncAudio=' in block and 'document.addEventListener("pointerdown",tryPlay' in block:
+                  new_block = '''const bgMusic=document.getElementById("yunaBgMusic");
+const audioMute=document.getElementById("audioMute");
+if(bgMusic&&audioMute){
+  const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
+  bgMusic.volume=0.08;
+  bgMusic.muted=true;
+  const syncAudio=()=>{
+    const muted=userMuted();
+    audioMute.textContent=muted?"🔇":"🔊";
+    audioMute.title=muted?"Ativar música":"Mutar música";
+    audioMute.setAttribute("aria-label",audioMute.title);
+  };
+  const playAudio=()=>{
+    if(userMuted()) return;
+    bgMusic.muted=false;
+    bgMusic.volume=0.08;
+    const p=bgMusic.play();
+    if(p&&typeof p.catch==='function') p.catch(()=>{});
+  };
+  const unlockAudio=()=>playAudio();
+  audioMute.addEventListener("click",e=>{
+    e.stopPropagation();
+    const nextMuted=!userMuted();
+    localStorage.setItem("yunamyst-music-muted",nextMuted?"1":"0");
+    bgMusic.muted=nextMuted;
+    syncAudio();
+    if(!nextMuted) playAudio();
+  });
+  ["touchstart","touchend","pointerdown","pointerup","click","keydown"].forEach(evt=>{
+    document.addEventListener(evt,unlockAudio,{capture:true,passive:true});
+  });
+  syncAudio();
+}'''
+                  s = s[:start] + new_block + s[script_end:]
 
-              js = (
-                  '\nconst bgMusic=document.getElementById("yunaBgMusic");'
-                  '\nconst audioMute=document.getElementById("audioMute");'
-                  '\nif(bgMusic&&audioMute){'
-                  '\n  bgMusic.volume=0.08;'
-                  '\n  bgMusic.muted=localStorage.getItem("yunamyst-music-muted")==="1";'
-                  '\n  const syncAudio=()=>{'
-                  '\n    audioMute.textContent=bgMusic.muted?"🔇":"🔊";'
-                  '\n    audioMute.title=bgMusic.muted?"Ativar música":"Mutar música";'
-                  '\n    audioMute.setAttribute("aria-label",audioMute.title);'
-                  '\n  };'
-                  '\n  const tryPlay=()=>{if(!bgMusic.muted)bgMusic.play().catch(()=>{});};'
-                  '\n  audioMute.addEventListener("click",e=>{'
-                  '\n    e.stopPropagation();'
-                  '\n    bgMusic.muted=!bgMusic.muted;'
-                  '\n    localStorage.setItem("yunamyst-music-muted",bgMusic.muted?"1":"0");'
-                  '\n    syncAudio();'
-                  '\n    if(!bgMusic.muted)tryPlay();'
-                  '\n  });'
-                  '\n  document.addEventListener("pointerdown",tryPlay,{once:true});'
-                  '\n  syncAudio();'
-                  '\n}'
-                  '\n'
-              )
-              s = s.replace('</script>', js + '</script>', 1)
-              p.write_text(s, encoding="utf-8")
-
+          p.write_text(s, encoding="utf-8")
           PY
 
           git config user.name "github-actions[bot]"
@@ -91,6 +103,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No music changes needed."
           else
-            git commit -m "Add background music control"
+            git commit -m "Fix mobile background music playback"
             git push
           fi
