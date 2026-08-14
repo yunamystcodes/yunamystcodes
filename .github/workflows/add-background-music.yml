@@ -23,9 +23,12 @@ jobs:
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
 
+          audio = '<audio id="yunaBgMusic" loop preload="auto" autoplay playsinline src="assets/One%20More%20Scroll.mp3"></audio>'
           if 'id="yunaBgMusic"' not in s:
-              audio = '<audio id="yunaBgMusic" loop preload="auto" src="assets/One%20More%20Scroll.mp3"></audio>'
               s = s.replace('<div class="bg"></div>', '<div class="bg"></div>\n' + audio, 1)
+          else:
+              import re
+              s = re.sub(r'<audio id="yunaBgMusic"[^>]*></audio>', audio, s, count=1)
 
           if 'id="audioMute"' not in s:
               old = '<div class="lang-wrap"><button class="lang" id="langBtn" type="button">'
@@ -60,7 +63,7 @@ jobs:
                   if(bgMusic&&audioMute){
                     const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
                     bgMusic.volume=0.08;
-                    bgMusic.muted=true;
+                    bgMusic.playsInline=true;
                     const syncAudio=()=>{
                       const muted=userMuted();
                       audioMute.textContent=muted?"🔇":"🔊";
@@ -73,6 +76,9 @@ jobs:
                       bgMusic.volume=0.08;
                       const p=bgMusic.play();
                       if(p&&typeof p.catch==='function') p.catch(()=>{});
+                    };
+                    const tryAutoplay=()=>{
+                      if(!userMuted()) playAudio();
                     };
                     const unlockAudio=()=>playAudio();
                     audioMute.addEventListener("click",e=>{
@@ -87,8 +93,12 @@ jobs:
                       document.addEventListener(evt,unlockAudio,{capture:true,passive:true});
                     });
                     syncAudio();
+                    if(document.readyState==="loading"){
+                      document.addEventListener("DOMContentLoaded",tryAutoplay,{once:true});
+                    }else{
+                      tryAutoplay();
+                    }
                   }'''
-                  # Remove the indentation added for YAML from the Python string.
                   new_block='\n'.join(line[18:] if line.startswith('                  ') else line for line in new_block.splitlines())
                   s = s[:start] + new_block + s[script_end:]
 
@@ -101,6 +111,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No music changes needed."
           else
-            git commit -m "Fix mobile background music playback"
+            git commit -m "Attempt music autoplay on page load"
             git push
           fi
