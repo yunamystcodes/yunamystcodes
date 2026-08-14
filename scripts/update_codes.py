@@ -54,8 +54,7 @@ def fetch_codes():
 def card(item, first=False):
     code = html.escape(item["code"])
     reward = html.escape(item["reward"])
-    ribbon = '<span class="ribbon">NOVO</span>' if first else ''
-    return f'''<article class="code" data-code="{code}">{ribbon}<div class="gift">🎁</div><div class="cinfo"><strong>{code}</strong><small>🔄 Atualizado automaticamente</small></div><div class="reward"><div class="ico"><span class="scroll"></span></div><b>—</b><small>Recompensa</small></div><div class="reward"><div class="ico"><span class="energy">⚡</span></div><b>—</b><small>Detalhes</small></div><div class="reward"><div class="ico"><span class="mana"></span></div><b>—</b><small>Fonte</small></div><button class="copy" onclick="copiarCodigo('{code}',this)"><span data-i18n="copy">▣ COPIAR</span></button><a class="iphone" href="https://withhive.me/313/{code}" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>'''
+    return f'''<article class="code" data-code="{code}"><div class="gift">🎁</div><div class="cinfo"><strong>{code}</strong><small>🔄 Atualizado automaticamente</small></div><div class="reward"><div class="ico"><span class="scroll"></span></div><b>—</b><small>Recompensa</small></div><div class="reward"><div class="ico"><span class="energy">⚡</span></div><b>—</b><small>Detalhes</small></div><div class="reward"><div class="ico"><span class="mana"></span></div><b>—</b><small>Fonte</small></div><button class="copy" onclick="copiarCodigo('{code}',this)"><span data-i18n="copy">▣ COPIAR</span></button><a class="iphone" href="https://withhive.me/313/{code}" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>'''
 
 
 def update_index(codes):
@@ -67,7 +66,7 @@ def update_index(codes):
     end = text.find('</div><div class="more"', content_start)
     if end == -1:
         raise RuntimeError('Fim do bloco de códigos não encontrado.')
-    cards = "\n".join(card(item, i == 0) for i, item in enumerate(codes))
+    cards = "\n".join(card(item, False) for item in codes)
     new_text = text[:content_start] + "\n" + cards + "\n" + text[end:]
     INDEX.write_text(new_text, encoding="utf-8")
 
