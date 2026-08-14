@@ -192,44 +192,51 @@ document.addEventListener('click',()=>langMenu?.classList.remove('open'));
 setLanguage(localStorage.getItem('yunamyst-lang')||'pt');
 
 const bgMusic=document.getElementById("yunaBgMusic");
-        const audioMute=document.getElementById("audioMute");
-        if(bgMusic&&audioMute){
-          const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
-          bgMusic.volume=0.08;
-          bgMusic.playsInline=true;
-          const syncAudio=()=>{
-            const muted=userMuted();
-            audioMute.textContent=muted?"🔇":"🔊";
-            audioMute.title=muted?"Ativar música":"Mutar música";
-            audioMute.setAttribute("aria-label",audioMute.title);
-          };
-          const playAudio=()=>{
-            if(userMuted()) return;
-            bgMusic.muted=false;
-            bgMusic.volume=0.08;
-            const p=bgMusic.play();
-            if(p&&typeof p.catch==='function') p.catch(()=>{});
-          };
-          const tryAutoplay=()=>{
-            if(!userMuted()) playAudio();
-          };
-          const unlockAudio=()=>playAudio();
-          audioMute.addEventListener("click",e=>{
-            e.stopPropagation();
-            const nextMuted=!userMuted();
-            localStorage.setItem("yunamyst-music-muted",nextMuted?"1":"0");
-            bgMusic.muted=nextMuted;
-            syncAudio();
-            if(!nextMuted) playAudio();
-          });
-          ["touchstart","touchend","pointerdown","pointerup","click","keydown"].forEach(evt=>{
-            document.addEventListener(evt,unlockAudio,{capture:true,passive:true});
-          });
-          syncAudio();
-          if(document.readyState==="loading"){
-            document.addEventListener("DOMContentLoaded",tryAutoplay,{once:true});
-          }else{
-            tryAutoplay();
-          }
-        }</script>
+const audioMute=document.getElementById("audioMute");
+if(bgMusic&&audioMute){
+  const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
+  bgMusic.volume=0.08;
+  bgMusic.playsInline=true;
+  const syncAudio=()=>{
+    const muted=userMuted();
+    audioMute.textContent=muted?"🔇":"🔊";
+    audioMute.title=muted?"Ativar música":"Mutar música";
+    audioMute.setAttribute("aria-label",audioMute.title);
+  };
+  const playAudio=()=>{
+    if(userMuted()) return;
+    bgMusic.muted=false;
+    bgMusic.volume=0.08;
+    const p=bgMusic.play();
+    if(p&&typeof p.catch==='function') p.catch(()=>{});
+  };
+  const tryAutoplay=()=>{
+    if(userMuted()) return;
+    bgMusic.muted=true;
+    const p=bgMusic.play();
+    if(p&&typeof p.then==='function') p.then(()=>{
+      if(!userMuted()) bgMusic.muted=false;
+      bgMusic.volume=0.08;
+      syncAudio();
+    }).catch(()=>{});
+  };
+  const unlockAudio=()=>playAudio();
+  audioMute.addEventListener("click",e=>{
+    e.stopPropagation();
+    const nextMuted=!userMuted();
+    localStorage.setItem("yunamyst-music-muted",nextMuted?"1":"0");
+    bgMusic.muted=nextMuted;
+    syncAudio();
+    if(!nextMuted) playAudio();
+  });
+  ["touchstart","pointerdown","click","keydown"].forEach(evt=>{
+    document.addEventListener(evt,unlockAudio,{capture:true,passive:true,once:true});
+  });
+  syncAudio();
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",tryAutoplay,{once:true});
+  }else{
+    tryAutoplay();
+  }
+}</script>
 </body></html>
