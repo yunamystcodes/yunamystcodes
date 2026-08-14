@@ -1,4 +1,4 @@
-name: Add background music control
+name: Fix background music
 
 on:
   push:
@@ -15,100 +15,76 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Add music control to index
+      - name: Fix mobile background music
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
 
-          p = Path("index.html")
-          s = p.read_text(encoding="utf-8")
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
 
           audio = '<audio id="yunaBgMusic" loop preload="auto" autoplay playsinline src="assets/One%20More%20Scroll.mp3"></audio>'
-          if 'id="yunaBgMusic"' not in s:
-              s = s.replace('<div class="bg"></div>', '<div class="bg"></div>\n' + audio, 1)
-          else:
-              s = re.sub(r'<audio id="yunaBgMusic"[^>]*></audio>', audio, s, count=1)
-
-          if 'id="audioMute"' not in s:
-              old = '<div class="lang-wrap"><button class="lang" id="langBtn" type="button">'
-              new = ('<div class="lang-wrap">'
-                     '<button class="audio-mute" id="audioMute" type="button" '
-                     'aria-label="Mutar música" title="Mutar música">🔊</button>'
-                     '<button class="lang" id="langBtn" type="button">')
-              if old in s:
-                  s = s.replace(old, new, 1)
-
-          if '.audio-mute{' not in s:
-              css = ('\n.audio-mute{width:42px;height:42px;border:1px solid #a85cff;'
-                     'border-radius:10px;background:#0c0a18;color:#fff;cursor:pointer;'
-                     'display:grid;place-items:center;font-size:20px;line-height:1;padding:0;'
-                     'box-shadow:0 0 12px rgba(168,92,255,.12)}'
-                     '\n.audio-mute:hover{background:#24113d;border-color:#c17cff}'
-                     '\n@media(max-width:600px){.audio-mute{width:38px;height:38px;'
-                     'border-radius:9px;font-size:18px}}\n')
-              s = s.replace('</style>', css + '</style>', 1)
+          s = re.sub(r'<audio id="yunaBgMusic"[^>]*></audio>', audio, s, count=1)
 
           start = s.find('const bgMusic=document.getElementById("yunaBgMusic");')
-          if start != -1:
-              script_end = s.find('</script>', start)
-              block = s[start:script_end]
-              if 'const syncAudio=' in block:
-                  new_block = '''const bgMusic=document.getElementById("yunaBgMusic");
-const audioMute=document.getElementById("audioMute");
-if(bgMusic&&audioMute){
-  const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
-  bgMusic.volume=0.08;
-  bgMusic.playsInline=true;
-  const syncAudio=()=>{
-    const muted=userMuted();
-    audioMute.textContent=muted?"🔇":"🔊";
-    audioMute.title=muted?"Ativar música":"Mutar música";
-    audioMute.setAttribute("aria-label",audioMute.title);
-  };
-  const playWithAutoplay=()=>{
-    if(userMuted()) return;
-    bgMusic.volume=0.08;
-    // Start muted so mobile browsers that allow muted autoplay can begin playback.
-    // Once playback is actually granted, immediately restore the requested 8% volume.
-    bgMusic.muted=true;
-    const p=bgMusic.play();
-    if(p&&typeof p.then==='function'){
-      p.then(()=>{
-        if(!userMuted()) bgMusic.muted=false;
-        syncAudio();
-      }).catch(()=>{});
-    }
-  };
-  const playAudio=()=>{
-    if(userMuted()) return;
-    bgMusic.muted=false;
-    bgMusic.volume=0.08;
-    const p=bgMusic.play();
-    if(p&&typeof p.catch==='function') p.catch(()=>{});
-  };
-  const unlockAudio=()=>playAudio();
-  audioMute.addEventListener("click",e=>{
-    e.stopPropagation();
-    const nextMuted=!userMuted();
-    localStorage.setItem("yunamyst-music-muted",nextMuted?"1":"0");
-    bgMusic.muted=nextMuted;
-    syncAudio();
-    if(!nextMuted) playAudio();
-  });
-  ["touchstart","touchend","pointerdown","pointerup","click","keydown"].forEach(evt=>{
-    document.addEventListener(evt,unlockAudio,{capture:true,passive:true});
-  });
-  syncAudio();
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",playWithAutoplay,{once:true});
-  }else{
-    playWithAutoplay();
-  }
-}'''
-                  s = s[:start] + new_block + s[script_end:]
+          if start == -1:
+              raise SystemExit('music script marker not found')
+          end = s.find('</script>', start)
+          if end == -1:
+              raise SystemExit('music script end not found')
 
-          p.write_text(s, encoding="utf-8")
+          script = '''const bgMusic=document.getElementById("yunaBgMusic");
+          const audioMute=document.getElementById("audioMute");
+          if(bgMusic&&audioMute){
+            const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
+            bgMusic.volume=0.08;
+            bgMusic.playsInline=true;
+            const syncAudio=()=>{
+              const muted=userMuted();
+              audioMute.textContent=muted?"🔇":"🔊";
+              audioMute.title=muted?"Ativar música":"Mutar música";
+              audioMute.setAttribute("aria-label",audioMute.title);
+            };
+            const playAudio=()=>{
+              if(userMuted()) return;
+              bgMusic.muted=false;
+              bgMusic.volume=0.08;
+              const p=bgMusic.play();
+              if(p&&typeof p.catch==='function') p.catch(()=>{});
+            };
+            const tryAutoplay=()=>{
+              if(userMuted()) return;
+              bgMusic.muted=true;
+              const p=bgMusic.play();
+              if(p&&typeof p.then==='function') p.then(()=>{
+                if(!userMuted()) bgMusic.muted=false;
+                bgMusic.volume=0.08;
+                syncAudio();
+              }).catch(()=>{});
+            };
+            const unlockAudio=()=>playAudio();
+            audioMute.addEventListener("click",e=>{
+              e.stopPropagation();
+              const nextMuted=!userMuted();
+              localStorage.setItem("yunamyst-music-muted",nextMuted?"1":"0");
+              bgMusic.muted=nextMuted;
+              syncAudio();
+              if(!nextMuted) playAudio();
+            });
+            ["touchstart","pointerdown","click","keydown"].forEach(evt=>{
+              document.addEventListener(evt,unlockAudio,{capture:true,passive:true,once:true});
+            });
+            syncAudio();
+            if(document.readyState==="loading"){
+              document.addEventListener("DOMContentLoaded",tryAutoplay,{once:true});
+            }else{
+              tryAutoplay();
+            }
+          }'''
+          script='\n'.join(line[10:] if line.startswith('          ') else line for line in script.splitlines())
+          s = s[:start] + script + s[end:]
+          p.write_text(s, encoding='utf-8')
           PY
 
           git config user.name "github-actions[bot]"
@@ -117,6 +93,6 @@ if(bgMusic&&audioMute){
           if git diff --cached --quiet; then
             echo "No music changes needed."
           else
-            git commit -m "Improve mobile music autoplay"
+            git commit -m "Fix mobile background music playback"
             git push
           fi
