@@ -40,47 +40,63 @@ jobs:
             const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
             bgMusic.volume=0.08;
             bgMusic.playsInline=true;
+
             const syncAudio=()=>{
               const muted=userMuted();
               audioMute.textContent=muted?"🔇":"🔊";
               audioMute.title=muted?"Ativar música":"Mutar música";
               audioMute.setAttribute("aria-label",audioMute.title);
             };
+
             const playAudio=()=>{
-              if(userMuted()) return;
+              if(userMuted()) return Promise.resolve(false);
               bgMusic.muted=false;
               bgMusic.volume=0.08;
-              const p=bgMusic.play();
-              if(p&&typeof p.catch==='function') p.catch(()=>{});
+              const promise=bgMusic.play();
+              if(promise&&typeof promise.then==='function'){
+                return promise.then(()=>true).catch(()=>false);
+              }
+              return Promise.resolve(true);
             };
-            const tryAutoplay=()=>{
+
+            const showPlayState=()=>{
               if(userMuted()) return;
-              bgMusic.muted=true;
-              const p=bgMusic.play();
-              if(p&&typeof p.then==='function') p.then(()=>{
-                if(!userMuted()) bgMusic.muted=false;
-                bgMusic.volume=0.08;
-                syncAudio();
-              }).catch(()=>{});
+              audioMute.textContent="▶️";
+              audioMute.title="Tocar música";
+              audioMute.setAttribute("aria-label","Tocar música");
             };
-            const unlockAudio=()=>playAudio();
+
             audioMute.addEventListener("click",e=>{
               e.stopPropagation();
+              if(bgMusic.paused){
+                localStorage.setItem("yunamyst-music-muted","0");
+                playAudio().then(ok=>{ if(ok) syncAudio(); });
+                return;
+              }
               const nextMuted=!userMuted();
               localStorage.setItem("yunamyst-music-muted",nextMuted?"1":"0");
               bgMusic.muted=nextMuted;
               syncAudio();
               if(!nextMuted) playAudio();
             });
-            ["touchstart","pointerdown","click","keydown"].forEach(evt=>{
-              document.addEventListener(evt,unlockAudio,{capture:true,passive:true,once:true});
-            });
+
             syncAudio();
+
+            const attemptAutoplay=()=>{
+              if(userMuted()) return;
+              playAudio().then(ok=>{
+                if(ok) syncAudio();
+                else showPlayState();
+              });
+            };
+
             if(document.readyState==="loading"){
-              document.addEventListener("DOMContentLoaded",tryAutoplay,{once:true});
+              document.addEventListener("DOMContentLoaded",attemptAutoplay,{once:true});
             }else{
-              tryAutoplay();
+              attemptAutoplay();
             }
+
+            window.addEventListener("pageshow",attemptAutoplay,{once:true});
           }'''
           script='\n'.join(line[10:] if line.startswith('          ') else line for line in script.splitlines())
           s = s[:start] + script + s[end:]
@@ -93,6 +109,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No music changes needed."
           else
-            git commit -m "Fix mobile background music playback"
+            git commit -m "Fix mobile autoplay handling"
             git push
           fi
