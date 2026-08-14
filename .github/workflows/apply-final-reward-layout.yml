@@ -1,0 +1,150 @@
+name: Apply final reward layout
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Apply reward layout
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          html = path.read_text(encoding='utf-8')
+          marker = '/* FINAL REWARD LAYOUT V2 */'
+
+          if marker not in html:
+              css = r'''
+          <style>
+          /* FINAL REWARD LAYOUT V2 */
+          .codes .code{
+            grid-template-columns:52px minmax(190px,1fr) auto auto auto auto auto !important;
+            gap:8px !important;
+            align-items:center !important;
+          }
+          .codes .reward{
+            display:flex !important;
+            align-items:center !important;
+            justify-content:flex-start !important;
+            gap:5px !important;
+            min-width:0 !important;
+            width:auto !important;
+            white-space:nowrap !important;
+            text-align:left !important;
+          }
+          .codes .reward .ico{
+            width:32px !important;
+            height:32px !important;
+            margin:0 !important;
+            flex:0 0 32px !important;
+          }
+          .codes .reward b{
+            font-size:13px !important;
+            line-height:1 !important;
+            white-space:nowrap !important;
+          }
+          .codes .reward small{display:none !important}
+          .codes .reward-icons{
+            display:flex !important;
+            align-items:center !important;
+            gap:5px !important;
+            flex-wrap:nowrap !important;
+          }
+          .codes .reward-img{
+            width:34px !important;
+            height:34px !important;
+            flex:0 0 34px !important;
+            background-size:contain !important;
+            background-position:center !important;
+            background-repeat:no-repeat !important;
+          }
+          .codes .reward-mana{
+            background-size:contain !important;
+            background-position:center !important;
+            background-repeat:no-repeat !important;
+          }
+          .codes .energy{
+            font-size:28px !important;
+            line-height:1 !important;
+            width:auto !important;
+            height:auto !important;
+            margin:0 !important;
+          }
+          .codes .scroll{
+            width:34px !important;
+            height:26px !important;
+            margin:0 !important;
+          }
+          .codes .copy,.codes .iphone{
+            align-self:center !important;
+            justify-self:start !important;
+            margin:0 !important;
+            min-width:max-content !important;
+          }
+          .codes .copy{padding:9px 14px !important;font-size:11px !important}
+          .codes .iphone{padding:9px 14px !important;font-size:11px !important}
+
+          @media (max-width:1050px){
+            .codes .code{
+              grid-template-columns:48px minmax(150px,1fr) auto auto !important;
+              gap:7px !important;
+            }
+            .codes .reward{display:flex !important}
+            .codes .reward .ico,.codes .reward-img{width:28px !important;height:28px !important;flex-basis:28px !important}
+            .codes .reward b{font-size:12px !important}
+          }
+
+          @media (max-width:850px){
+            .codes .code{
+              grid-template-columns:44px minmax(0,1fr) !important;
+              gap:10px !important;
+              padding:16px 12px !important;
+            }
+            .codes .reward{
+              grid-column:1 / -1 !important;
+              display:flex !important;
+              justify-content:flex-start !important;
+              gap:12px !important;
+              flex-wrap:wrap !important;
+              order:3 !important;
+              padding-left:54px !important;
+            }
+            .codes .copy{grid-column:1 / 2 !important;order:4 !important;width:88px !important;min-width:88px !important}
+            .codes .iphone{grid-column:2 / 3 !important;order:5 !important;width:96px !important;min-width:96px !important;margin-left:14px !important}
+          }
+
+          @media (max-width:600px){
+            .codes .reward{gap:10px !important;padding-left:54px !important}
+            .codes .reward .ico,.codes .reward-img{width:26px !important;height:26px !important;flex-basis:26px !important}
+            .codes .reward b{font-size:11px !important}
+            .codes .copy{width:88px !important;min-width:88px !important;margin-top:2px !important}
+            .codes .iphone{width:96px !important;min-width:96px !important;margin-left:14px !important;margin-top:2px !important}
+          }
+          </style>
+          '''
+              html = html.replace('</head>', css + '\n</head>', 1)
+              path.write_text(html, encoding='utf-8')
+          PY
+
+      - name: Commit index update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No index changes needed"
+          else
+            git commit -m "Fix reward icons and button spacing"
+            git push
+          fi
