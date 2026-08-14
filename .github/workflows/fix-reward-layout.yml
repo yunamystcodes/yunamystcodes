@@ -1,0 +1,62 @@
+name: Corrigir recompensas e baú no index
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-reward-layout.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Corrigir index.html
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+
+          # Usa a própria imagem PNG em sprite que já está no index e recorta
+          # exatamente os seis símbolos enviados: místico, fogo, água, vento,
+          # mana e cristal.
+          m = re.search(r'background-image:url\("(data:image/png;base64,[^"]+)"\)', text)
+          sprite = m.group(1) if m else ''
+          if not sprite:
+              raise SystemExit('Sprite PNG das recompensas não encontrado no index.html')
+
+          # Retira correções anteriores para não acumular CSS duplicado.
+          text = re.sub(r'\n<style id="reward-layout-fix">.*?</style>', '', text, flags=re.S)
+
+          fix_css = f'''\n<style id="reward-layout-fix">\n/* Recompensas: PNG transparente com os símbolos reais enviados */\n.reward-icons{{display:flex!important;align-items:center;justify-content:center;gap:12px;min-width:0;flex-wrap:wrap;visibility:visible!important;opacity:1!important}}\n.reward-chip{{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;white-space:nowrap!important}}\n.reward-img{{display:inline-block!important;width:32px!important;height:32px!important;flex:none!important;background-image:url("{sprite}")!important;background-repeat:no-repeat!important;background-size:192px 32px!important;background-position-y:0!important}}\n.reward-mystic{{background-position-x:0!important}}\n.reward-fire{{background-position-x:-32px!important}}\n.reward-water{{background-position-x:-64px!important}}\n.reward-wind{{background-position-x:-96px!important}}\n.reward-mana{{background-position-x:-128px!important}}\n.reward-crystal{{background-position-x:-160px!important}}\n.reward-chip b{{font-size:12px!important;color:#fff!important}}\n.reward-energy{{font-size:25px!important;line-height:32px!important;display:inline-block!important;width:32px!important;height:32px!important;text-align:center}}\n.right>.gamebox{{margin-top:12px;padding:18px;text-align:center;color:#bcb2ca;font-size:12px;background:linear-gradient(180deg,rgba(11,8,29,.94),rgba(6,5,18,.92));border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,.35)}}\n.right>.gamebox strong{{display:block;color:#f0c975;font:700 19px Georgia,serif;margin-bottom:5px}}\n@media(max-width:850px){{.reward-icons{{grid-column:1 / 3!important;grid-row:2!important;justify-content:center!important;gap:10px!important;padding-top:2px!important}}.reward-img{{width:30px!important;height:30px!important;background-size:180px 30px!important}}.reward-mystic{{background-position-x:0!important}}.reward-fire{{background-position-x:-30px!important}}.reward-water{{background-position-x:-60px!important}}.reward-wind{{background-position-x:-90px!important}}.reward-mana{{background-position-x:-120px!important}}.reward-crystal{{background-position-x:-150px!important}}.reward-energy{{width:30px!important;height:30px!important;font-size:22px!important;line-height:30px!important}}.reward-chip b{{font-size:11px!important}}}\n@media(max-width:600px){{.code{{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-rows:auto auto auto!important;column-gap:20px!important;row-gap:12px!important}}.code .gift{{grid-column:1!important;grid-row:1!important}}.code .cinfo{{grid-column:2!important;grid-row:1!important}}.code .reward-icons{{grid-column:1 / 3!important;grid-row:2!important;display:flex!important;justify-content:center!important;align-items:center!important;min-height:34px!important}}.code .copy{{grid-column:1!important;grid-row:3!important}}.code .iphone{{grid-column:2!important;grid-row:3!important;margin:0!important}}.right>.gamebox{{margin-top:12px!important}}}\n</style>\n'''
+          text = text.replace('</head>', fix_css + '</head>', 1)
+
+          # Move the existing gamebox out of COMO USAR and place it between
+          # COMO USAR and FAQ, as requested.
+          gm = re.search(r'<div class="gamebox">.*?</div>', text, flags=re.S)
+          if gm:
+              gamebox = gm.group(0)
+              text = text[:gm.start()] + text[gm.end():]
+              marker = '</section><section class="panel faq" id="faq">'
+              if marker in text:
+                  text = text.replace(marker, '</section>' + gamebox + '<section class="panel faq" id="faq">', 1)
+
+          path.write_text(text, encoding='utf-8')
+          print('index.html corrigido.')
+
+      - name: Commit e push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && echo "Sem alterações" && exit 0
+          git commit -m "Usar PNGs reais nas recompensas e mover bau acima da FAQ"
+          git push
