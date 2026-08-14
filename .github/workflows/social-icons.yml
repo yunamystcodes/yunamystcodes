@@ -45,6 +45,36 @@ jobs:
           else:
               html = html.replace('</body>', social + '\n</body>', 1)
 
+          # Corrige as recompensas usando o PNG transparente em sprite que já existe no index.
+          m = re.search(r'background-image:url\("(data:image/png;base64,[^"]+)"\)', html)
+          if not m:
+              raise SystemExit('PNG das recompensas não encontrado')
+          sprite = m.group(1)
+
+          html = re.sub(r'\n<style id="reward-layout-fix">.*?</style>', '', html, flags=re.S)
+          reward_css = '''
+<style id="reward-layout-fix">
+.reward-icons{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;gap:12px!important;flex-wrap:wrap!important}
+.reward-chip{display:inline-flex!important;align-items:center!important;gap:5px!important;white-space:nowrap!important}
+.reward-img{display:inline-block!important;width:32px!important;height:32px!important;flex:none!important;background-image:url("__SPRITE__")!important;background-repeat:no-repeat!important;background-size:192px 32px!important;background-position-y:0!important}
+.reward-mystic{background-position-x:0!important}.reward-fire{background-position-x:-32px!important}.reward-water{background-position-x:-64px!important}.reward-wind{background-position-x:-96px!important}.reward-mana{background-position-x:-128px!important}.reward-crystal{background-position-x:-160px!important}
+.reward-chip b{font-size:12px!important;color:#fff!important}.reward-energy{display:inline-block!important;width:32px!important;height:32px!important;font-size:25px!important;line-height:32px!important;text-align:center}
+.right>.gamebox{margin-top:12px!important;padding:18px!important;text-align:center!important;color:#bcb2ca!important;background:linear-gradient(180deg,rgba(11,8,29,.94),rgba(6,5,18,.92))!important;border:1px solid var(--line)!important;border-radius:18px!important;box-shadow:0 20px 50px rgba(0,0,0,.35)!important}
+@media(max-width:850px){.reward-icons{grid-column:1 / 3!important;grid-row:2!important;justify-content:center!important}.reward-img{width:30px!important;height:30px!important;background-size:180px 30px!important}.reward-mystic{background-position-x:0!important}.reward-fire{background-position-x:-30px!important}.reward-water{background-position-x:-60px!important}.reward-wind{background-position-x:-90px!important}.reward-mana{background-position-x:-120px!important}.reward-crystal{background-position-x:-150px!important}.reward-energy{width:30px!important;height:30px!important;font-size:22px!important;line-height:30px!important}}
+@media(max-width:600px){.code{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-rows:auto auto auto!important;column-gap:20px!important;row-gap:12px!important}.code .gift{grid-column:1!important;grid-row:1!important}.code .cinfo{grid-column:2!important;grid-row:1!important}.code .reward-icons{grid-column:1 / 3!important;grid-row:2!important;min-height:34px!important}.code .copy{grid-column:1!important;grid-row:3!important}.code .iphone{grid-column:2!important;grid-row:3!important;margin:0!important}}
+</style>
+'''.replace('__SPRITE__', sprite)
+          html = html.replace('</head>', reward_css + '</head>', 1)
+
+          # Move the existing box from inside COMO USAR to between COMO USAR and FAQ.
+          gm = re.search(r'<div class="gamebox">.*?</div>', html, flags=re.S)
+          if gm:
+              box = gm.group(0)
+              html = html[:gm.start()] + html[gm.end():]
+              marker = '</section><section class="panel faq" id="faq">'
+              if marker in html:
+                  html = html.replace(marker, '</section>' + box + '<section class="panel faq" id="faq">', 1)
+
           p.write_text(html, encoding='utf-8')
           PY
       - name: Commit changes
@@ -53,8 +83,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           if git diff --cached --quiet; then
-            echo "No social icon changes needed."
+            echo "No changes needed."
           else
-            git commit -m "Add visible Twitch TikTok and YouTube icons"
+            git commit -m "Fix reward PNGs and move box above FAQ"
             git push
           fi
