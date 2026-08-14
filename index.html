@@ -195,8 +195,9 @@ const bgMusic=document.getElementById("yunaBgMusic");
 const audioMute=document.getElementById("audioMute");
 if(bgMusic&&audioMute){
   const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
-  bgMusic.volume=0.08;
+  bgMusic.autoplay=true;
   bgMusic.playsInline=true;
+  bgMusic.volume=0.08;
 
   const syncAudio=()=>{
     const muted=userMuted();
@@ -223,6 +224,17 @@ if(bgMusic&&audioMute){
     audioMute.setAttribute("aria-label","Tocar música");
   };
 
+  const attemptAutoplay=()=>{
+    if(userMuted()) return;
+    bgMusic.autoplay=true;
+    bgMusic.muted=false;
+    bgMusic.volume=0.08;
+    playAudio().then(ok=>{
+      if(ok) syncAudio();
+      else showPlayState();
+    });
+  };
+
   audioMute.addEventListener("click",e=>{
     e.stopPropagation();
     if(bgMusic.paused){
@@ -239,20 +251,22 @@ if(bgMusic&&audioMute){
 
   syncAudio();
 
-  const attemptAutoplay=()=>{
-    if(userMuted()) return;
-    playAudio().then(ok=>{
-      if(ok) syncAudio();
-      else showPlayState();
-    });
-  };
-
   if(document.readyState==="loading"){
     document.addEventListener("DOMContentLoaded",attemptAutoplay,{once:true});
   }else{
     attemptAutoplay();
   }
-
+  window.addEventListener("load",attemptAutoplay,{once:true});
   window.addEventListener("pageshow",attemptAutoplay,{once:true});
+
+  /* Fallback only when the browser blocks autoplay. One normal page
+     interaction starts the music; no mute -> unmute is required. */
+  const unlockOnce=()=>{
+    if(userMuted()||!bgMusic.paused) return;
+    playAudio().then(ok=>{ if(ok) syncAudio(); });
+  };
+  ["pointerdown","touchstart","keydown"].forEach(evt=>{
+    document.addEventListener(evt,unlockOnce,{capture:true,passive:true});
+  });
 }</script>
 </body></html>
