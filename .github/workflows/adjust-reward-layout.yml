@@ -14,37 +14,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Ajustar layout
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-          marker = '</head>'
-          css = r'''
-<style id="final-reward-layout">
-@media (min-width:851px){
-  .code{flex-wrap:nowrap!important;gap:7px!important}
-  .code .cinfo{flex:1 1 auto!important;min-width:120px!important}
-  .code .reward-icons{flex:0 0 auto!important;gap:5px!important;margin:0 2px 0 0!important;justify-content:flex-start!important}
-  .code .reward-chip{gap:4px!important}
-  .code .reward-img{width:30px!important;height:30px!important}
-  .code .reward-energy{width:30px!important;font-size:23px!important}
-  .code .reward-chip b{font-size:12px!important}
-  .code .copy,.code .iphone{flex:0 0 auto!important;width:auto!important;min-width:82px!important;margin:0!important}
-  .code .copy + .iphone{margin-left:0!important}
-}
-</style>
-'''
-          if 'id="final-reward-layout"' not in s:
-              s = s.replace(marker, css + '\n' + marker, 1)
-          else:
-              import re
-              s = re.sub(r'<style id="final-reward-layout">.*?</style>', css.strip(), s, flags=re.S)
-          p.write_text(s, encoding='utf-8')
-          PY
-
+          python -c "from pathlib import Path; p=Path('index.html'); s=p.read_text(encoding='utf-8'); css='''<style id=\"final-reward-layout\">@media (min-width:851px){.code{flex-wrap:nowrap!important;gap:7px!important}.code .cinfo{flex:1 1 auto!important;min-width:120px!important}.code .reward-icons{flex:0 0 auto!important;gap:5px!important;margin:0 2px 0 0!important;justify-content:flex-start!important}.code .reward-chip{gap:4px!important}.code .reward-img{width:30px!important;height:30px!important}.code .reward-energy{width:30px!important;font-size:23px!important}.code .reward-chip b{font-size:12px!important}.code .copy,.code .iphone{flex:0 0 auto!important;width:auto!important;min-width:82px!important;margin:0!important}.code .copy + .iphone{margin-left:0!important}}</style>'''; import re; s=re.sub(r'<style id=\"final-reward-layout\">.*?</style>',css,s,flags=re.S); s=s.replace('</head>',css+'\n</head>',1) if 'id=\"final-reward-layout\"' not in s else s; p.write_text(s,encoding='utf-8')"
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
