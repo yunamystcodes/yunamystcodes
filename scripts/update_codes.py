@@ -107,3 +107,5 @@ if __name__ == "__main__":
     codes = fetch_codes()
     update_index(codes)
     print(f"Atualizados {len(codes)} códigos ativos.")
+
+# Trigger automático: mantém a atualização do index sincronizada com o repositório.
