@@ -1,109 +1,17 @@
 name: Sync Summoners War codes
 
+# A atualização do index agora é feita por update_codes.py.
+# Este workflow fica apenas manual para não haver duas rotinas a escrever no index ao mesmo tempo.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Update active and expired code tabs
-        run: |
-          python3 -m pip install beautifulsoup4
-          python3 <<'PY'
-          from pathlib import Path
-          from bs4 import BeautifulSoup
-
-          p = Path('index.html')
-          html = p.read_text(encoding='utf-8')
-          soup = BeautifulSoup(html, 'html.parser')
-
-          # Active codes confirmed by the current code source(s) used for the site.
-          active = [
-              ('AUGSW2026V7N', 'Código de agosto 2026'),
-              ('SWXFRIEREN2026', 'Frieren collab'),
-              ('JUNSW2026W6C', 'Código de junho 2026'),
-          ]
-
-          # Expired codes from the requested source list (Pocket Gamer), deduplicated.
-          expired_text = '''MAYSW2026Z2Q APRSW2026M08 LOTR4CO11ABON SW03DEV06NOTE MARSW2026K61 26SWXLOTRS2 COL3KY8G1FT15 FEBSW2026E82 OSAKAK1T3YA314 2026TEAMJPDARE JANSW2026C13 1SURPR1SEG1FT SW25HSZN1223NQ SW2025DEC9PJ 2NEWTOMORROW2 SW2025NOVQ5W SW2025OCTP3T SWC25HAMBOISO APAC25FUNA1NGY0 NEXTWF25PARISA1GA ADEUSSPOLABUSAN OLEOLEOLESWC25 BORASPBRASIL2025 SWCPARISNOUSVOILA 20FIGHT4GLORY25 SCHOENHIERSWC SWSA100RUSH SW2025SEPJ6Z GETUR5STAR 11BALIDENGNILAI1 RONGY4OZH1LUSWC SWCHZHU4NYINGNI25 SW2025AUGR5Q PARISWIRKOMMEN 25VIVELESWC SWCSHUILA520 GEARING4PARIS 20POURLESWC25 ZENMOSUSWC2025 NIJINBANG66SWC GAMESCOM2US2025 WAKUWAKUSWC2025 SWC25NO1JPDARE BRINGONEUSWC ALLESGEBENSWC2025 MEZASEJPNO1 IKOUACBU3HE ZAIHANGZHOUJIAN ZUIHOUYICIJIHUI COME2BRAZILSWC GUE22NEXT4BRASIL HAIYOU4GEWEIZHI SWCZENGSHIKAIMU 4TICKETSLEFT2BR SWCV4M0SAM2025 4THLESSON4SWC PRELIM20FVRSWC25 20M1SSEDUOAM25 SWCBUSAN25GMG SWC20MOTCHAMJI25 MAHSWCJAS1NITNA CUINAPAC18OCT 4P4C15H3R3 25R0AD2P4RISWC 20ALLEZBLEUSWC25 20SWC25BEGINS2 SWC25SEAULTYEET W3LCOME2SWC25APAC SW2025JUL9UA H1TO33CHAMP LTWH0SNEXT33 SW2025JUNY5C ENGSCR10Y11 RUSHXSWSA AGAIN11TYU TY4SW11TH SW11YABDAYGIFT SW2025APR8C4 ALLSTAREHERE PLCHAMPION24 SW2025MAYA5Q SWELTHANKS SWELTOP1 SW2025APR1C4 SW21GK89 BELOWISAPIECEOFSHT SW2025MAR1N3 SWSTARROUND2 CHAMP32B0RN LETLT32BEG1N LETSGO16FINAL SEEU1N26AGA1N KRNAKAY0SH1JP Y0UK0S0SM25 G3TSWMYTG1FT THX4ENJDSCOLLAB SWXDSHAPPY25 SW2025JAN6A8 SW2025FEB3D9 DEVNOTE2025DSCOLLAB COLLABTAIANJING SANKAIMENOJVSK 20JPTEAMHADARE25 NEXTMAR8TOKYO NAYASUPERMATCH25 GOODBYE2024 GOODBY3LT2024 LTS31GAMESTART SW2024DECS9Q SARABASWC2024 SWC24SAISYUKESSEN YOUKOSOSWC24WF SW2024NOVU5Z SWSAXBASHARKKF3I9 HENGAPTOKYO1109 DINHNOCSWC2024 APACSANSANG2024 NEXTAPACCUP26OCT AMERICASCUPRIZZUP VIVALASVEGASSWC2024 SW2024OCTM6B CUATAMCUP1012 WHOLLBLTS30LEGEND SWC24FERTIGLOS RINGFREISWC2024 AUFNACHJAPAN24 TRY2FINDME87 10IKUZOHOCHIMINH26 NETTOUSWC2024 2024WEREGOIN2VEGAS SWCWANNAGO2VEGAS SWCNONATUGAKITA SWC24JPNODEBAN SW2024SEPM1V ZHONGWUAOSWC24 SWC24CHAOJIBANG SWCISBACKTORISE24 1STTWOFORSWCAMCUP 2024SHEIQUYATAIBEI HUZHIMINGJIAN AMGETREADY4DAY2 NEXT2SIGMAAURASWC WFDEMATTERUZE 24NIPPON1NINARE IDOMESWC2024 LIANGMINGJINWF24 JINGDIANBISAIZAISWC SWCLAISHANGHAI SWC2024 DAEHWANGGODSWC24 ENROUTEPPOURSWC24 09SWCNACHBERLIN21 DALDIDANSWC2024 SWCS2LUCKYVICKY SWCLOSGEHTS2024 READYSETSWC2024 10APACXINCHAO26 SUMMERSEASWC2024 LESPRELIMSEU24 ALLESAUFANFANGSWC SELAMATSWC24SEA SWC24ISUNDERWAY SW2024AUGO2E SWXJJKTHQ24 SW2024JULN4T SW2024JUNE6U 24SW10FESTA SW2024MAYR9S SW2024APRS3R COMINGLTS29SOON ROADTO20LEGEND24 SWCWF24INTOKYO SUPERHYPEDKOJP SW2024MARW1M 24SPBACKINSEOUL SW2024M310TH SW2024Y03M V2MEZASUZOJP SPJPYOSENKAISHI GERALTIN24SW10TH 1STWINTEROF2024 GOODLUCKSS28 SW2024FEBA7S SW2024JANR8A'''
-          expired = []
-          for c in expired_text.split():
-              if c not in expired:
-                  expired.append(c)
-
-          codes_panel = soup.select_one('.codes')
-          if not codes_panel:
-              raise SystemExit('Could not find .codes panel')
-
-          # Remove existing active cards, preserving the rest of the design.
-          for card in codes_panel.select('.code:not(.expired)'):
-              card.decompose()
-
-          # Build active cards using the site's existing classes.
-          more = codes_panel.select_one('.more')
-          for i, (code, note) in enumerate(active):
-              article = soup.new_tag('article', attrs={'class':'code', 'data-code':code})
-              if i == 0:
-                  ribbon = soup.new_tag('div', attrs={'class':'ribbon'})
-                  ribbon.string = 'NOVO'
-                  article.append(ribbon)
-              gift = soup.new_tag('div', attrs={'class':'gift'})
-              gift.string = '🎁'
-              article.append(gift)
-              info = soup.new_tag('div', attrs={'class':'cinfo'})
-              strong = soup.new_tag('strong'); strong.string = code
-              small = soup.new_tag('small'); small.string = '📅 ' + note
-              info.extend([strong, small]); article.append(info)
-              copy = soup.new_tag('button', attrs={'class':'copy', 'type':'button', 'onclick':f'copyCode("{code}")'})
-              copy.string = '▣ COPIAR'
-              article.append(copy)
-              link = soup.new_tag('a', attrs={'class':'iphone', 'href':f'https://withhive.me/313/{code}', 'target':'_blank', 'rel':'noopener'})
-              link.string = ' LINK'
-              article.append(link)
-              if more:
-                  more.insert_before(article)
-              else:
-                  codes_panel.append(article)
-
-          # Fill the existing expired tab.
-          expired_list = soup.select_one('#expiredCodesList')
-          if not expired_list:
-              tab = soup.new_tag('div', attrs={'class':'expired-tab'})
-              toggle = soup.new_tag('button', attrs={'class':'expired-toggle', 'type':'button', 'onclick':'toggleExpired()'})
-              toggle.string = f'🗃️ CÓDIGOS EXPIRADOS ({len(expired)}) ⌄'
-              panel = soup.new_tag('div', attrs={'id':'expiredCodesList','class':'expired-panel'})
-              tab.extend([toggle,panel])
-              codes_panel.append(tab)
-              expired_list = panel
-          expired_list.clear()
-          for code in expired:
-              article = soup.new_tag('article', attrs={'class':'code expired', 'data-code':code})
-              gift = soup.new_tag('div', attrs={'class':'gift'}); gift.string='🗃️'
-              info = soup.new_tag('div', attrs={'class':'cinfo'})
-              strong=soup.new_tag('strong'); strong.string=code
-              small=soup.new_tag('small'); small.string='⛔ Código expirado'
-              info.extend([strong,small])
-              article.extend([gift,info])
-              status=soup.new_tag('span', attrs={'style':'grid-column:span 2;color:#9f96ad;font-size:11px;text-align:center'})
-              status.string='EXPIRADO'
-              article.append(status)
-              expired_list.append(article)
-
-          p.write_text(str(soup), encoding='utf-8')
-          PY
-
-      - name: Commit updated code lists
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          git diff --cached --quiet || git commit -m "Separate active and expired Summoners War codes"
-          git push
+      - name: Verificar configuração
+        run: echo "A sincronização automática é feita por scripts/update_codes.py."
