@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Códigos Summoners War 2026 | YunaMyst Codes</title>
-<meta name="description" content="Códigos ativos de Summoners War: Sky Arena 2026, recompensas, como usar e FAQ.">
+<title>Códigos Summoners War | YunaMyst Codes</title>
+<meta name="description" content="Códigos ativos de Summoners War: Sky Arena, recompensas, como usar e FAQ.">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--gold:#f3bd52;--purple:#a85cff;--pink:#ff4fa3;--panel:rgba(8,7,22,.88);--line:rgba(214,151,255,.38);--muted:#c8c3d6}
@@ -70,7 +70,7 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 </div></header>
 <section class="hero container" id="inicio">
 <div class="kicker" data-i18n="kicker">✦ COMUNIDADE YUNAMYST ✦</div>
-<h1 data-i18n="heroTitle">CÓDIGOS DE<br class="mobile-break"> SUMMONERS WAR 2026</h1>
+<h1 data-i18n="heroTitle">CÓDIGOS DE<br class="mobile-break"> SUMMONERS WAR</h1>
 <p data-i18n="heroText">Códigos novos e ativos para resgatar as tuas recompensas!</p>
 <a class="whats" href="https://chat.whatsapp.com/KWg53GNpXDA3G5lDT8VwOg?s=cl&p=a&ilr=0" target="_blank" rel="noopener"><div class="wicon">☏</div><div><b data-i18n="whatsTitle">ENTRA NO GRUPO DO WHATSAPP!</b><span data-i18n="whatsText">Participa no grupo para não perder nenhum código!</span></div><strong>›</strong></a>
 </section>
@@ -151,7 +151,7 @@ footer:'YunaMyst • Códigos Summoners War: Sky Arena • Site de comunidade in
 },
 en:{
 home:'⌂ HOME',codesNav:'🎁 CODES',howNav:'❔ HOW TO USE',faqNav:'❔ FAQ',
-kicker:'✦ YUNAMYST COMMUNITY ✦',heroTitle:'SUMMONERS WAR 2026<br class="mobile-break"> CODES',
+kicker:'✦ YUNAMYST COMMUNITY ✦',heroTitle:'SUMMONERS WAR<br class="mobile-break"> CODES',
 heroText:'New and active codes to claim your rewards!',
 whatsTitle:'JOIN THE WHATSAPP GROUP!',whatsText:'Join the group so you never miss a code!',
 yunamyst:'♛ YUNAMYST ♛',daily:'Daily Summoners War<br>content!',dailyMobile:'Daily Summoners War content!',
@@ -195,9 +195,9 @@ const bgMusic=document.getElementById("yunaBgMusic");
 const audioMute=document.getElementById("audioMute");
 if(bgMusic&&audioMute){
   const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
+  bgMusic.volume=0.08;
   bgMusic.autoplay=true;
   bgMusic.playsInline=true;
-  bgMusic.volume=0.08;
 
   const syncAudio=()=>{
     const muted=userMuted();
@@ -210,28 +210,16 @@ if(bgMusic&&audioMute){
     if(userMuted()) return Promise.resolve(false);
     bgMusic.muted=false;
     bgMusic.volume=0.08;
-    const promise=bgMusic.play();
-    if(promise&&typeof promise.then==='function'){
-      return promise.then(()=>true).catch(()=>false);
-    }
-    return Promise.resolve(true);
-  };
-
-  const showPlayState=()=>{
-    if(userMuted()) return;
-    audioMute.textContent="▶️";
-    audioMute.title="Tocar música";
-    audioMute.setAttribute("aria-label","Tocar música");
+    return Promise.resolve(bgMusic.play()).then(()=>true).catch(()=>false);
   };
 
   const attemptAutoplay=()=>{
     if(userMuted()) return;
-    bgMusic.autoplay=true;
     bgMusic.muted=false;
     bgMusic.volume=0.08;
+    bgMusic.load();
     playAudio().then(ok=>{
       if(ok) syncAudio();
-      else showPlayState();
     });
   };
 
@@ -257,10 +245,12 @@ if(bgMusic&&audioMute){
     attemptAutoplay();
   }
   window.addEventListener("load",attemptAutoplay,{once:true});
+  bgMusic.addEventListener("canplay",attemptAutoplay,{once:true});
   window.addEventListener("pageshow",attemptAutoplay,{once:true});
 
-  /* Fallback only when the browser blocks autoplay. One normal page
-     interaction starts the music; no mute -> unmute is required. */
+  /* Browser fallback: if autoplay is blocked, the first ordinary
+     interaction starts the music. This is required by browsers that
+     prohibit audible autoplay on a fresh page. */
   const unlockOnce=()=>{
     if(userMuted()||!bgMusic.paused) return;
     playAudio().then(ok=>{ if(ok) syncAudio(); });
