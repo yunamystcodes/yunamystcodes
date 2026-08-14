@@ -1,0 +1,58 @@
+name: Fix transparent reward scrolls
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create transparent PNG reward icons
+        shell: bash
+        run: |
+          set -e
+          mkdir -p assets/rewards
+          for name in mystic fire water wind; do
+            convert "assets/rewards/${name}.svg" \
+              -alpha off \
+              -bordercolor '#cccccc' -border 1 \
+              -fuzz 10% -fill none \
+              -draw 'matte 0,0 floodfill' \
+              -shave 1x1 \
+              -trim +repage \
+              "assets/rewards/${name}.png"
+          done
+
+      - name: Use PNG reward icons in index
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          for name in ('mystic', 'fire', 'water', 'wind'):
+              s = s.replace(f'assets/rewards/{name}.svg', f'assets/rewards/{name}.png')
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit changes and remove one-shot workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/fix-transparent-scrolls.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html assets/rewards/mystic.png assets/rewards/fire.png assets/rewards/water.png assets/rewards/wind.png .github/workflows/fix-transparent-scrolls.yml
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m 'Remove backgrounds from reward scroll icons'
+          git push
