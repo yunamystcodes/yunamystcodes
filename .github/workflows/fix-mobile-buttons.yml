@@ -1,0 +1,40 @@
+name: Fix mobile copy and link buttons
+on: [push, workflow_dispatch]
+permissions:
+  contents: write
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Separate mobile buttons
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '<style id="mobile-buttons-separation">'
+          if marker not in s:
+              css = '''<style id="mobile-buttons-separation">
+          @media (max-width:600px){
+            .code{grid-template-columns:minmax(0,1fr) 16px minmax(0,1fr)!important;column-gap:0!important;row-gap:12px!important}
+            .code .gift{grid-column:1!important;grid-row:1!important;justify-self:start!important}
+            .code .cinfo{grid-column:2 / 4!important;grid-row:1!important}
+            .code .reward{grid-column:1 / 4!important;grid-row:2!important}
+            .code .copy{grid-column:1 / 2!important;grid-row:3!important;width:100%!important;min-width:0!important;max-width:none!important;margin:0!important;justify-self:stretch!important}
+            .code .iphone{grid-column:3 / 4!important;grid-row:3!important;width:100%!important;min-width:0!important;max-width:none!important;margin:0!important;justify-self:stretch!important}
+          }
+          @media (max-width:380px){
+            .code{grid-template-columns:minmax(0,1fr) 12px minmax(0,1fr)!important;row-gap:10px!important}
+          }
+          </style>'''
+              s = s.replace('</head>', css + '</head>')
+              p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          if ! git diff --cached --quiet; then git commit -m 'Separate copy and iPhone buttons on mobile'; git push; fi
