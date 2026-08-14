@@ -1,0 +1,35 @@
+name: Fix Portuguese title
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-pt-title.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-title:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove 2026 from Portuguese hero title
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = "heroTitle:'CÓDIGOS DE<br class=\"mobile-break\"> SUMMONERS WAR 2026'"
+          new = "heroTitle:'CÓDIGOS DE<br class=\"mobile-break\"> SUMMONERS WAR'"
+          if old not in s:
+              raise SystemExit('Portuguese heroTitle string not found')
+          s = s.replace(old, new, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit correction
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Fix Portuguese title year'
+          git push
