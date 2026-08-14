@@ -1,61 +1,18 @@
 name: Add YunaMyst social links
 
+# Os links sociais já estão no index.html. Este workflow fica manual para não
+# disputar alterações com a atualização automática dos códigos.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  update-social-links:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Add social icons and links
-        shell: python
-        run: |
-          from pathlib import Path
-          import re
-
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-
-          social = '''<div class="social social-links">
-            <a href="https://www.twitch.tv/YunaMyst" target="_blank" rel="noopener noreferrer" aria-label="Twitch"><img src="assets/social/twitch.svg" alt="Twitch"></a>
-            <a href="https://www.tiktok.com/@yunamyst_" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><img src="assets/social/tiktok.svg" alt="TikTok"></a>
-            <a href="https://www.youtube.com/@YunaMyst" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><img src="assets/social/youtube.svg" alt="YouTube"></a>
-          </div>'''
-
-          # Replace any existing social block, including previous attempts.
-          s, count = re.subn(r'<div class="social(?:\s+social-links)?">.*?</div>', social, s, count=1, flags=re.S)
-          if count == 0:
-              s = s.replace('<div class="about"', social + '\n<div class="about"', 1)
-
-          css = '''
-.social-links{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:15px}
-.social-links a{width:30px;height:30px;border:1px solid #5c397b;border-radius:8px;display:grid;place-items:center;background:#17102a;text-decoration:none;transition:.2s;overflow:hidden}
-.social-links a img{width:17px;height:17px;object-fit:contain;display:block}
-.social-links a:hover{transform:translateY(-2px);border-color:#a85cff;background:#24113d}
-@media(max-width:600px){.social-links{gap:5px;margin-top:13px}.social-links a{width:28px;height:28px}.social-links a img{width:16px;height:16px}}
-'''
-          s = re.sub(r'\n?\.social-links\{.*?\n@media\(max-width:600px\)\{\.social-links.*?\}\}\n', '\n', s, count=1, flags=re.S)
-          if '.social-links{' not in s:
-              s = s.replace('</style>', css + '</style>', 1)
-
-          p.write_text(s, encoding='utf-8')
-
-      - name: Commit changes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          if git diff --cached --quiet; then
-            echo "No social icon changes needed."
-          else
-            git commit -m "Use uploaded social icons"
-            git push
-          fi
+      - name: Verificar configuração
+        run: echo "Links sociais mantidos diretamente no index.html."
