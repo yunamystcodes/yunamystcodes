@@ -9,12 +9,9 @@ SOURCE_URL = "https://summonerswarcodes.us/"
 INDEX = Path("index.html")
 CODE_RE = re.compile(r"\b[A-Z0-9]{8,24}\b")
 
-# Códigos de eventos recentes que podem não aparecer na tabela principal da fonte.
-# Mantemos a recompensa como "não confirmada" quando não existe uma fonte fiável
-# publicada para não inventar recompensas.
 EXTRA_CODES = {
-    "SWCTICKET2HAMBURG": "Recompensa SWC — não confirmada",
-    "INVOCATEUREU26": "Recompensa SWC — não confirmada",
+    "SWCTICKET2HAMBURG": "1 Mystical Scroll",
+    "INVOCATEUREU26": "100,000 Mana + 2 Mystical Scrolls",
 }
 
 
@@ -54,16 +51,14 @@ def fetch_codes():
         reward = cells[1] if len(cells) > 1 else "Recompensas não informadas"
         found.append({"code": code, "reward": reward[:180]})
 
-    # Recompensas confirmadas recentemente para os códigos que aparecem no site.
     reward_overrides = {
-        "AUGSW2026V7N": "100 Energia + 1 Pergaminho de Fogo",
-        "SWXFRIEREN2026": "100 Energia + 300.000 Mana + 3 Pergaminhos Místicos",
+        "AUGSW2026V7N": "100 Energy + 1 Fire Scroll",
+        "SWXFRIEREN2026": "100 Energy + 300,000 Mana + 3 Mystical Scrolls",
     }
     for item in found:
         if item["code"] in reward_overrides:
             item["reward"] = reward_overrides[item["code"]]
 
-    # Acrescenta os códigos SWC recentes caso a fonte principal ainda não os tenha na tabela.
     for code, reward in EXTRA_CODES.items():
         if code not in seen:
             found.insert(0, {"code": code, "reward": reward})
@@ -74,19 +69,73 @@ def fetch_codes():
     return found
 
 
+def reward_icons(reward):
+    text = clean(reward).lower()
+    patterns = [
+        ("mystic", r"(?:scroll\s*)?mystical|mystic(?:al)?\s*scroll|pergaminho\s*m[íi]stico|scroll\s*mystical", "📜"),
+        ("fire", r"fire\s*scroll|scroll\s*fire|pergaminho\s*de\s*fogo", "🔥"),
+        ("water", r"water\s*scroll|scroll\s*water|pergaminho\s*de\s*[aá]gua", "💧"),
+        ("wind", r"wind\s*scroll|scroll\s*wind|pergaminho\s*de\s*vento", "🍃"),
+        ("mana", r"mana", "🔵"),
+        ("crystal", r"crystal|crystals|cristal|cristais", "💎"),
+        ("energy", r"energy|energia", "⚡"),
+    ]
+    items = []
+    for kind, pattern, icon in patterns:
+        before = re.search(r"(\d[\d,.]*)\s*(?:x|×)?\s*(?:\+)?\s*" + pattern, text)
+        after = re.search(pattern + r"\s*(?:x|×)?\s*(\d[\d,.]*)", text)
+        match = before or after
+        if match:
+            qty = match.group(1)
+            items.append((kind, icon, qty))
+    if not items:
+        return '<span class="reward-unknown">?</span>'
+    return "".join(
+        f'<span class="reward-chip {kind}" title="{html.escape(kind)}">'
+        f'<span class="reward-icon">{icon}</span><b>×{qty}</b></span>'
+        for kind, icon, qty in items
+    )
+
+
 def card(item):
     code = html.escape(item["code"])
-    reward = html.escape(item["reward"] or "Recompensa não informada")
-    return f'''<article class="code" data-code="{code}"><div class="gift">🎁</div><div class="cinfo"><strong>{code}</strong><small>🔄 Atualizado automaticamente</small></div><div class="reward-summary"><small>RECOMPENSA</small><b>{reward}</b></div><button class="copy" onclick="copiarCodigo('{code}',this)"><span data-i18n="copy">▣ COPIAR</span></button><a class="iphone" href="https://withhive.me/313/{code}" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>'''
+    rewards = reward_icons(item["reward"] or "")
+    return (
+        f'<article class="code" data-code="{code}">'
+        f'<div class="gift">🎁</div>'
+        f'<div class="cinfo"><strong>{code}</strong><small>🔄 Atualizado automaticamente</small></div>'
+        f'<div class="reward-icons" aria-label="Recompensas">{rewards}</div>'
+        f'<button class="copy" onclick="copiarCodigo(\'{code}\',this)"><span data-i18n="copy">▣ COPIAR</span></button>'
+        f'<a class="iphone" href="https://withhive.me/313/{code}" target="_blank" rel="noopener">'
+        f'<span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>'
+    )
+
+
+STYLE_PATCH = '''
+/* Recompensas: apenas símbolo + quantidade */
+.reward-summary{display:none!important}
+.reward-icons{grid-column:3 / 6;display:flex;align-items:center;justify-content:center;gap:12px;min-width:0;flex-wrap:wrap}.reward-chip{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}.reward-icon{font-size:24px;line-height:1;filter:drop-shadow(0 0 4px rgba(255,255,255,.18))}.reward-chip b{font-size:12px;color:#fff}.reward-unknown{color:#aaa;font-size:12px}
+@media(max-width:1050px){.reward-icons{grid-column:3 / 5;gap:9px}.reward-icon{font-size:22px}}
+@media(max-width:850px){.reward-icons{grid-column:1 / 3;grid-row:2;justify-content:flex-start;gap:10px;padding-top:2px}.reward-icon{font-size:22px}.reward-chip b{font-size:11px}}
+@media(max-width:600px){.reward-icons{grid-column:1 / 3;grid-row:2;justify-content:flex-start;gap:10px}.reward-icon{font-size:21px}.reward-chip b{font-size:11px}.code .copy{grid-row:3}.code .iphone{grid-row:3}}
+'''
 
 
 def update_index(codes):
     text = INDEX.read_text(encoding="utf-8")
-
-    # Ajustes visuais permanentes, preservados nas futuras atualizações automáticas.
-    style_patch = '''\n/* Ajustes de leitura dos códigos e recompensas */\n.reward-summary{grid-column:3 / 6;text-align:center;min-width:0;padding:0 4px}.reward-summary small{display:block;color:#d7cbdc;font-size:9px;letter-spacing:.4px;margin-bottom:3px}.reward-summary b{display:block;color:#fff;font-size:12px;line-height:1.25;white-space:normal}.cinfo strong{font-size:16px}.cinfo small{font-size:11px}\n@media(max-width:600px){.cinfo strong{font-size:14px}.cinfo small{font-size:10px}.reward-summary{grid-column:1 / 3;grid-row:2;text-align:center;padding:0 2px}.reward-summary b{font-size:11px;line-height:1.2}.reward-summary small{font-size:8px}.code .copy{grid-row:3}.code .iphone{grid-row:3}}\n@media(max-width:380px){.cinfo strong{font-size:13px}.reward-summary b{font-size:10px}.code .copy,.code .iphone{font-size:11px}}\n'''
-    if '/* Ajustes de leitura dos códigos e recompensas */' not in text:
-        text = text.replace('</style>', style_patch + '</style>', 1)
+    text = re.sub(
+        r'\n/\* Ajustes de leitura dos códigos e recompensas \*/.*?(?=\n</style>)',
+        '',
+        text,
+        flags=re.S,
+    )
+    text = re.sub(
+        r'\n/\* Recompensas: apenas símbolo \+ quantidade \*/.*?(?=\n</style>)',
+        '',
+        text,
+        flags=re.S,
+    )
+    text = text.replace('</style>', STYLE_PATCH + '</style>', 1)
 
     marker = '<div class="codes" id="activeCodesList">'
     start = text.find(marker)
@@ -98,6 +147,7 @@ def update_index(codes):
         end = text.find('</div><div class="more"', content_start)
     if end == -1:
         raise RuntimeError('Fim da lista de códigos ativos não encontrado.')
+
     cards = "\n".join(card(item) for item in codes)
     new_text = text[:content_start] + "\n" + cards + "\n" + text[end:]
     INDEX.write_text(new_text, encoding="utf-8")
@@ -107,5 +157,3 @@ if __name__ == "__main__":
     codes = fetch_codes()
     update_index(codes)
     print(f"Atualizados {len(codes)} códigos ativos.")
-
-# Mantém a geração do index sincronizada com o repositório.
