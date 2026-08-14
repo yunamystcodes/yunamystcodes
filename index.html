@@ -41,6 +41,7 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 
 
 
+
 /* Recompensas: usar as imagens reais enviadas pelo utilizador */
 .reward-summary{display:none!important}
 .reward-icons{grid-column:3 / 6;display:flex;align-items:center;justify-content:center;gap:12px;min-width:0;flex-wrap:wrap}
@@ -58,6 +59,16 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 @media(max-width:1050px){.reward-icons{grid-column:3 / 5;gap:9px}}
 @media(max-width:850px){.reward-icons{grid-column:1 / 3;grid-row:2;justify-content:flex-start;gap:9px;padding-top:2px}.reward-chip b{font-size:11px}}
 @media(max-width:600px){.reward-icons{grid-column:1 / 3;grid-row:2;justify-content:flex-start;gap:8px}.reward-img{width:30px;height:30px;background-size:180px 30px}.reward-mystic{background-position:0 0}.reward-fire{background-position:-30px 0}.reward-water{background-position:-60px 0}.reward-wind{background-position:-90px 0}.reward-mana{background-position:-120px 0}.reward-crystal{background-position:-150px 0}.reward-energy{width:30px;font-size:22px}.reward-chip b{font-size:10px}}
+
+/* Imagens reais enviadas para as recompensas */
+.reward-img{background-image:none!important;background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;width:32px!important;height:32px!important;display:inline-block!important}
+.reward-mystic{background-image:url("assets/rewards/mystic.svg")!important}
+.reward-fire{background-image:url("assets/rewards/fire.svg")!important}
+.reward-water{background-image:url("assets/rewards/water.svg")!important}
+.reward-wind{background-image:url("assets/rewards/wind.svg")!important}
+.reward-mana{background-image:url("assets/rewards/mana.svg")!important}
+.reward-crystal{background-image:url("assets/rewards/crystal.svg")!important}
+@media(max-width:600px){.reward-img{width:30px!important;height:30px!important}}
 </style>
 </head>
 <body>
