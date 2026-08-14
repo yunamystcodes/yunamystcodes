@@ -107,8 +107,9 @@ jobs:
 
           @media (max-width:850px){
             .codes .code{
-              grid-template-columns:44px minmax(0,1fr) !important;
-              gap:10px !important;
+              grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+              column-gap:18px !important;
+              row-gap:10px !important;
               padding:16px 12px !important;
             }
             .codes .reward{
@@ -118,18 +119,42 @@ jobs:
               gap:12px !important;
               flex-wrap:wrap !important;
               order:3 !important;
-              padding-left:54px !important;
+              padding-left:0 !important;
             }
-            .codes .copy{grid-column:1 / 2 !important;order:4 !important;width:88px !important;min-width:88px !important}
-            .codes .iphone{grid-column:2 / 3 !important;order:5 !important;width:96px !important;min-width:96px !important;margin-left:14px !important}
+            .codes .copy{
+              grid-column:1 / 2 !important;
+              order:4 !important;
+              width:88px !important;
+              min-width:88px !important;
+              justify-self:center !important;
+              margin:0 !important;
+            }
+            .codes .iphone{
+              grid-column:2 / 3 !important;
+              order:5 !important;
+              width:96px !important;
+              min-width:96px !important;
+              justify-self:center !important;
+              margin:0 !important;
+            }
           }
 
           @media (max-width:600px){
-            .codes .reward{gap:10px !important;padding-left:54px !important}
+            .codes .reward{gap:10px !important;padding-left:0 !important}
             .codes .reward .ico,.codes .reward-img{width:26px !important;height:26px !important;flex-basis:26px !important}
             .codes .reward b{font-size:11px !important}
-            .codes .copy{width:88px !important;min-width:88px !important;margin-top:2px !important}
-            .codes .iphone{width:96px !important;min-width:96px !important;margin-left:14px !important;margin-top:2px !important}
+            .codes .copy{
+              width:88px !important;
+              min-width:88px !important;
+              margin:0 !important;
+              justify-self:center !important;
+            }
+            .codes .iphone{
+              width:96px !important;
+              min-width:96px !important;
+              margin:0 !important;
+              justify-self:center !important;
+            }
           }
           </style>
           '''
@@ -145,6 +170,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No index changes needed"
           else
-            git commit -m "Fix reward icons and button spacing"
+            git commit -m "Fix mobile copy and iPhone button spacing"
             git push
           fi
