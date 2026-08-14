@@ -108,4 +108,4 @@ if __name__ == "__main__":
     update_index(codes)
     print(f"Atualizados {len(codes)} códigos ativos.")
 
-# Trigger automático: mantém a atualização do index sincronizada com o repositório.
+# Mantém a geração do index sincronizada com o repositório.
