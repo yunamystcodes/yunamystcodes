@@ -192,25 +192,36 @@ document.addEventListener('click',()=>langMenu?.classList.remove('open'));
 setLanguage(localStorage.getItem('yunamyst-lang')||'pt');
 
 const bgMusic=document.getElementById("yunaBgMusic");
-const audioMute=document.getElementById("audioMute");
-if(bgMusic&&audioMute){
-  bgMusic.volume=0.08;
-  bgMusic.muted=localStorage.getItem("yunamyst-music-muted")==="1";
-  const syncAudio=()=>{
-    audioMute.textContent=bgMusic.muted?"🔇":"🔊";
-    audioMute.title=bgMusic.muted?"Ativar música":"Mutar música";
-    audioMute.setAttribute("aria-label",audioMute.title);
-  };
-  const tryPlay=()=>{if(!bgMusic.muted)bgMusic.play().catch(()=>{});};
-  audioMute.addEventListener("click",e=>{
-    e.stopPropagation();
-    bgMusic.muted=!bgMusic.muted;
-    localStorage.setItem("yunamyst-music-muted",bgMusic.muted?"1":"0");
-    syncAudio();
-    if(!bgMusic.muted)tryPlay();
-  });
-  document.addEventListener("pointerdown",tryPlay,{once:true});
-  syncAudio();
-}
-</script>
+        const audioMute=document.getElementById("audioMute");
+        if(bgMusic&&audioMute){
+          const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
+          bgMusic.volume=0.08;
+          bgMusic.muted=true;
+          const syncAudio=()=>{
+            const muted=userMuted();
+            audioMute.textContent=muted?"🔇":"🔊";
+            audioMute.title=muted?"Ativar música":"Mutar música";
+            audioMute.setAttribute("aria-label",audioMute.title);
+          };
+          const playAudio=()=>{
+            if(userMuted()) return;
+            bgMusic.muted=false;
+            bgMusic.volume=0.08;
+            const p=bgMusic.play();
+            if(p&&typeof p.catch==='function') p.catch(()=>{});
+          };
+          const unlockAudio=()=>playAudio();
+          audioMute.addEventListener("click",e=>{
+            e.stopPropagation();
+            const nextMuted=!userMuted();
+            localStorage.setItem("yunamyst-music-muted",nextMuted?"1":"0");
+            bgMusic.muted=nextMuted;
+            syncAudio();
+            if(!nextMuted) playAudio();
+          });
+          ["touchstart","touchend","pointerdown","pointerup","click","keydown"].forEach(evt=>{
+            document.addEventListener(evt,unlockAudio,{capture:true,passive:true});
+          });
+          syncAudio();
+        }</script>
 </body></html>
