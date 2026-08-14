@@ -7,6 +7,7 @@ on:
   push:
     paths:
       - "scripts/update_codes.py"
+      - ".github/workflows/update-codes.yml"
 
 permissions:
   contents: write
@@ -25,6 +26,17 @@ jobs:
 
       - name: Instalar dependências
         run: pip install requests beautifulsoup4
+
+      - name: Corrigir template das recompensas
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("scripts/update_codes.py")
+          s = p.read_text(encoding="utf-8")
+          s = s.replace("STYLE_PATCH = f'''", "STYLE_PATCH = '''")
+          s = s.replace("text = text.replace('</style>', STYLE_PATCH + '</style>', 1)", "text = text.replace('</style>', STYLE_PATCH.replace('{{','{').replace('}}','}').replace('{REWARD_SPRITE}', REWARD_SPRITE) + '</style>', 1)")
+          p.write_text(s, encoding="utf-8")
+          PY
 
       - name: Atualizar códigos
         run: python scripts/update_codes.py
