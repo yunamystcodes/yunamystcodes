@@ -8,6 +8,7 @@ on:
     paths:
       - "scripts/update_codes.py"
       - ".github/workflows/update-codes.yml"
+      - "assets/rewards/**"
 
 permissions:
   contents: write
@@ -41,14 +42,35 @@ jobs:
       - name: Atualizar códigos
         run: python scripts/update_codes.py
 
+      - name: Aplicar imagens reais das recompensas
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("index.html")
+          s = p.read_text(encoding="utf-8")
+          patch = '''
+          /* Imagens reais enviadas para as recompensas */
+          .reward-img{background-image:none!important;background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;width:32px!important;height:32px!important;display:inline-block!important}
+          .reward-mystic{background-image:url("assets/rewards/mystic.svg")!important}
+          .reward-fire{background-image:url("assets/rewards/fire.svg")!important}
+          .reward-water{background-image:url("assets/rewards/water.svg")!important}
+          .reward-wind{background-image:url("assets/rewards/wind.svg")!important}
+          .reward-mana{background-image:url("assets/rewards/mana.svg")!important}
+          .reward-crystal{background-image:url("assets/rewards/crystal.svg")!important}
+          @media(max-width:600px){.reward-img{width:30px!important;height:30px!important}}
+          '''
+          s = s.replace("</style>", patch + "</style>", 1)
+          p.write_text(s, encoding="utf-8")
+          PY
+
       - name: Guardar alterações
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
+          git add index.html assets/rewards .github/workflows/update-codes.yml
           if git diff --cached --quiet; then
             echo "Nenhuma alteração nos códigos."
           else
-            git commit -m "Atualizar códigos do Summoners War"
+            git commit -m "Corrigir icones das recompensas"
             git push
           fi
