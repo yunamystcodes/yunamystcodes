@@ -1,0 +1,45 @@
+name: Remove year from site title
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/remove-title-year.yml'
+      - 'index.html'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-title:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove 2026 only from main heading
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          replacements = [
+              ('CÓDIGOS DE SUMMONERS WAR 2026', 'CÓDIGOS DE SUMMONERS WAR'),
+              ('CÓDIGOS DE<br>SUMMONERS WAR 2026', 'CÓDIGOS DE<br>SUMMONERS WAR'),
+          ]
+          for old, new in replacements:
+              s = s.replace(old, new)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit title fix
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git diff --quiet -- index.html; then
+            echo 'No title change needed.'
+            exit 0
+          fi
+          git add index.html
+          git commit -m 'Remove 2026 from main site title'
+          git push
