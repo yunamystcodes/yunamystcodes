@@ -1,0 +1,47 @@
+name: Add YunaMyst social links
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-social-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add social icons and links
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          # Turn the existing four social placeholders into small clickable icons.
+          old = '<div class="social"><span>◉</span><span>▶</span><span>♪</span><span>◎</span></div>'
+          new = '''<div class="social social-links">\n  <a href="https://www.twitch.tv/YunaMyst" target="_blank" rel="noopener" aria-label="Twitch">◉</a>\n  <a href="https://www.youtube.com/@YunaMyst" target="_blank" rel="noopener" aria-label="YouTube">▶</a>\n  <a href="https://www.tiktok.com/@yunamyst_" target="_blank" rel="noopener" aria-label="TikTok">♪</a>\n</div>'''
+
+          s = s.replace(old, new)
+
+          # Add compact styling without changing the desktop/mobile layout.
+          marker = '</style>'
+          css = '''\n.social-links{display:flex;justify-content:center;gap:6px;margin-top:15px}\n.social-links a{width:30px;height:30px;border:1px solid #5c397b;border-radius:8px;display:grid;place-items:center;background:#17102a;color:#fff;text-decoration:none;font-size:14px;font-weight:900;transition:.2s}\n.social-links a:hover{transform:translateY(-2px);border-color:#a85cff;background:#24113d}\n@media(max-width:600px){.social-links{gap:5px}.social-links a{width:28px;height:28px;font-size:13px}}\n'''
+          if '.social-links{' not in s:
+              s = s.replace(marker, css + marker, 1)
+
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Add Twitch TikTok and YouTube icons"
+          git push
