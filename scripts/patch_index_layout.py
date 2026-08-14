@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 p = Path('index.html')
 s = p.read_text(encoding='utf-8')
@@ -22,21 +23,19 @@ css = '''
 .reward-img{width:30px!important;height:30px!important}.reward-chip b{font-size:11px}
 }
 @media(max-width:600px){.reward-icons{gap:9px}.reward-img{width:30px!important;height:30px!important}.reward-chip b{font-size:10px}.code{padding:16px 14px 18px}}
-.reward-chest{margin-top:12px;padding:18px;border-radius:18px;border:1px solid rgba(214,151,255,.38);background:linear-gradient(180deg,rgba(20,10,42,.96),rgba(7,5,20,.96));text-align:center;box-shadow:0 14px 35px rgba(0,0,0,.35)}
-.reward-chest .chest-icon{font-size:48px;line-height:1;display:block;margin-bottom:8px}.reward-chest strong{display:block;color:#f3c66c;font:900 20px Georgia,serif}.reward-chest span{display:block;color:#c8c0d2;font-size:12px;margin-top:5px}
 '''
 
-if '/* Final reward layout */' not in s:
-    s = s.replace('</style>', css + '\n</style>', 1)
+# Replace the previous reward-layout patch so the workflow remains idempotent.
+s = re.sub(r'\n/\* Final reward layout \*/.*?(?=\n</style>)', '', s, flags=re.S)
+s = s.replace('</style>', css + '\n</style>', 1)
 
-chest = '''<section class="panel reward-chest" id="recompensas"><div class="chest-icon" aria-hidden="true">🧰</div><strong>BAÚ DE RECOMPENSAS</strong><span>Confere as recompensas dos códigos antes de resgatar.</span></section>'''
+# Remove every reward chest inserted by older versions, including duplicate mobile copies.
+s = re.sub(r'\s*<section class="panel reward-chest"[^>]*>.*?</section>', '', s, flags=re.S)
+s = re.sub(r'\s*<div class="reward-chest"[^>]*>.*?</div>', '', s, flags=re.S)
 
-if 'class="reward-chest"' not in s:
-    s = s.replace('</section><section class="panel faq" id="faq">', '</section>' + chest + '<section class="panel faq" id="faq">', 1)
-
-if 'id="mobile-faq"' in s and 'id="mobile-como"' in s and 'id="mobile-recompensas"' not in s:
-    mobile = chest.replace('id="recompensas"', 'id="mobile-recompensas"')
-    s = s.replace('</section><section class="panel faq" id="mobile-faq">', '</section>' + mobile + '<section class="panel faq" id="mobile-faq">', 1)
+# Remove old reward-chest CSS.
+s = re.sub(r'\n\.reward-chest\{.*?\n\.reward-chest \.chest-icon\{.*?\n', '\n', s, flags=re.S)
+s = re.sub(r'\n\.reward-chest[^\n]*\n', '\n', s)
 
 p.write_text(s, encoding='utf-8')
-print('index.html patched')
+print('index.html patched: reward chests removed')
