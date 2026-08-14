@@ -1,0 +1,54 @@
+name: Fix Portuguese title year
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-portuguese-title.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-title:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove 2026 from Portuguese title
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          original = s
+
+          replacements = {
+              'CÓDIGOS DE SUMMONERS WAR 2026': 'CÓDIGOS DE SUMMONERS WAR',
+              'Códigos Summoners War 2026': 'Códigos Summoners War',
+              'Códigos ativos de Summoners War: Sky Arena 2026': 'Códigos ativos de Summoners War: Sky Arena',
+          }
+          for old, new in replacements.items():
+              s = s.replace(old, new)
+
+          # Also remove a standalone 2026 at the end of the visible H1,
+          # including cases where the translation inserts whitespace/line breaks.
+          s = re.sub(r'(<h1\\b[^>]*>.*?SUMMONERS WAR)\\s*2026(\\s*</h1>)', r'\\1\\2', s, flags=re.I | re.S)
+
+          if s == original:
+              print('No Portuguese title year change needed')
+          else:
+              p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit change
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          if git diff --cached --quiet; then
+            echo 'No changes to commit'
+          else
+            git commit -m 'Remove 2026 from Portuguese site title'
+            git push
+          fi
