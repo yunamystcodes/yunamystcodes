@@ -8,20 +8,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Fix mobile buttons
+      - name: Fix mobile reward layout
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          css = '''\n<style id="mobile-button-final-fix">\n@media (max-width:600px){\n  .code .copy{grid-column:1 / 2!important;width:88px!important;min-width:88px!important;max-width:88px!important;margin:0!important;justify-self:start!important}\n  .code .iphone{grid-column:2 / 3!important;width:96px!important;min-width:96px!important;max-width:96px!important;margin:0 0 0 8px!important;justify-self:start!important}\n}\n</style>\n'''
-          if 'mobile-button-final-fix' not in s:
-              s = s.replace('</head>', css + '</head>', 1)
-              p.write_text(s, encoding='utf-8')
+          css = '''\n<style id="mobile-button-final-fix">\n@media (max-width:600px){\n  .codes .code{\n    display:grid!important;\n    grid-template-columns:44px minmax(0,1fr)!important;\n    grid-template-rows:auto auto auto!important;\n    column-gap:8px!important;\n    row-gap:10px!important;\n    align-items:center!important;\n    position:relative!important;\n    padding:15px 10px 15px!important;\n    min-height:0!important;\n  }\n  .codes .code .gift{\n    grid-column:1!important;grid-row:1!important;\n    width:44px!important;height:44px!important;\n    align-self:start!important;\n  }\n  .codes .code .cinfo{\n    grid-column:2!important;grid-row:1!important;\n    min-width:0!important;\n    align-self:center!important;\n  }\n  .codes .code .cinfo strong{\n    font-size:16px!important;line-height:1.15!important;\n    white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;\n  }\n  .codes .code .reward-icons{\n    grid-column:1 / 3!important;grid-row:2!important;\n    display:flex!important;\n    align-items:center!important;justify-content:flex-start!important;\n    flex-wrap:nowrap!important;\n    gap:10px!important;\n    width:100%!important;\n    min-width:0!important;\n    padding:0 0 0 0!important;\n    margin:0!important;\n    position:static!important;\n    order:initial!important;\n    visibility:visible!important;opacity:1!important;\n  }\n  .codes .code .reward-chip{\n    display:inline-flex!important;align-items:center!important;\n    gap:4px!important;flex:0 0 auto!important;\n    white-space:nowrap!important;\n  }\n  .codes .code .reward-img{\n    width:30px!important;height:30px!important;\n    flex:0 0 30px!important;display:inline-block!important;\n    background-size:contain!important;background-position:center!important;\n    background-repeat:no-repeat!important;\n  }\n  .codes .code .reward-energy{\n    width:30px!important;height:30px!important;flex:0 0 30px!important;\n    display:inline-flex!important;align-items:center!important;justify-content:center!important;\n    font-size:22px!important;line-height:30px!important;\n  }\n  .codes .code .reward-chip b{\n    display:inline!important;font-size:11px!important;\n    color:#fff!important;white-space:nowrap!important;\n  }\n  .codes .code .copy,.codes .code .iphone{\n    grid-row:3!important;\n    position:static!important;\n    height:44px!important;\n    margin:0!important;\n    width:100%!important;\n    min-width:0!important;max-width:none!important;\n    justify-self:stretch!important;\n    align-self:center!important;\n    padding:0 8px!important;\n    font-size:12px!important;\n    box-sizing:border-box!important;\n  }\n  .codes .code .copy{grid-column:1!important;}\n  .codes .code .iphone{grid-column:2!important;}\n}\n@media (max-width:380px){\n  .codes .code{grid-template-columns:40px minmax(0,1fr)!important;column-gap:7px!important;row-gap:8px!important;padding:13px 8px 13px!important}\n  .codes .code .gift{width:40px!important;height:40px!important}\n  .codes .code .cinfo strong{font-size:14px!important}\n  .codes .code .reward-icons{gap:7px!important}\n  .codes .code .reward-img,.codes .code .reward-energy{width:27px!important;height:27px!important;flex-basis:27px!important}\n  .codes .code .reward-chip b{font-size:10px!important}\n  .codes .code .copy,.codes .code .iphone{height:42px!important;font-size:11px!important}\n}\n</style>\n'''
+          pattern = r'<style id="mobile-button-final-fix">.*?</style>\n?'
+          s = re.sub(pattern, '', s, flags=re.S)
+          s = s.replace('</head>', css + '</head>', 1)
+          p.write_text(s, encoding='utf-8')
           PY
       - name: Commit index
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          if ! git diff --cached --quiet; then git commit -m 'Ajustar botoes copiar e link no telemovel'; git push; fi
+          if ! git diff --cached --quiet; then git commit -m 'Corrigir layout mobile das recompensas'; git push; fi
