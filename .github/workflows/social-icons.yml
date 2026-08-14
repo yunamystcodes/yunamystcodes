@@ -1,0 +1,60 @@
+name: Update social icons
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  social-icons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add social icons to index
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          html = p.read_text(encoding='utf-8')
+
+          css = '''
+.social-links{display:flex;justify-content:center;align-items:center;gap:7px;margin-top:15px}
+.social-links a{width:30px;height:30px;border:1px solid #5c397b;border-radius:8px;display:grid;place-items:center;background:#17102a;text-decoration:none;transition:.2s;overflow:hidden}
+.social-links a img{width:17px;height:17px;object-fit:contain;display:block}
+.social-links a:hover{transform:translateY(-2px);border-color:#a85cff;background:#24113d}
+@media(max-width:600px){.social-links{gap:5px;margin-top:13px}.social-links a{width:28px;height:28px}.social-links a img{width:16px;height:16px}}
+'''
+          html = re.sub(r'\n?\.social-links\{.*?</style>', '\n' + css + '</style>', html, count=1, flags=re.S) if '.social-links{' in html else html.replace('</style>', css + '</style>', 1)
+
+          social = '''<div class="social-links" aria-label="Redes sociais">
+  <a href="https://www.twitch.tv/YunaMyst" target="_blank" rel="noopener noreferrer" aria-label="Twitch"><img src="assets/social/twitch.svg" alt="Twitch"></a>
+  <a href="https://www.tiktok.com/@yunamyst_" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><img src="assets/social/tiktok.svg" alt="TikTok"></a>
+  <a href="https://www.youtube.com/@YunaMyst" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><img src="assets/social/youtube.svg" alt="YouTube"></a>
+</div>'''
+
+          html = re.sub(r'\n?<div class="social-links".*?</div>', '', html, flags=re.S)
+          if re.search(r'<div class="social">.*?</div>', html, flags=re.S):
+              html = re.sub(r'<div class="social">.*?</div>', social, html, count=1, flags=re.S)
+          elif 'class="about"' in html:
+              html = html.replace('<div class="about"', social + '\n<div class="about"', 1)
+          else:
+              html = html.replace('</body>', social + '\n</body>', 1)
+
+          p.write_text(html, encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No social icon changes needed."
+          else
+            git commit -m "Add visible Twitch TikTok and YouTube icons"
+            git push
+          fi
