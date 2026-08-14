@@ -24,17 +24,27 @@ jobs:
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
 
-          # Turn the existing four social placeholders into small clickable icons.
-          old = '<div class="social"><span>◉</span><span>▶</span><span>♪</span><span>◎</span></div>'
-          new = '''<div class="social social-links">\n  <a href="https://www.twitch.tv/YunaMyst" target="_blank" rel="noopener" aria-label="Twitch">◉</a>\n  <a href="https://www.youtube.com/@YunaMyst" target="_blank" rel="noopener" aria-label="YouTube">▶</a>\n  <a href="https://www.tiktok.com/@yunamyst_" target="_blank" rel="noopener" aria-label="TikTok">♪</a>\n</div>'''
+          social = '''<div class="social social-links">
+            <a href="https://www.twitch.tv/YunaMyst" target="_blank" rel="noopener noreferrer" aria-label="Twitch"><img src="assets/social/twitch.svg" alt="Twitch"></a>
+            <a href="https://www.tiktok.com/@yunamyst_" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><img src="assets/social/tiktok.svg" alt="TikTok"></a>
+            <a href="https://www.youtube.com/@YunaMyst" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><img src="assets/social/youtube.svg" alt="YouTube"></a>
+          </div>'''
 
-          s = s.replace(old, new)
+          # Replace any existing social block, including previous attempts.
+          s, count = re.subn(r'<div class="social(?:\s+social-links)?">.*?</div>', social, s, count=1, flags=re.S)
+          if count == 0:
+              s = s.replace('<div class="about"', social + '\n<div class="about"', 1)
 
-          # Add compact styling without changing the desktop/mobile layout.
-          marker = '</style>'
-          css = '''\n.social-links{display:flex;justify-content:center;gap:6px;margin-top:15px}\n.social-links a{width:30px;height:30px;border:1px solid #5c397b;border-radius:8px;display:grid;place-items:center;background:#17102a;color:#fff;text-decoration:none;font-size:14px;font-weight:900;transition:.2s}\n.social-links a:hover{transform:translateY(-2px);border-color:#a85cff;background:#24113d}\n@media(max-width:600px){.social-links{gap:5px}.social-links a{width:28px;height:28px;font-size:13px}}\n'''
+          css = '''
+.social-links{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:15px}
+.social-links a{width:30px;height:30px;border:1px solid #5c397b;border-radius:8px;display:grid;place-items:center;background:#17102a;text-decoration:none;transition:.2s;overflow:hidden}
+.social-links a img{width:17px;height:17px;object-fit:contain;display:block}
+.social-links a:hover{transform:translateY(-2px);border-color:#a85cff;background:#24113d}
+@media(max-width:600px){.social-links{gap:5px;margin-top:13px}.social-links a{width:28px;height:28px}.social-links a img{width:16px;height:16px}}
+'''
+          s = re.sub(r'\n?\.social-links\{.*?\n@media\(max-width:600px\)\{\.social-links.*?\}\}\n', '\n', s, count=1, flags=re.S)
           if '.social-links{' not in s:
-              s = s.replace(marker, css + marker, 1)
+              s = s.replace('</style>', css + '</style>', 1)
 
           p.write_text(s, encoding='utf-8')
 
@@ -43,5 +53,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "Add Twitch TikTok and YouTube icons"
-          git push
+          if git diff --cached --quiet; then
+            echo "No social icon changes needed."
+          else
+            git commit -m "Use uploaded social icons"
+            git push
+          fi
