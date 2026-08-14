@@ -19,7 +19,6 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import re
 
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
@@ -51,47 +50,46 @@ jobs:
               )
               s = s.replace('</style>', css + '</style>', 1)
 
-          # Replace the old music controller with a mobile-safe version.
           start = s.find('const bgMusic=document.getElementById("yunaBgMusic");')
-          end = s.find('\n}', start) if start != -1 else -1
           if start != -1:
-              # Find the closing brace of the controller block by using the next script tag.
               script_end = s.find('</script>', start)
               block = s[start:script_end]
-              if 'const syncAudio=' in block and 'document.addEventListener("pointerdown",tryPlay' in block:
+              if 'const syncAudio=' in block:
                   new_block = '''const bgMusic=document.getElementById("yunaBgMusic");
-const audioMute=document.getElementById("audioMute");
-if(bgMusic&&audioMute){
-  const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
-  bgMusic.volume=0.08;
-  bgMusic.muted=true;
-  const syncAudio=()=>{
-    const muted=userMuted();
-    audioMute.textContent=muted?"🔇":"🔊";
-    audioMute.title=muted?"Ativar música":"Mutar música";
-    audioMute.setAttribute("aria-label",audioMute.title);
-  };
-  const playAudio=()=>{
-    if(userMuted()) return;
-    bgMusic.muted=false;
-    bgMusic.volume=0.08;
-    const p=bgMusic.play();
-    if(p&&typeof p.catch==='function') p.catch(()=>{});
-  };
-  const unlockAudio=()=>playAudio();
-  audioMute.addEventListener("click",e=>{
-    e.stopPropagation();
-    const nextMuted=!userMuted();
-    localStorage.setItem("yunamyst-music-muted",nextMuted?"1":"0");
-    bgMusic.muted=nextMuted;
-    syncAudio();
-    if(!nextMuted) playAudio();
-  });
-  ["touchstart","touchend","pointerdown","pointerup","click","keydown"].forEach(evt=>{
-    document.addEventListener(evt,unlockAudio,{capture:true,passive:true});
-  });
-  syncAudio();
-}'''
+                  const audioMute=document.getElementById("audioMute");
+                  if(bgMusic&&audioMute){
+                    const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
+                    bgMusic.volume=0.08;
+                    bgMusic.muted=true;
+                    const syncAudio=()=>{
+                      const muted=userMuted();
+                      audioMute.textContent=muted?"🔇":"🔊";
+                      audioMute.title=muted?"Ativar música":"Mutar música";
+                      audioMute.setAttribute("aria-label",audioMute.title);
+                    };
+                    const playAudio=()=>{
+                      if(userMuted()) return;
+                      bgMusic.muted=false;
+                      bgMusic.volume=0.08;
+                      const p=bgMusic.play();
+                      if(p&&typeof p.catch==='function') p.catch(()=>{});
+                    };
+                    const unlockAudio=()=>playAudio();
+                    audioMute.addEventListener("click",e=>{
+                      e.stopPropagation();
+                      const nextMuted=!userMuted();
+                      localStorage.setItem("yunamyst-music-muted",nextMuted?"1":"0");
+                      bgMusic.muted=nextMuted;
+                      syncAudio();
+                      if(!nextMuted) playAudio();
+                    });
+                    ["touchstart","touchend","pointerdown","pointerup","click","keydown"].forEach(evt=>{
+                      document.addEventListener(evt,unlockAudio,{capture:true,passive:true});
+                    });
+                    syncAudio();
+                  }'''
+                  # Remove the indentation added for YAML from the Python string.
+                  new_block='\n'.join(line[18:] if line.startswith('                  ') else line for line in new_block.splitlines())
                   s = s[:start] + new_block + s[script_end:]
 
           p.write_text(s, encoding="utf-8")
