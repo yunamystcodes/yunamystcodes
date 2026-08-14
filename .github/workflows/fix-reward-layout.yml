@@ -1,4 +1,4 @@
-name: Corrigir recompensas e bau no index
+name: Limpar baus e corrigir recompensas
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Corrigir index.html
+      - name: Limpar baus e gamebox
         shell: python
         run: |
           from pathlib import Path
@@ -23,63 +23,9 @@ jobs:
 
           p = Path('index.html')
           text = p.read_text(encoding='utf-8')
-
-          # Remove versões antigas do bloco de recompensas/baú para evitar
-          # imagens quebradas ou blocos duplicados.
-          text = re.sub(r'\n<style id="reward-layout-fix">.*?</style>', '', text, flags=re.S)
-
-          css = '''
-<style id="reward-layout-fix">
-.reward-icons{display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;gap:12px!important;flex-wrap:wrap!important}
-.reward-chip{display:inline-flex!important;align-items:center!important;gap:5px!important;white-space:nowrap!important}
-.reward-chip b{font-size:12px!important;color:#fff!important}
-.reward-energy{display:inline-block!important;width:32px!important;height:32px!important;font-size:25px!important;line-height:32px!important;text-align:center}
-
-/* Baú de recompensas: usa SVG inline, portanto nunca fica com imagem quebrada. */
-.reward-chest{margin:12px 0!important;padding:20px 16px!important;text-align:center!important;background:linear-gradient(180deg,rgba(11,8,29,.96),rgba(6,5,18,.94))!important;border:1px solid var(--line)!important;border-radius:18px!important;box-shadow:0 20px 50px rgba(0,0,0,.35)!important}
-.reward-chest-icon{width:86px!important;height:86px!important;margin:0 auto 8px!important;display:block!important;filter:drop-shadow(0 0 12px rgba(243,189,82,.4))!important}
-.reward-chest-title{display:block!important;color:#f0c975!important;font:700 22px Georgia,serif!important;margin:0!important}
-.reward-chest-subtitle{display:block!important;color:#bcb2ca!important;font-size:12px!important;margin-top:5px!important}
-@media(max-width:850px){.reward-icons{grid-column:1 / 3!important;grid-row:2!important;justify-content:center!important}.reward-chest{margin:12px 0!important;padding:18px 12px!important}.reward-chest-icon{width:74px!important;height:74px!important}.reward-chest-title{font-size:19px!important}}
-@media(max-width:600px){.code{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-rows:auto auto auto!important;column-gap:20px!important;row-gap:12px!important}.code .gift{grid-column:1!important;grid-row:1!important}.code .cinfo{grid-column:2!important;grid-row:1!important}.code .reward-icons{grid-column:1 / 3!important;grid-row:2!important;min-height:34px!important}.code .copy{grid-column:1!important;grid-row:3!important}.code .iphone{grid-column:2!important;grid-row:3!important;margin:0!important}}
-</style>
-'''
-          text = text.replace('</head>', css + '</head>', 1)
-
-          chest = '''<div class="reward-chest" id="rewardChest">
-  <svg class="reward-chest-icon" viewBox="0 0 120 120" role="img" aria-label="Baú de recompensas" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="chestTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe58a"/><stop offset=".45" stop-color="#d99a32"/><stop offset="1" stop-color="#8b4b17"/></linearGradient>
-      <linearGradient id="chestBody" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b96a22"/><stop offset="1" stop-color="#55240f"/></linearGradient>
-    </defs>
-    <ellipse cx="60" cy="103" rx="42" ry="7" fill="#000" opacity=".35"/>
-    <path d="M18 45h84v48c0 7-6 12-13 12H31c-7 0-13-5-13-12V45z" fill="url(#chestBody)" stroke="#f2c35f" stroke-width="4"/>
-    <path d="M18 45c3-18 18-29 42-29s39 11 42 29H18z" fill="url(#chestTop)" stroke="#f7d779" stroke-width="4"/>
-    <path d="M60 17v28" stroke="#fff0a8" stroke-width="5" opacity=".8"/>
-    <path d="M23 65h74" stroke="#f2c35f" stroke-width="4" opacity=".75"/>
-    <rect x="51" y="53" width="18" height="25" rx="3" fill="#f7d779" stroke="#6b3211" stroke-width="4"/>
-    <circle cx="60" cy="63" r="3" fill="#6b3211"/>
-  </svg>
-  <strong class="reward-chest-title">BAÚ DE RECOMPENSAS</strong>
-  <span class="reward-chest-subtitle">Recompensas dos códigos do Summoners War</span>
-</div>'''
-
-          # Retira qualquer gamebox antigo, inclusive versões sem imagem.
-          text = re.sub(r'<div class="gamebox">.*?</div>', '', text, flags=re.S)
-          text = re.sub(r'<div class="reward-chest" id="rewardChest">.*?</div>', '', text, flags=re.S)
-
-          # O baú deve ficar no painel direito, entre COMO USAR e FAQ.
-          marker = '<section class="panel faq" id="faq">'
-          if marker in text:
-              text = text.replace(marker, chest + marker, 1)
-          else:
-              # Fallback: coloca antes do primeiro FAQ encontrado.
-              marker2 = '<div class="faq">'
-              if marker2 in text:
-                  text = text.replace(marker2, chest + marker2, 1)
-              else:
-                  raise SystemExit('Não encontrei a área do FAQ para posicionar o baú.')
-
+          text = re.sub(r'\s*<section class="panel reward-chest"[^>]*>.*?</section>', '', text, flags=re.S)
+          text = re.sub(r'\s*<div class="reward-chest"[^>]*>.*?</div>', '', text, flags=re.S)
+          text = re.sub(r'\s*<div class="gamebox"[^>]*>.*?</div>', '', text, flags=re.S)
           p.write_text(text, encoding='utf-8')
 
       - name: Commit index
@@ -87,5 +33,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "Corrigir baú de recompensas no index"
+          git diff --cached --quiet || git commit -m "Remover baus duplicados do index"
           git push
