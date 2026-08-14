@@ -222,16 +222,13 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 
 <style id="mobile-buttons-separation">
 @media (max-width:600px){
-  .code{grid-template-columns:minmax(0,1fr) 10px minmax(0,1fr)!important;column-gap:0!important;row-gap:12px!important}
-  .code .gift{grid-column:1!important;grid-row:1!important;justify-self:start!important}
-  .code .cinfo{grid-column:2 / 4!important;grid-row:1!important}
-  .code .reward{grid-column:1 / 4!important;grid-row:2!important}
-  .code .copy{grid-column:1 / 2!important;grid-row:3!important;width:100%!important;min-width:0!important;max-width:none!important;margin:0!important;justify-self:stretch!important;box-sizing:border-box!important;padding:9px 8px!important;font-size:10px!important;text-align:center!important;white-space:nowrap!important;overflow:visible!important}
-  .code .iphone{grid-column:3 / 4!important;grid-row:3!important;width:100%!important;min-width:0!important;max-width:none!important;margin:0!important;justify-self:stretch!important;box-sizing:border-box!important;padding:9px 8px!important;font-size:10px!important;text-align:center!important;white-space:nowrap!important;overflow:visible!important}
+  .code{position:relative!important;padding-bottom:72px!important}
+  .code .copy{position:absolute!important;left:12px!important;bottom:18px!important;width:88px!important;min-width:88px!important;max-width:88px!important;margin:0!important;padding:9px 6px!important;font-size:10px!important;justify-self:auto!important;grid-column:auto!important;grid-row:auto!important}
+  .code .iphone{position:absolute!important;left:110px!important;bottom:18px!important;width:96px!important;min-width:96px!important;max-width:96px!important;margin:0!important;padding:9px 6px!important;font-size:10px!important;justify-self:auto!important;grid-column:auto!important;grid-row:auto!important}
 }
 @media (max-width:380px){
-  .code{grid-template-columns:minmax(0,1fr) 8px minmax(0,1fr)!important;row-gap:10px!important}
-  .code .copy,.code .iphone{font-size:9px!important;padding:8px 6px!important}
+  .code .copy{left:10px!important;width:82px!important;min-width:82px!important;max-width:82px!important;font-size:9px!important;padding:8px 5px!important}
+  .code .iphone{left:102px!important;width:90px!important;min-width:90px!important;max-width:90px!important;font-size:9px!important;padding:8px 5px!important}
 }
 </style></head>
 <body>
