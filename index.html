@@ -14,7 +14,7 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 .bg:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,transparent 15%,rgba(3,2,12,.55) 78%)}
 .container{width:min(1180px,calc(100% - 28px));margin:auto}
 .topbar{position:sticky;top:0;z-index:20;background:rgba(5,4,13,.82);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.12)}
-.nav{height:76px;display:flex;align-items:center;justify-content:space-between}.logo{font-family:Georgia,serif;font-size:36px;font-weight:900;letter-spacing:1px;text-shadow:0 0 18px #8b45ff}.logo small{display:block;font:700 9px Arial;letter-spacing:4px;color:#f1ca76;text-align:center;margin-top:-4px}.menu{display:flex;gap:22px}.menu a{color:#fff;text-decoration:none;font-weight:800;font-size:13px}.menu a:hover{color:#d69cff}.lang-wrap{position:relative}.lang{border:1px solid #a85cff;border-radius:12px;padding:11px 15px;font-weight:800;background:#0c0a18;color:#fff;cursor:pointer}.lang-menu{display:none;position:absolute;right:0;top:calc(100% + 8px);min-width:130px;padding:6px;background:#0c0a18;border:1px solid #a85cff;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.45)}.lang-menu.open{display:block}.lang-menu button{display:block;width:100%;border:0;background:transparent;color:#fff;text-align:left;padding:9px 10px;border-radius:8px;font-weight:800;cursor:pointer}.lang-menu button:hover{background:#24113d}
+.nav{height:76px;display:flex;align-items:center;justify-content:space-between}.logo{font-family:Georgia,serif;font-size:36px;font-weight:900;letter-spacing:1px;text-shadow:0 0 18px #8b45ff}.logo small{display:block;font:700 9px Arial;letter-spacing:4px;color:#f1ca76;text-align:center;margin-top:-4px}.menu{display:flex;gap:22px}.menu a{color:#fff;text-decoration:none;font-weight:800;font-size:13px}.menu a:hover{color:#d69cff}.lang-wrap{position:relative;display:flex;align-items:center;gap:8px}.lang{border:1px solid #a85cff;border-radius:12px;padding:11px 15px;font-weight:800;background:#0c0a18;color:#fff;cursor:pointer}.lang-menu{display:none;position:absolute;right:0;top:calc(100% + 8px);min-width:130px;padding:6px;background:#0c0a18;border:1px solid #a85cff;border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.45)}.lang-menu.open{display:block}.lang-menu button{display:block;width:100%;border:0;background:transparent;color:#fff;text-align:left;padding:9px 10px;border-radius:8px;font-weight:800;cursor:pointer}.lang-menu button:hover{background:#24113d}
 .hero{text-align:center;padding:48px 0 25px}.kicker{font-weight:900;letter-spacing:4px;color:#d4a8ff;font-size:14px}h1{margin:12px 0 12px;font:900 clamp(48px,7vw,84px)/.94 Georgia,serif;background:linear-gradient(#fff,#d8c5ff 50%,#efbb5d);-webkit-background-clip:text;color:transparent;text-shadow:0 0 25px rgba(173,82,255,.35)}.hero p{color:#e2ddec;font-size:19px}
 .whats{margin:25px auto 22px;max-width:760px;display:flex;align-items:center;gap:14px;text-align:left;padding:11px 17px;border-radius:18px;text-decoration:none;color:#fff;background:linear-gradient(90deg,rgba(20,8,40,.96),rgba(34,13,57,.96));border:1px solid #a85cff;box-shadow:0 0 28px rgba(168,92,255,.18)}.wicon{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:#25d366;color:#06200e;font-size:28px;font-weight:900;flex:none}.whats b{display:block;color:#58f38a;font-size:18px}.whats span{display:block;font-size:13px;color:#d0c7da;margin-top:4px}.whats>strong{margin-left:auto;font-size:25px}
 .layout{display:grid;grid-template-columns:220px minmax(0,1fr) 270px;gap:18px;align-items:start}.panel{background:linear-gradient(180deg,rgba(11,8,29,.94),rgba(6,5,18,.92));border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,.45);overflow:hidden}.panel h2{margin:0;padding:18px;border-bottom:1px solid rgba(255,255,255,.1);font-size:20px}.profile{padding:20px;text-align:center}.avatar{width:100px;height:100px;margin:0 auto 12px;border-radius:50%;border:3px solid #a85cff;background:radial-gradient(circle,#40216f,#120b28);display:grid;place-items:center;font-size:36px;box-shadow:0 0 30px rgba(168,92,255,.45)}.profile h3{margin:5px 0;color:#f4d37e;font:900 23px Georgia,serif}.profile p{color:#bdb5cd;font-size:13px;line-height:1.5}.social{display:flex;justify-content:center;gap:7px;margin-top:15px}.social span{width:36px;height:36px;border:1px solid #5c397b;border-radius:9px;display:grid;place-items:center;background:#17102a}.about{margin-top:12px;padding:17px;color:#c8c1d1;font-size:13px;line-height:1.55}.about b{color:#d99dff}
@@ -54,14 +54,19 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 .social-links a svg{width:20px;height:20px;display:block}
 .social-links a:hover{transform:translateY(-2px);border-color:#a85cff;background:#24113d}
 @media(max-width:600px){.social-links{gap:5px}.social-links a{width:28px;height:28px}.social-links a svg{width:18px;height:18px}}
+
+.audio-mute{width:42px;height:42px;border:1px solid #a85cff;border-radius:10px;background:#0c0a18;color:#fff;cursor:pointer;display:grid;place-items:center;font-size:20px;line-height:1;padding:0;box-shadow:0 0 12px rgba(168,92,255,.12)}
+.audio-mute:hover{background:#24113d;border-color:#c17cff}
+@media(max-width:600px){.audio-mute{width:38px;height:38px;border-radius:9px;font-size:18px}}
 </style>
 </head>
 <body>
 <div class="bg"></div>
+<audio id="yunaBgMusic" loop preload="auto" src="assets/One%20More%20Scroll.mp3"></audio>
 <header class="topbar"><div class="container nav">
 <div class="logo">YunaMyst<small>SUMMONERS WAR</small></div>
 <nav class="menu"><a href="#inicio" data-i18n="home">⌂ INÍCIO</a><a href="#codigos" data-i18n="codesNav">🎁 CÓDIGOS</a><a href="#como" data-i18n="howNav">❔ COMO USAR</a><a href="#faq" data-i18n="faqNav">❔ FAQ</a></nav>
-<div class="lang-wrap"><button class="lang" id="langBtn" type="button">🇧🇷 PT/BR⌄</button><div class="lang-menu" id="langMenu"><button type="button" data-lang="pt">🇧🇷 PT/BR</button><button type="button" data-lang="en">🇺🇸 ENG</button></div></div>
+<div class="lang-wrap"><button class="audio-mute" id="audioMute" type="button" aria-label="Mutar música" title="Mutar música">🔇</button><button class="lang" id="langBtn" type="button">🇧🇷 PT/BR⌄</button><div class="lang-menu" id="langMenu"><button type="button" data-lang="pt">🇧🇷 PT/BR</button><button type="button" data-lang="en">🇺🇸 ENG</button></div></div>
 </div></header>
 <section class="hero container" id="inicio">
 <div class="kicker" data-i18n="kicker">✦ COMUNIDADE YUNAMYST ✦</div>
@@ -185,5 +190,27 @@ langBtn?.addEventListener('click',e=>{e.stopPropagation();langMenu?.classList.to
 document.querySelectorAll('#langMenu [data-lang]').forEach(b=>b.addEventListener('click',()=>setLanguage(b.dataset.lang)));
 document.addEventListener('click',()=>langMenu?.classList.remove('open'));
 setLanguage(localStorage.getItem('yunamyst-lang')||'pt');
+
+const bgMusic=document.getElementById("yunaBgMusic");
+const audioMute=document.getElementById("audioMute");
+if(bgMusic&&audioMute){
+  bgMusic.volume=0.08;
+  bgMusic.muted=localStorage.getItem("yunamyst-music-muted")==="1";
+  const syncAudio=()=>{
+    audioMute.textContent=bgMusic.muted?"🔇":"🔊";
+    audioMute.title=bgMusic.muted?"Ativar música":"Mutar música";
+    audioMute.setAttribute("aria-label",audioMute.title);
+  };
+  const tryPlay=()=>{if(!bgMusic.muted)bgMusic.play().catch(()=>{});};
+  audioMute.addEventListener("click",e=>{
+    e.stopPropagation();
+    bgMusic.muted=!bgMusic.muted;
+    localStorage.setItem("yunamyst-music-muted",bgMusic.muted?"1":"0");
+    syncAudio();
+    if(!bgMusic.muted)tryPlay();
+  });
+  document.addEventListener("pointerdown",tryPlay,{once:true});
+  syncAudio();
+}
 </script>
 </body></html>
