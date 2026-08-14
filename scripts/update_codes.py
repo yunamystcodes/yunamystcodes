@@ -51,22 +51,24 @@ def fetch_codes():
     return found
 
 
-def card(item, first=False):
+def card(item):
     code = html.escape(item["code"])
-    reward = html.escape(item["reward"])
     return f'''<article class="code" data-code="{code}"><div class="gift">🎁</div><div class="cinfo"><strong>{code}</strong><small>🔄 Atualizado automaticamente</small></div><div class="reward"><div class="ico"><span class="scroll"></span></div><b>—</b><small>Recompensa</small></div><div class="reward"><div class="ico"><span class="energy">⚡</span></div><b>—</b><small>Detalhes</small></div><div class="reward"><div class="ico"><span class="mana"></span></div><b>—</b><small>Fonte</small></div><button class="copy" onclick="copiarCodigo('{code}',this)"><span data-i18n="copy">▣ COPIAR</span></button><a class="iphone" href="https://withhive.me/313/{code}" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>'''
 
 
 def update_index(codes):
     text = INDEX.read_text(encoding="utf-8")
-    start = text.find('<div class="codes">')
+    marker = '<div class="codes" id="activeCodesList">'
+    start = text.find(marker)
     if start == -1:
-        raise RuntimeError('Bloco <div class="codes"> não encontrado.')
-    content_start = start + len('<div class="codes">')
-    end = text.find('</div><div class="more"', content_start)
+        raise RuntimeError('Bloco da lista de códigos ativos não encontrado.')
+    content_start = start + len(marker)
+    end = text.find('</div>\n<div class="more"', content_start)
     if end == -1:
-        raise RuntimeError('Fim do bloco de códigos não encontrado.')
-    cards = "\n".join(card(item, False) for item in codes)
+        end = text.find('</div><div class="more"', content_start)
+    if end == -1:
+        raise RuntimeError('Fim da lista de códigos ativos não encontrado.')
+    cards = "\n".join(card(item) for item in codes)
     new_text = text[:content_start] + "\n" + cards + "\n" + text[end:]
     INDEX.write_text(new_text, encoding="utf-8")
 
