@@ -12,61 +12,53 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Corrigir parceria e adicionar códigos atuais
+      - name: Corrigir parceria e códigos de hoje
         run: |
           python - <<'PY'
           from pathlib import Path
           import re
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
 
-          # Texto correto da parceria.
-          s=s.replace('Queres fazer uma parceria com o YunaMyst Codes?','Queres fazer uma parceria com a YunaMyst Codes?')
+          s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst Codes?')
 
-          # Garante o botão de parceria no PC imediatamente antes da FAQ.
-          pat=r'<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton"[\s\S]*?</a>\s*'
-          m=re.search(pat,s,re.I)
-          if m:
-              desktop=m.group(0)
-              s=s[:m.start()]+s[m.end():]
-          else:
-              desktop='''<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst Codes</small></span><strong>›</strong></a>\n'''
-          target='<section class="panel faq" id="faq">'
-          if target not in s: raise SystemExit('FAQ_NAO_ENCONTRADA')
-          s=s.replace(target,desktop+target,1)
+          desktop = '<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst Codes</small></span><strong>›</strong></a>\n'
+          pat = r'<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton"[\s\S]*?</a>\s*'
+          s = re.sub(pat, '', s, count=1, flags=re.I)
+          target = '<section class="panel faq" id="faq">'
+          if target not in s:
+              raise SystemExit('FAQ_NAO_ENCONTRADA')
+          s = s.replace(target, desktop + target, 1)
 
-          # Garante o botão móvel abaixo do WhatsApp.
-          mobile_pat=r'<a href="#" class="partnership" id="yunaPartnershipButton"[\s\S]*?</a>\s*'
-          if not re.search(mobile_pat,s,re.I):
-              mobile='''<a href="#" class="partnership" id="yunaPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst Codes</small></span><strong>›</strong></a>\n'''
-              wa='</a>\n</section>'
-              # Insere após o primeiro WhatsApp da hero.
-              idx=s.find(wa,s.find('<a class="whats"'))
-              if idx!=-1:
-                  idx += len('</a>\n')
-                  s=s[:idx]+mobile+s[idx:]
+          mobile = '<a href="#" class="partnership" id="yunaPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst Codes</small></span><strong>›</strong></a>\n'
+          if 'id="yunaPartnershipButton"' not in s:
+              wa_end = '</a>\n</section>'
+              pos = s.find(wa_end, s.find('<a class="whats"'))
+              if pos < 0:
+                  raise SystemExit('WHATSAPP_NAO_ENCONTRADO')
+              pos += len('</a>\n')
+              s = s[:pos] + mobile + s[pos:]
 
-          css='''<style id="yuna-partnership-final-position">@media (min-width:851px){#yunaPartnershipButton{display:none!important}#yunaDesktopPartnershipButton{display:flex!important;margin:0 0 12px!important;width:100%!important;max-width:none!important}}@media (max-width:850px){#yunaPartnershipButton{display:flex!important;margin:0 auto 22px!important;width:100%!important;max-width:760px!important}#yunaDesktopPartnershipButton{display:none!important}}</style>'''
-          s=re.sub(r'<style id="yuna-partnership-final-position">[\s\S]*?</style>','',s,flags=re.I)
-          s=s.replace('</head>',css+'</head>',1)
+          css = '<style id="yuna-partnership-final-position">@media (min-width:851px){#yunaPartnershipButton{display:none!important}#yunaDesktopPartnershipButton{display:flex!important;margin:0 0 12px!important;width:100%!important;max-width:none!important}}@media (max-width:850px){#yunaPartnershipButton{display:flex!important;margin:0 auto 22px!important;width:100%!important;max-width:760px!important}#yunaDesktopPartnershipButton{display:none!important}}</style>'
+          s = re.sub(r'<style id="yuna-partnership-final-position">[\s\S]*?</style>', '', s, flags=re.I)
+          s = s.replace('</head>', css + '</head>', 1)
 
-          # Adiciona os 2 códigos confirmados como novos em 15/08/2026.
-          codes=[
-            ('YYDSSWC26ZAN','2026-08-22T00:00:00','https://withhive.me/313/YYDSSWC26ZAN'),
-            ('4MINGYIDAOXIAN','2026-08-22T00:00:00','https://withhive.me/313/4MINGYIDAOXIAN'),
-          ]
-          marker='<div class="codes" id="activeCodesList">'
-          pos=s.find(marker)
-          if pos!=-1:
-              pos=s.find('>',pos)+1
-              cards=[]
-              for code,expiry,link in codes:
-                  if f'data-code="{code}"' not in s:
-                      cards.append(f'''<article class="code" data-code="{code}" data-expires="{expiry}"><div class="gift">🎁</div><div class="cinfo"><strong>{code}</strong><small>🆕 Código novo de 15/08/2026</small></div><div class="reward-icons" aria-label="Recompensas"><span class="reward-chip"><span class="reward-unknown">🎁</span><b>Recompensa do código</b></span></div><button class="copy" onclick="copiarCodigo('{code}',this)"><span data-i18n="copy">▣ COPIAR</span></button><a class="iphone" href="{link}" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>''')
-              if cards:
-                  s=s[:pos]+''.join(cards)+s[pos:]
+          marker = '<div class="codes" id="activeCodesList">'
+          pos = s.find(marker)
+          if pos < 0:
+              raise SystemExit('LISTA_DE_CODIGOS_NAO_ENCONTRADA')
+          pos = s.find('>', pos) + 1
 
-          p.write_text(s,encoding='utf-8')
+          cards = []
+          if 'data-code="YYDSSWC26ZAN"' not in s:
+              cards.append('<article class="code" data-code="YYDSSWC26ZAN" data-expires="2026-08-22T00:00:00"><div class="gift">🎁</div><div class="cinfo"><strong>YYDSSWC26ZAN</strong><small>🆕 Código novo de 15/08/2026</small></div><div class="reward-icons" aria-label="Recompensas"><span class="reward-chip"><span class="reward-unknown">🎁</span><b>Recompensa do código</b></span></div><button class="copy" onclick="copiarCodigo(\'YYDSSWC26ZAN\',this)"><span data-i18n="copy">▣ COPIAR</span></button><a class="iphone" href="https://withhive.me/313/YYDSSWC26ZAN" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>')
+          if 'data-code="4MINGYIDAOXIAN"' not in s:
+              cards.append('<article class="code" data-code="4MINGYIDAOXIAN" data-expires="2026-08-22T00:00:00"><div class="gift">🎁</div><div class="cinfo"><strong>4MINGYIDAOXIAN</strong><small>🆕 Código novo de 15/08/2026</small></div><div class="reward-icons" aria-label="Recompensas"><span class="reward-chip"><span class="reward-unknown">🎁</span><b>Recompensa do código</b></span></div><button class="copy" onclick="copiarCodigo(\'4MINGYIDAOXIAN\',this)"><span data-i18n="copy">▣ COPIAR</span></button><a class="iphone" href="https://withhive.me/313/4MINGYIDAOXIAN" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>')
+          if cards:
+              s = s[:pos] + ''.join(cards) + s[pos:]
+
+          p.write_text(s, encoding='utf-8')
+          print('OK')
           PY
       - name: Publicar
         run: |
@@ -74,5 +66,5 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'Corrigir parceria e adicionar códigos de 15 agosto'
+          git commit -m 'Corrigir parceria e adicionar códigos de hoje'
           git push origin HEAD:main
