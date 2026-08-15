@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   seo:
-    if: ${{ !contains(github.event.head_commit.message, 'Atualizar SEO do site') }}
+    if: ${{ !contains(github.event.head_commit.message, 'Atualizar SEO do site') && !contains(github.event.head_commit.message, 'Remover workflow temporário de SEO') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,18 +22,14 @@ jobs:
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-
           s = s.replace('<title>Códigos Summoners War | YunaMyst Codes</title>', '<title>Códigos Summoners War Sky Arena 2026 | YunaCodes</title>')
           s = s.replace('<meta content="Códigos ativos de Summoners War: Sky Arena, recompensas, como usar e FAQ." name="description"/>', '<meta content="Códigos Summoners War Sky Arena 2026: códigos ativos, novos códigos, códigos de recompensa, recompensas e como resgatar códigos no jogo." name="description"/>')
-
           marker = '<meta content="Códigos Summoners War Sky Arena 2026: códigos ativos, novos códigos, códigos de recompensa, recompensas e como resgatar códigos no jogo." name="description"/>'
           keywords = '<meta name="keywords" content="Summoners War, Summoners War Sky Arena, códigos Summoners War, códigos Summoners War Sky Arena, códigos ativos Summoners War, códigos novos Summoners War, códigos de recompensa Summoners War, Summoners War codes, redeem codes Summoners War, códigos de resgate Summoners War, recompensas Summoners War, eventos Summoners War, guia Summoners War">'
           if keywords not in s:
               s = s.replace(marker, marker + '\n' + keywords)
-
           s = s.replace('Códigos novos e ativos para resgatar as tuas recompensas!', 'Códigos novos e ativos de Summoners War: Sky Arena para resgatar recompensas, códigos de resgate e prémios do jogo!')
           s = s.replace('YunaMyst • Códigos Summoners War: Sky Arena • Site de comunidade independente', 'YunaMyst • Códigos Summoners War Sky Arena • Códigos ativos, recompensas e comunidade')
-
           p.write_text(s, encoding='utf-8')
           PY
 
@@ -42,14 +38,15 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet && exit 0
+          if git diff --cached --quiet; then exit 0; fi
           git commit -m "Atualizar SEO do site"
+          git pull --rebase origin main
           git push
 
       - name: Remover workflow temporário
-        if: always()
+        if: success()
         run: |
-          git rm -f .github/workflows/seo-update.yml || true
-          git diff --cached --quiet && exit 0
+          git rm -f .github/workflows/seo-update.yml
           git commit -m "Remover workflow temporário de SEO"
+          git pull --rebase origin main
           git push
