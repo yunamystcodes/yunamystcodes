@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Configurar Python
         uses: actions/setup-python@v5
@@ -37,5 +39,6 @@ jobs:
             echo "Nenhuma alteração nos códigos."
           else
             git commit -m "Atualizar códigos ativos automaticamente"
+            git pull --rebase origin main
             git push
           fi
