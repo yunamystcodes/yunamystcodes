@@ -16,34 +16,47 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Corrigir meta description quebrada
+      - name: Corrigir e publicar index
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          p = Path("index.html")
-          text = p.read_text(encoding="utf-8")
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
 
-          pattern = r'<meta\s+content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas\.\.\.\s*<style>'
-          replacement = '<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas, códigos de resgate e como usar os códigos no jogo." name="description"/>\n<style>'
+            python - <<'PY'
+            from pathlib import Path
+            import re
 
-          fixed, count = re.subn(pattern, replacement, text, count=1, flags=re.S)
-          if count == 0:
-              print("Meta já está correta ou não foi encontrada.")
-          else:
-              p.write_text(fixed, encoding="utf-8")
-              print("Meta description corrigida.")
-          PY
+            p = Path("index.html")
+            text = p.read_text(encoding="utf-8")
+            pattern = r'<meta\s+content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas\.\.\.\s*<style>'
+            replacement = '<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas, códigos de resgate e como usar os códigos no jogo." name="description"/>\n<style>'
+            fixed, count = re.subn(pattern, replacement, text, count=1, flags=re.S)
+            if count:
+                p.write_text(fixed, encoding="utf-8")
+                print("Meta description corrigida.")
+            else:
+                print("Meta já está correta.")
+            PY
 
-      - name: Publicar correção
-        run: |
-          if git diff --quiet -- index.html; then
-            echo "Nenhuma alteração necessária."
-          else
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            if git diff --quiet -- index.html; then
+              echo "Nenhuma alteração necessária."
+              exit 0
+            fi
+
             git add index.html
             git commit -m "Corrigir HTML quebrado do index"
-            git push
-          fi
+            if git push origin HEAD:main; then
+              echo "Correção publicada com sucesso."
+              exit 0
+            fi
+
+            echo "Houve outra atualização no main; tentando novamente..."
+            git reset --hard origin/main
+            sleep 2
+          done
+
+          echo "Não foi possível publicar após várias tentativas."
+          exit 1
