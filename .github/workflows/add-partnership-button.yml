@@ -17,50 +17,30 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import re
-
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-
-          # Corrigir o texto pedido.
-          s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?',
-                        'Queres fazer uma parceria com a YunaMyst Codes?')
-
-          # O botão existente fica apenas no telemóvel.
-          if 'id="yunaPartnershipButton"' not in s:
-              raise SystemExit('BOTAO_MOBILE_NAO_ENCONTRADO')
-
-          # Criar o botão exclusivo do PC na coluna direita, antes da FAQ.
-          if 'id="yunaDesktopPartnershipButton"' not in s:
-              desktop_button = '''\n<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria">\n  <span class="picon">🤝</span>\n  <span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst Codes</small></span>\n  <strong>›</strong>\n</a>\n'''
-              pattern = r'(<div[^>]*class=["\'][^"\']*\\bfaq\\b[^"\']*["\'])'
-              s2, n = re.subn(pattern, desktop_button + r'\1', s, count=1, flags=re.I)
-              if n != 1:
-                  # Fallback: colocar no início da coluna direita.
-                  pattern2 = r'(<aside[^>]*class=["\'][^"\']*\\bright\\b[^"\']*["\'][^>]*>)'
-                  s2, n = re.subn(pattern2, r'\1' + desktop_button, s, count=1, flags=re.I)
-              if n != 1:
-                  raise SystemExit('FAQ_OU_COLUNA_DIREITA_NAO_ENCONTRADA')
-              s = s2
-
-          css = '''\n<style id="yuna-partnership-responsive-final">\n@media (min-width:851px){\n  #yunaPartnershipButton{display:none!important}\n  #yunaDesktopPartnershipButton{display:flex!important;margin:12px 0 12px!important;max-width:none!important;width:100%!important}\n}\n@media (max-width:850px){\n  #yunaPartnershipButton{display:flex!important}\n  #yunaDesktopPartnershipButton{display:none!important}\n}\n</style>\n'''
-          # Remover apenas regras antigas que controlavam os dois botões para evitar conflito.
-          s = re.sub(r'<style>\s*/\* YUNA PARTNERSHIP MOBILE ONLY \*/[\s\S]*?</style>', '', s, flags=re.I)
-          s = s.replace('</head>', css + '</head>', 1)
-
-          # O clique deve abrir a mesma janela tanto no PC como no telemóvel.
-          old = "const b=document.getElementById('yunaPartnershipButton');"
-          new = "const buttons=[document.getElementById('yunaPartnershipButton'),document.getElementById('yunaDesktopPartnershipButton')].filter(Boolean);"
-          s = s.replace(old, new)
-          s = s.replace("if(!b||!m||!c)return;", "if(!buttons.length||!m||!c)return;")
-          s = s.replace("b.addEventListener('click',function(e){e.preventDefault();m.classList.add('open');m.setAttribute('aria-hidden','false');});", "buttons.forEach(b=>b.addEventListener('click',function(e){e.preventDefault();m.classList.add('open');m.setAttribute('aria-hidden','false');}));")
-
-          p.write_text(s, encoding='utf-8')
+          p=Path('index.html'); s=p.read_text(encoding='utf-8')
+          s=s.replace('Queres fazer uma parceria com o YunaMyst Codes?','Queres fazer uma parceria com a YunaMyst Codes?')
+          pat=r'<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton"[\s\S]*?</a>\s*'
+          m=re.search(pat,s,re.I)
+          if m:
+              desktop=m.group(0); s=s[:m.start()]+s[m.end():]
+          else:
+              desktop='''<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst Codes</small></span><strong>›</strong></a>\n'''
+          target='<section class="panel faq" id="faq">'
+          if target not in s: raise SystemExit('FAQ_NAO_ENCONTRADA')
+          s=s.replace(target,desktop+target,1)
+          css='''<style id="yuna-partnership-responsive-final">@media (min-width:851px){#yunaPartnershipButton{display:none!important}#yunaDesktopPartnershipButton{display:flex!important;margin:0 0 12px!important;width:100%!important;max-width:none!important}}@media (max-width:850px){#yunaPartnershipButton{display:flex!important}#yunaDesktopPartnershipButton{display:none!important}}</style>'''
+          s=re.sub(r'<style id="yuna-partnership-responsive-final">[\s\S]*?</style>','',s,flags=re.I)
+          s=s.replace('</head>',css+'</head>',1)
+          s=s.replace("const b=document.getElementById('yunaPartnershipButton');","const buttons=[document.getElementById('yunaPartnershipButton'),document.getElementById('yunaDesktopPartnershipButton')].filter(Boolean);")
+          s=s.replace("if(!b||!m||!c)return;","if(!buttons.length||!m||!c)return;")
+          s=s.replace("b.addEventListener('click',function(e){e.preventDefault();m.classList.add('open');m.setAttribute('aria-hidden','false');});","buttons.forEach(b=>b.addEventListener('click',function(e){e.preventDefault();m.classList.add('open');m.setAttribute('aria-hidden','false');}));")
+          p.write_text(s,encoding='utf-8')
           PY
       - name: Publicar
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          git diff --cached --quiet && exit 0
-          git commit -m "Corrigir parceria no PC e telemóvel"
-          git push
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Fixar parceria ao lado da FAQ no PC'
+          git push origin HEAD:main
