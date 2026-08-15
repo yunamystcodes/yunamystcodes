@@ -93,8 +93,61 @@ def card(item):
     )
 
 
+ACTIVE_TAB_CSS = """
+<style id="active-codes-tab-style">
+.active-codes-tab{margin-top:10px;border-top:1px solid rgba(255,255,255,.1)}
+.active-codes-toggle{width:100%;border:0;background:transparent;color:#d99cff;padding:15px 17px;font-size:16px;font-weight:900;cursor:pointer;text-align:center}
+.active-codes-toggle:hover{background:rgba(168,92,255,.08)}
+.active-codes-toggle .active-arrow{display:inline-block;margin-left:6px;transition:transform .2s ease}
+.active-codes-toggle.open .active-arrow{transform:rotate(180deg)}
+.active-codes-hidden{display:none!important}
+@media(max-width:600px){.active-codes-toggle{font-size:14px;padding:14px 10px}}
+</style>
+"""
+
+ACTIVE_TAB_JS = """
+<script id="active-codes-tab-script">
+(function(){
+  function setupActiveCodesTab(){
+    var list=document.getElementById('activeCodesList');
+    var tab=document.getElementById('activeCodesTab');
+    var button=document.getElementById('activeCodesToggle');
+    if(!list||!tab||!button)return;
+    var cards=Array.prototype.slice.call(list.querySelectorAll(':scope > .code:not(.expired)'));
+    var visibleCount=4;
+    cards.forEach(function(card,index){
+      card.classList.toggle('active-codes-hidden',index>=visibleCount && !button.classList.contains('open'));
+    });
+    function update(){
+      var open=button.classList.contains('open');
+      cards.forEach(function(card,index){card.classList.toggle('active-codes-hidden',!open && index>=visibleCount);});
+      button.setAttribute('aria-expanded',open?'true':'false');
+      var label=button.querySelector('[data-active-label]');
+      if(label)label.textContent=open?'RECOLHER CÓDIGOS ATIVOS':'VER TODOS OS CÓDIGOS ATIVOS';
+      var arrow=button.querySelector('.active-arrow');
+      if(arrow)arrow.textContent=open?'⌃':'⌄';
+    }
+    button.onclick=function(){button.classList.toggle('open');update();};
+    update();
+    tab.style.display=cards.length>visibleCount?'block':'none';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setupActiveCodesTab);else setupActiveCodesTab();
+})();
+</script>
+"""
+
+
+def ensure_active_codes_ui(text):
+    if 'id="active-codes-tab-style"' not in text:
+        text = text.replace('</head>', ACTIVE_TAB_CSS + '\n</head>', 1)
+    if 'id="active-codes-tab-script"' not in text:
+        text = text.replace('</body>', ACTIVE_TAB_JS + '\n</body>', 1)
+    return text
+
+
 def update_index(codes):
     text = INDEX.read_text(encoding="utf-8")
+    text = ensure_active_codes_ui(text)
     marker = '<div class="codes" id="activeCodesList">'
     start = text.find(marker)
     if start == -1:
@@ -109,7 +162,10 @@ def update_index(codes):
         raise RuntimeError("Fim da lista de códigos ativos não encontrado.")
     end += len('</div>')
     cards = "\n".join(card(item) for item in codes)
-    INDEX.write_text(text[:content_start] + "\n" + cards + "\n" + text[end:], encoding="utf-8")
+    active_tab = '''\n<div class="active-codes-tab" id="activeCodesTab"><button class="active-codes-toggle" id="activeCodesToggle" type="button" aria-expanded="false"><span data-active-label>VER TODOS OS CÓDIGOS ATIVOS</span> <span class="active-arrow">⌄</span></button></div>'''
+    tail = text[end:]
+    tail = re.sub(r'\n<div class="active-codes-tab" id="activeCodesTab">.*?</div>\n', '\n', tail, count=1, flags=re.S)
+    INDEX.write_text(text[:content_start] + "\n" + cards + "\n</div>" + active_tab + tail, encoding="utf-8")
 
 
 if __name__ == "__main__":
