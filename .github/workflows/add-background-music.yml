@@ -44,7 +44,7 @@ jobs:
           const audioMute=document.getElementById("audioMute");
           if(bgMusic&&audioMute){
             const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";
-            bgMusic.volume=0.08;
+            bgMusic.volume=0.03;
             bgMusic.autoplay=true;
             bgMusic.playsInline=true;
 
@@ -58,14 +58,14 @@ jobs:
             const playAudio=()=>{
               if(userMuted()) return Promise.resolve(false);
               bgMusic.muted=false;
-              bgMusic.volume=0.08;
+              bgMusic.volume=0.03;
               return Promise.resolve(bgMusic.play()).then(()=>true).catch(()=>false);
             };
 
             const attemptAutoplay=()=>{
               if(userMuted()) return;
               bgMusic.muted=false;
-              bgMusic.volume=0.08;
+              bgMusic.volume=0.03;
               bgMusic.load();
               playAudio().then(ok=>{
                 if(ok) syncAudio();
@@ -119,6 +119,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No site changes needed."
           else
-            git commit -m "Fix music autoplay and remove year from heading"
+            git commit -m "Reduce mobile background music volume"
             git push
           fi
