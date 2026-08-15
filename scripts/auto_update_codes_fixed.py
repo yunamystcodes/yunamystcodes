@@ -9,7 +9,6 @@ SOURCE_URL = "https://summonerswarcodes.us/"
 INDEX = Path("index.html")
 CODE_RE = re.compile(r"\b[A-Z0-9]{8,24}\b")
 
-# Fallbacks for codes that may appear before the external source is updated.
 FALLBACK_CODES = {
     "HURRASWC2026": "Recompensas não informadas",
 }
@@ -34,8 +33,8 @@ def fetch_codes():
         cells = [clean(c.get_text(" ", strip=True)) for c in row.find_all(["td", "th"])]
         if not cells:
             continue
-        joined = " | ".join(cells)
-        if "active" not in joined.lower() and "ativo" not in joined.lower():
+        joined = " | ".join(cells).lower()
+        if "active" not in joined and "ativo" not in joined:
             continue
         match = None
         for cell in cells:
@@ -51,7 +50,6 @@ def fetch_codes():
         reward = cells[1] if len(cells) > 1 else "Recompensas não informadas"
         found.append({"code": code, "reward": reward[:180]})
 
-    # Never lose a known recent code if the source has not caught up yet.
     for code, reward in FALLBACK_CODES.items():
         if code not in seen:
             found.insert(0, {"code": code, "reward": reward})
@@ -86,15 +84,23 @@ def update_index(codes):
 
     content_start = start + len(marker)
 
-    # Find the closing div that is immediately followed by the existing
-    # "more/expired" section, tolerating whitespace/newlines and attributes.
-    match = re.search(r'</div>\s*<div\s+class="more"', text[content_start:], re.I)
-    if not match:
-        match = re.search(r'</div>\s*<div[^>]*class="[^"]*more[^"]*"', text[content_start:], re.I)
-    if not match:
-        raise RuntimeError("Fim da lista de códigos ativos não encontrado.")
+    # The site has changed its expired-section markup several times.
+    # Locate the expired section first, then use the last closing div before it
+    # as the end of the active-codes container.
+    section = re.search(
+        r'<div[^>]*class="[^"]*(?:expired-tab|more)[^"]*"',
+        text[content_start:],
+        re.I,
+    )
+    if not section:
+        raise RuntimeError("Secção de códigos expirados não encontrada.")
 
-    end = content_start + match.start() + len('</div>')
+    section_start = content_start + section.start()
+    end = text.rfind('</div>', content_start, section_start)
+    if end == -1:
+        raise RuntimeError("Fim da lista de códigos ativos não encontrado.")
+    end += len('</div>')
+
     cards = "\n".join(card(item) for item in codes)
     new_text = text[:content_start] + "\n" + cards + "\n" + text[end:]
     INDEX.write_text(new_text, encoding="utf-8")
