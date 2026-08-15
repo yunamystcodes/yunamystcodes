@@ -1,0 +1,54 @@
+name: Adicionar botão de parceria
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Adicionar parceria sem alterar o restante do site
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          if 'id="yunaPartnershipButton"' in s:
+              print('PARCERIA_JA_EXISTE')
+              raise SystemExit(0)
+
+          button = '''\n<a href="#" class="partnership" id="yunaPartnershipButton" aria-label="Abrir informações de parceria">\n  <span class="picon">🤝</span>\n  <span><b>FAZER PARCERIA</b><small>Colabora com o YunaMyst Codes</small></span>\n  <strong>›</strong>\n</a>\n'''
+
+          pattern = r'(<a[^>]*class=["\'][^"\']*\\bwhats\\b[^"\']*["\'][^>]*>[\\s\\S]*?</a>)'
+          s2, n = re.subn(pattern, r'\1' + button, s, count=1, flags=re.I)
+          if n != 1:
+              raise SystemExit('BLOCO_WHATSAPP_NAO_ENCONTRADO')
+          s = s2
+
+          css = '''\n.partnership{margin:0 auto 22px;max-width:760px;display:flex;align-items:center;gap:14px;text-align:left;padding:11px 17px;border-radius:18px;text-decoration:none;color:#fff;background:linear-gradient(90deg,rgba(20,8,40,.96),rgba(34,13,57,.96));border:1px solid #f3bd52;box-shadow:0 0 28px rgba(243,189,82,.14);cursor:pointer}.picon{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#f3bd52,#9b5b1f);color:#17100a;font-size:27px;flex:none}.partnership b{display:block;color:#f3d27a;font-size:18px}.partnership small{display:block;font-size:13px;color:#d0c7da;margin-top:4px}.partnership>strong{margin-left:auto;font-size:25px}.partnership:hover{filter:brightness(1.08)}\n.yuna-partnership-modal{display:none;position:fixed;inset:0;z-index:100;background:rgba(2,1,9,.78);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:18px}.yuna-partnership-modal.open{display:flex}.yuna-partnership-box{width:min(520px,100%);background:linear-gradient(180deg,#17102b,#080615);border:1px solid #a85cff;border-radius:20px;box-shadow:0 25px 70px rgba(0,0,0,.65);padding:24px;text-align:center;position:relative}.yuna-partnership-box h2{color:#f3d27a;font:900 27px Georgia,serif;margin-bottom:10px}.yuna-partnership-box p{color:#d0c8db;font-size:14px;line-height:1.6}.yuna-partnership-close{position:absolute;right:12px;top:10px;width:34px;height:34px;border:1px solid #5c397b;border-radius:9px;background:#17102a;color:#fff;font-size:22px;cursor:pointer}.yuna-partnership-close:hover{border-color:#a85cff}.yuna-partnership-cta{display:inline-block;margin-top:18px;padding:11px 20px;border-radius:10px;background:linear-gradient(#f4c966,#b97b1f);border:1px solid #e7b953;color:#241300;font-weight:900;text-decoration:none}\n@media(max-width:850px){.partnership{margin-left:0;margin-right:0;max-width:100%;padding:11px 13px;gap:11px}.picon{width:48px;height:48px;font-size:25px}.partnership b{font-size:16px}.partnership small{font-size:12px}.partnership>strong{font-size:22px}}\n@media(max-width:600px){.partnership{padding:11px 12px;border-radius:16px}.picon{width:46px;height:46px;font-size:24px}.partnership b{font-size:15px;line-height:1.2}.partnership small{font-size:11px;line-height:1.35}}\n'''
+          if '.partnership{' not in s:
+              s = s.replace('</style>', css + '</style>', 1)
+
+          modal = '''\n<div class="yuna-partnership-modal" id="yunaPartnershipModal" aria-hidden="true">\n  <div class="yuna-partnership-box" role="dialog" aria-modal="true" aria-labelledby="yunaPartnershipTitle">\n    <button class="yuna-partnership-close" id="yunaPartnershipClose" aria-label="Fechar">×</button>\n    <h2 id="yunaPartnershipTitle">🤝 PARCERIA YUNAMYST CODES</h2>\n    <p>Queres fazer uma parceria com o YunaMyst Codes? Este espaço é para criadores, marcas e projetos relacionados com Summoners War.</p>\n    <p>Entra em contacto através das redes sociais do YunaMyst para apresentar a tua proposta.</p>\n  </div>\n</div>\n<script>\n(function(){\n  const b=document.getElementById('yunaPartnershipButton');\n  const m=document.getElementById('yunaPartnershipModal');\n  const c=document.getElementById('yunaPartnershipClose');\n  if(!b||!m||!c)return;\n  function close(){m.classList.remove('open');m.setAttribute('aria-hidden','true');}\n  b.addEventListener('click',function(e){e.preventDefault();m.classList.add('open');m.setAttribute('aria-hidden','false');});\n  c.addEventListener('click',close);\n  m.addEventListener('click',function(e){if(e.target===m)close();});\n  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});\n})();\n</script>\n'''
+          if 'id="yunaPartnershipModal"' not in s:
+              s = s.replace('</body>', modal + '</body>', 1)
+
+          p.write_text(s, encoding='utf-8')
+          print('PARCERIA_ADICIONADA')
+          PY
+      - name: Publicar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Adicionar botão de parceria abaixo do WhatsApp"
+          git push
