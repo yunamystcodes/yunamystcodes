@@ -1,0 +1,35 @@
+name: Corrigir HTML quebrado
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Corrigir meta description
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          lines = p.read_text(encoding='utf-8').splitlines()
+          for i, line in enumerate(lines):
+              if line.startswith('<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas'):
+                  lines[i] = '<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas, códigos de resgate e como usar os códigos no jogo." name="description"/>'
+                  break
+          p.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
+      - name: Publicar correção
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "HTML já está correto"
+          else
+            git commit -m "Corrigir meta description do site"
+            git push
+          fi
