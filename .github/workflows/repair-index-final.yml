@@ -14,14 +14,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Corrigir HTML
+      - name: Corrigir HTML e logo
         run: |
-          python -c 'from pathlib import Path; import re; p=Path("index.html"); s=p.read_text(encoding="utf-8"); pattern=r"<meta\\s+content=\\"Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas\\.\\.\\.\\s*<style>"; replacement="<meta content=\\"Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas, códigos de resgate e como usar os códigos no jogo.\\" name=\\"description\\"/>\\n<style>"; s2,n=re.subn(pattern,replacement,s,count=1,flags=re.S); p.write_text(s2,encoding="utf-8") if n else None; print("CORRIGIDO" if n else "JA_CORRETO")'
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+
+          # Corrigir apenas o bloco visual do logo, sem mexer no restante do site.
+          logo_fix='''\n.logo{display:flex;flex-direction:column;align-items:center;justify-content:center;white-space:nowrap;line-height:1}.logo small{display:block;width:100%;font:700 9px Arial;letter-spacing:4px;color:#f1ca76;text-align:center;margin-top:2px;line-height:1.1}'''
+          if '.logo{display:flex;flex-direction:column;align-items:center;justify-content:center;white-space:nowrap;line-height:1}' not in s:
+              marker='</style>'
+              s=s.replace(marker, logo_fix+'\n'+marker, 1)
+
+          # No telemóvel, mantém YunaMyst e SUMMONERS WAR centrados e separados.
+          mobile_fix='''\n@media(max-width:600px){.logo{font-size:30px;line-height:.95;align-items:center}.logo small{font-size:8px;letter-spacing:3px;margin-top:3px;line-height:1.1}}'''
+          if '@media(max-width:600px){.logo{font-size:30px;line-height:.95;align-items:center}' not in s:
+              s=s.replace('</style>', mobile_fix+'\n</style>', 1)
+
+          p.write_text(s,encoding="utf-8")
+          print("LOGO_CORRIGIDO")
+          PY
       - name: Publicar
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Corrigir HTML quebrado do index" || exit 0
+          git commit -m "Ajustar logo YunaMyst para PC e telemóvel" || exit 0
           for i in 1 2 3 4 5; do git fetch origin main; git rebase origin/main || true; if git push origin HEAD:main; then exit 0; fi; git reset --hard origin/main; sleep 2; done
           exit 1
