@@ -115,9 +115,6 @@ ACTIVE_TAB_JS = """
     if(!list||!tab||!button)return;
     var cards=Array.prototype.slice.call(list.querySelectorAll(':scope > .code:not(.expired)'));
     var visibleCount=4;
-    cards.forEach(function(card,index){
-      card.classList.toggle('active-codes-hidden',index>=visibleCount && !button.classList.contains('open'));
-    });
     function update(){
       var open=button.classList.contains('open');
       cards.forEach(function(card,index){card.classList.toggle('active-codes-hidden',!open && index>=visibleCount);});
@@ -145,6 +142,20 @@ def ensure_active_codes_ui(text):
     return text
 
 
+def remove_loose_code_buttons(text):
+    marker = '<div class="active-codes-tab" id="activeCodesTab">'
+    expired = '<div class="expired-tab"'
+    start = text.find(marker)
+    if start == -1:
+        return text
+    end = text.find(expired, start)
+    if end == -1:
+        return text
+    block = text[start:end]
+    block = re.sub(r'\s*<button class="copy"[^>]*>.*?</button>\s*<a class="iphone"[^>]*>.*?</a>\s*', '\n', block, flags=re.S)
+    return text[:start] + block + text[end:]
+
+
 def update_index(codes):
     text = INDEX.read_text(encoding="utf-8")
     text = ensure_active_codes_ui(text)
@@ -165,7 +176,9 @@ def update_index(codes):
     active_tab = '''\n<div class="active-codes-tab" id="activeCodesTab"><button class="active-codes-toggle" id="activeCodesToggle" type="button" aria-expanded="false"><span data-active-label>VER TODOS OS CÓDIGOS ATIVOS</span> <span class="active-arrow">⌄</span></button></div>'''
     tail = text[end:]
     tail = re.sub(r'\n<div class="active-codes-tab" id="activeCodesTab">.*?</div>\n', '\n', tail, count=1, flags=re.S)
-    INDEX.write_text(text[:content_start] + "\n" + cards + "\n</div>" + active_tab + tail, encoding="utf-8")
+    new_text = text[:content_start] + "\n" + cards + "\n</div>" + active_tab + tail
+    new_text = remove_loose_code_buttons(new_text)
+    INDEX.write_text(new_text, encoding="utf-8")
 
 
 if __name__ == "__main__":
