@@ -30,6 +30,7 @@ jobs:
       - name: Atualizar códigos ativos
         run: python scripts/auto_update_codes_fixed.py
 
+      # Mantém a parceria apenas no topo da página; remove o botão da coluna da FAQ.
       - name: Colocar parceria no topo
         run: |
           python - <<'PY'
@@ -49,7 +50,7 @@ jobs:
           """
           if 'partnership-top-final' not in s:
               s=s.replace('</head>', partnership_css+'\n</head>', 1)
-          desktop = '<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst Codes</small></span><strong>›</strong></a>'
+          desktop = '<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com o YunaMyst Codes</small></span><strong>›</strong></a>'
           s=s.replace(desktop+'\n','',1)
           p.write_text(s,encoding='utf-8')
           PY
