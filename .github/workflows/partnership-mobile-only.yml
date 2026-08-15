@@ -1,39 +1,63 @@
-name: Parceria apenas no telemóvel
+name: Corrigir parceria PC e telemóvel
 
 on:
-  workflow_dispatch:
   push:
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  mobile-only:
+  update:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Mostrar parceria apenas no telemóvel
+      - name: Aplicar correções da parceria
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          marker = '/* YUNA PARTNERSHIP MOBILE ONLY */'
-          if marker not in s and 'id="yunaPartnershipButton"' in s:
-              css = '''\n<style>\n/* YUNA PARTNERSHIP MOBILE ONLY */\n@media (min-width:851px){#yunaPartnershipButton{display:none!important}}\n@media (max-width:850px){#yunaPartnershipButton{display:flex!important}}\n</style>\n'''
-              s = s.replace('</body>', css + '</body>', 1)
-              p.write_text(s, encoding='utf-8')
-              print('PARCERIA_APENAS_TELEMOVEL')
-          else:
-              print('JA_APLICADO_OU_BOTAO_INEXISTENTE')
+
+          s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst Codes?')
+
+          desktop_id = 'yunaDesktopPartnershipButton'
+          if desktop_id not in s:
+              button = '''\n<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst Codes</small></span><strong>›</strong></a>\n'''
+              patterns = [
+                  r'(<div[^>]*class=["\'][^"\']*\bfaq\b[^"\']*["\'][^>]*>)',
+                  r'(<section[^>]*id=["\']faq["\'][^>]*>)',
+                  r'(<[^>]*data-i18n=["\']faqTitle["\'][^>]*>)'
+              ]
+              for pat in patterns:
+                  s2, n = re.subn(pat, button + r'\1', s, count=1, flags=re.I)
+                  if n:
+                      s = s2
+                      break
+              else:
+                  raise SystemExit('NAO_ENCONTREI_AREA_DA_FAQ')
+
+          marker = '/* YUNAMYST PARTNERSHIP FINAL */'
+          s = re.sub(r'<style[^>]*>\s*/\* YUNA PARTNERSHIP MOBILE ONLY \*/[\s\S]*?</style>\s*', '', s, flags=re.I)
+          s = re.sub(r'<style[^>]*>\s*/\* YUNAMYST_PARTNERSHIP_MOBILE_ONLY \*/[\s\S]*?</style>\s*', '', s, flags=re.I)
+          css = f'''\n<style id="yuna-partnership-final">\n{marker}\n@media (min-width:851px){{\n  #yunaPartnershipButton{{display:none!important}}\n  #yunaDesktopPartnershipButton{{display:flex!important}}\n}}\n@media (max-width:850px){{\n  #yunaPartnershipButton{{display:flex!important}}\n  #yunaDesktopPartnershipButton{{display:none!important}}\n}}\n</style>\n'''
+          s = re.sub(r'<style id="yuna-partnership-final">[\s\S]*?</style>\s*', '', s, flags=re.I)
+          s = s.replace('</head>', css + '</head>', 1)
+
+          old = "const b=document.getElementById('yunaPartnershipButton');"
+          new = "const buttons=[document.getElementById('yunaPartnershipButton'),document.getElementById('yunaDesktopPartnershipButton')].filter(Boolean);"
+          s = s.replace(old, new)
+          s = s.replace("if(!b||!m||!c)return;", "if(!buttons.length||!m||!c)return;")
+          s = s.replace("b.addEventListener('click',function(e){e.preventDefault();m.classList.add('open');m.setAttribute('aria-hidden','false');});", "buttons.forEach(b=>b.addEventListener('click',function(e){e.preventDefault();m.classList.add('open');m.setAttribute('aria-hidden','false');}));")
+
+          p.write_text(s, encoding='utf-8')
           PY
       - name: Publicar
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          git diff --cached --quiet && exit 0
-          git commit -m "Mostrar parceria apenas no telemóvel"
-          git fetch origin main
-          git rebase origin/main || git rebase --abort
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Corrigir parceria no PC e telemóvel'
           git push origin HEAD:main
