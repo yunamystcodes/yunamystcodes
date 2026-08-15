@@ -1,0 +1,27 @@
+name: Reparar HTML final
+
+on:
+  push:
+    paths:
+      - ".github/workflows/repair-index-final.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Corrigir HTML
+        run: |
+          python -c 'from pathlib import Path; import re; p=Path("index.html"); s=p.read_text(encoding="utf-8"); pattern=r"<meta\\s+content=\\"Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas\\.\\.\\.\\s*<style>"; replacement="<meta content=\\"Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas, códigos de resgate e como usar os códigos no jogo.\\" name=\\"description\\"/>\\n<style>"; s2,n=re.subn(pattern,replacement,s,count=1,flags=re.S); p.write_text(s2,encoding="utf-8") if n else None; print("CORRIGIDO" if n else "JA_CORRETO")'
+      - name: Publicar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Corrigir HTML quebrado do index" || exit 0
+          for i in 1 2 3 4 5; do git fetch origin main; git rebase origin/main || true; if git push origin HEAD:main; then exit 0; fi; git reset --hard origin/main; sleep 2; done
+          exit 1
