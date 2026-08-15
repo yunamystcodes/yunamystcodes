@@ -1,0 +1,50 @@
+name: Finalizar correção do HTML
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: fix-html-final
+  cancel-in-progress: false
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Corrigir HTML e publicar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          lines = p.read_text(encoding='utf-8').splitlines()
+          changed = False
+          for i, line in enumerate(lines):
+              if line.startswith('<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas'):
+                  lines[i] = '<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas, códigos de resgate e como usar os códigos no jogo." name="description"/>'
+                  changed = True
+                  break
+          if changed:
+              p.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          print('CORRIGIDO' if changed else 'JA_CORRETO')
+          PY
+            if git diff --quiet -- index.html; then
+              echo "HTML já está correto"
+              exit 0
+            fi
+            git add index.html
+            git commit -m "Corrigir meta description do site"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep 2
+          done
+          exit 1
