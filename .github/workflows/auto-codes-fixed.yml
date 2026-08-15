@@ -30,6 +30,30 @@ jobs:
       - name: Atualizar códigos ativos
         run: python scripts/auto_update_codes_fixed.py
 
+      - name: Colocar parceria no topo
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("index.html")
+          s = p.read_text(encoding="utf-8")
+          partnership_css = """
+          <style id="partnership-top-final">
+          @media(min-width:851px){
+            #yunaPartnershipButton{display:flex!important;margin:0 auto 16px!important;max-width:760px!important;width:100%!important}
+            #yunaDesktopPartnershipButton{display:none!important}
+          }
+          @media(max-width:850px){
+            #yunaDesktopPartnershipButton{display:none!important}
+          }
+          </style>
+          """
+          if 'partnership-top-final' not in s:
+              s=s.replace('</head>', partnership_css+'\n</head>', 1)
+          desktop = '<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com o YunaMyst Codes</small></span><strong>›</strong></a>'
+          s=s.replace(desktop+'\n','',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+
       - name: Publicar alterações
         run: |
           git config user.name "github-actions[bot]"
