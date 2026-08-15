@@ -15,151 +15,63 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Apply reward layout
+      - name: Apply reward and partnership layout
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
 
           path = Path('index.html')
           html = path.read_text(encoding='utf-8')
-          marker = '/* FINAL REWARD LAYOUT V2 */'
 
+          # Corrigir somente o texto de parceria.
+          html = html.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst Codes?')
+
+          # Remover regras antigas que escondiam a parceria no PC.
+          html = re.sub(r'<style[^>]*>\s*/\* YUNA PARTNERSHIP MOBILE ONLY \*/[\s\S]*?</style>\s*', '', html, flags=re.I)
+          html = re.sub(r'<style[^>]*>\s*/\* YUNAMYST_PARTNERSHIP_MOBILE_ONLY \*/[\s\S]*?</style>\s*', '', html, flags=re.I)
+
+          # No PC, criar o botão ao lado da área da FAQ; no telemóvel manter o botão original abaixo do WhatsApp.
+          if 'id="yunaDesktopPartnershipButton"' not in html:
+              desktop_button = '''<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst Codes</small></span><strong>›</strong></a>\n'''
+              target = '<section class="panel faq" id="faq">'
+              if target in html:
+                  html = html.replace(target, desktop_button + target, 1)
+              else:
+                  raise SystemExit('FAQ_NAO_ENCONTRADA')
+
+          partnership_css = '''\n<style id="yuna-partnership-final">\n@media (min-width:851px){\n  #yunaPartnershipButton{display:none!important}\n  #yunaDesktopPartnershipButton{display:flex!important;margin:12px 0 12px!important;max-width:none!important;width:100%!important}\n}\n@media (max-width:850px){\n  #yunaPartnershipButton{display:flex!important}\n  #yunaDesktopPartnershipButton{display:none!important}\n}\n</style>\n'''
+          html = re.sub(r'<style id="yuna-partnership-final">[\s\S]*?</style>\s*', '', html, flags=re.I)
+          html = html.replace('</head>', partnership_css + '</head>', 1)
+
+          # Fazer os dois botões abrirem a mesma janela de parceria.
+          html = html.replace("const b=document.getElementById('yunaPartnershipButton');", "const buttons=[document.getElementById('yunaPartnershipButton'),document.getElementById('yunaDesktopPartnershipButton')].filter(Boolean);")
+          html = html.replace("if(!b||!m||!c)return;", "if(!buttons.length||!m||!c)return;")
+          html = html.replace("b.addEventListener('click',function(e){e.preventDefault();m.classList.add('open');m.setAttribute('aria-hidden','false');});", "buttons.forEach(b=>b.addEventListener('click',function(e){e.preventDefault();m.classList.add('open');m.setAttribute('aria-hidden','false');}));")
+
+          # Aplicar o layout das recompensas apenas se ainda não existir.
+          marker = '/* FINAL REWARD LAYOUT V2 */'
           if marker not in html:
               css = r'''
           <style>
           /* FINAL REWARD LAYOUT V2 */
-          .codes .code{
-            grid-template-columns:52px minmax(190px,1fr) auto auto auto auto auto !important;
-            gap:8px !important;
-            align-items:center !important;
-          }
-          .codes .reward{
-            display:flex !important;
-            align-items:center !important;
-            justify-content:flex-start !important;
-            gap:5px !important;
-            min-width:0 !important;
-            width:auto !important;
-            white-space:nowrap !important;
-            text-align:left !important;
-          }
-          .codes .reward .ico{
-            width:32px !important;
-            height:32px !important;
-            margin:0 !important;
-            flex:0 0 32px !important;
-          }
-          .codes .reward b{
-            font-size:13px !important;
-            line-height:1 !important;
-            white-space:nowrap !important;
-          }
+          .codes .code{grid-template-columns:52px minmax(190px,1fr) auto auto auto auto auto !important;gap:8px !important;align-items:center !important}
+          .codes .reward{display:flex !important;align-items:center !important;justify-content:flex-start !important;gap:5px !important;min-width:0 !important;width:auto !important;white-space:nowrap !important;text-align:left !important}
+          .codes .reward .ico{width:32px !important;height:32px !important;margin:0 !important;flex:0 0 32px !important}
+          .codes .reward b{font-size:13px !important;line-height:1 !important;white-space:nowrap !important}
           .codes .reward small{display:none !important}
-          .codes .reward-icons{
-            display:flex !important;
-            align-items:center !important;
-            gap:5px !important;
-            flex-wrap:nowrap !important;
-          }
-          .codes .reward-img{
-            width:34px !important;
-            height:34px !important;
-            flex:0 0 34px !important;
-            background-size:contain !important;
-            background-position:center !important;
-            background-repeat:no-repeat !important;
-          }
-          .codes .reward-mana{
-            background-size:contain !important;
-            background-position:center !important;
-            background-repeat:no-repeat !important;
-          }
-          .codes .energy{
-            font-size:28px !important;
-            line-height:1 !important;
-            width:auto !important;
-            height:auto !important;
-            margin:0 !important;
-          }
-          .codes .scroll{
-            width:34px !important;
-            height:26px !important;
-            margin:0 !important;
-          }
-          .codes .copy,.codes .iphone{
-            align-self:center !important;
-            justify-self:start !important;
-            margin:0 !important;
-            min-width:max-content !important;
-          }
-          .codes .copy{padding:9px 14px !important;font-size:11px !important}
-          .codes .iphone{padding:9px 14px !important;font-size:11px !important}
-
-          @media (max-width:1050px){
-            .codes .code{
-              grid-template-columns:48px minmax(150px,1fr) auto auto !important;
-              gap:7px !important;
-            }
-            .codes .reward{display:flex !important}
-            .codes .reward .ico,.codes .reward-img{width:28px !important;height:28px !important;flex-basis:28px !important}
-            .codes .reward b{font-size:12px !important}
-          }
-
-          @media (max-width:850px){
-            .codes .code{
-              grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
-              column-gap:18px !important;
-              row-gap:10px !important;
-              padding:16px 12px !important;
-            }
-            .codes .reward{
-              grid-column:1 / -1 !important;
-              display:flex !important;
-              justify-content:flex-start !important;
-              gap:12px !important;
-              flex-wrap:wrap !important;
-              order:3 !important;
-              padding-left:0 !important;
-            }
-            .codes .copy{
-              grid-column:1 / 2 !important;
-              order:4 !important;
-              width:88px !important;
-              min-width:88px !important;
-              justify-self:center !important;
-              margin:0 !important;
-            }
-            .codes .iphone{
-              grid-column:2 / 3 !important;
-              order:5 !important;
-              width:96px !important;
-              min-width:96px !important;
-              justify-self:center !important;
-              margin:0 !important;
-            }
-          }
-
-          @media (max-width:600px){
-            .codes .reward{gap:10px !important;padding-left:0 !important}
-            .codes .reward .ico,.codes .reward-img{width:26px !important;height:26px !important;flex-basis:26px !important}
-            .codes .reward b{font-size:11px !important}
-            .codes .copy{
-              width:88px !important;
-              min-width:88px !important;
-              margin:0 !important;
-              justify-self:center !important;
-            }
-            .codes .iphone{
-              width:96px !important;
-              min-width:96px !important;
-              margin:0 !important;
-              justify-self:center !important;
-            }
-          }
+          .codes .reward-icons{display:flex !important;align-items:center !important;gap:5px !important;flex-wrap:nowrap !important}
+          .codes .reward-img{width:34px !important;height:34px !important;flex:0 0 34px !important;background-size:contain !important;background-position:center !important;background-repeat:no-repeat !important}
+          .codes .copy,.codes .iphone{align-self:center !important;justify-self:start !important;margin:0 !important;min-width:max-content !important}
+          .codes .copy{padding:9px 14px !important;font-size:11px !important}.codes .iphone{padding:9px 14px !important;font-size:11px !important}
+          @media (max-width:1050px){.codes .code{grid-template-columns:48px minmax(150px,1fr) auto auto !important;gap:7px !important}.codes .reward{display:flex !important}}
+          @media (max-width:850px){.codes .code{grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;column-gap:18px !important;row-gap:10px !important;padding:16px 12px !important}.codes .reward{grid-column:1 / -1 !important;display:flex !important;justify-content:flex-start !important;gap:12px !important;flex-wrap:wrap !important;order:3 !important}.codes .copy{grid-column:1 / 2 !important;order:4 !important;width:88px !important;min-width:88px !important;justify-self:center !important;margin:0 !important}.codes .iphone{grid-column:2 / 3 !important;order:5 !important;width:96px !important;min-width:96px !important;justify-self:center !important;margin:0 !important}}
+          @media (max-width:600px){.codes .reward{gap:10px !important}.codes .reward .ico,.codes .reward-img{width:26px !important;height:26px !important;flex-basis:26px !important}.codes .reward b{font-size:11px !important}.codes .copy{width:88px !important;min-width:88px !important}.codes .iphone{width:96px !important;min-width:96px !important}}
           </style>
-          '''
+              '''
               html = html.replace('</head>', css + '\n</head>', 1)
-              path.write_text(html, encoding='utf-8')
+
+          path.write_text(html, encoding='utf-8')
           PY
 
       - name: Commit index update
@@ -170,6 +82,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No index changes needed"
           else
-            git commit -m "Fix mobile copy and iPhone button spacing"
+            git commit -m "Fix partnership PC and mobile layout"
             git push
           fi
