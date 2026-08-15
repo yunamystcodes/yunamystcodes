@@ -1,0 +1,42 @@
+name: Parceria apenas no telemóvel
+
+on:
+  push:
+    paths:
+      - 'index.html'
+      - '.github/workflows/mobile-partnership-only.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  mobile-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Esconder parceria no PC e mostrar no telemóvel
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '/* YUNAMYST_PARTNERSHIP_MOBILE_ONLY */'
+          if marker in s:
+              print('REGRA_JA_EXISTE')
+              raise SystemExit(0)
+          css = f'''\n<style>\n{marker}\n@media (min-width:851px){{#yunaPartnershipButton{{display:none!important}}}}\n@media (max-width:850px){{#yunaPartnershipButton{{display:flex!important}}}}\n</style>\n'''
+          if '</head>' in s:
+              s = s.replace('</head>', css + '</head>', 1)
+          else:
+              s = css + s
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Publicar alteração
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Mostrar parceria apenas no telemóvel"
+          git push origin HEAD:main
