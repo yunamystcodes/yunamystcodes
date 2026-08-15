@@ -1,0 +1,39 @@
+name: Parceria apenas no telemóvel
+
+on:
+  workflow_dispatch:
+  push:
+
+permissions:
+  contents: write
+
+jobs:
+  mobile-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Mostrar parceria apenas no telemóvel
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '/* YUNA PARTNERSHIP MOBILE ONLY */'
+          if marker not in s and 'id="yunaPartnershipButton"' in s:
+              css = '''\n<style>\n/* YUNA PARTNERSHIP MOBILE ONLY */\n@media (min-width:851px){#yunaPartnershipButton{display:none!important}}\n@media (max-width:850px){#yunaPartnershipButton{display:flex!important}}\n</style>\n'''
+              s = s.replace('</body>', css + '</body>', 1)
+              p.write_text(s, encoding='utf-8')
+              print('PARCERIA_APENAS_TELEMOVEL')
+          else:
+              print('JA_APLICADO_OU_BOTAO_INEXISTENTE')
+          PY
+      - name: Publicar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Mostrar parceria apenas no telemóvel"
+          git fetch origin main
+          git rebase origin/main || git rebase --abort
+          git push origin HEAD:main
