@@ -27,22 +27,58 @@
       whats.parentNode.insertBefore(mobile,whats.nextSibling);
     }
 
-    // No telemóvel, mostrar todos os códigos ativos dentro de uma área própria com scroll.
-    // Isto evita que a lista fique cortada e impede botões soltos de aparecerem fora dos cartões.
     var activeList=document.getElementById('activeCodesList');
     if(activeList){
+      // Remove botões/link soltos que ficaram diretamente dentro da lista.
+      // Os botões corretos continuam dentro de cada cartão .code.
+      Array.prototype.slice.call(activeList.children).forEach(function(child){
+        if(!child.classList.contains('code') && child.tagName!=='DIV') child.remove();
+      });
+
+      // Cria uma aba igual à dos códigos expirados.
+      var tab=document.getElementById('activeCodesTab');
+      if(!tab){
+        tab=document.createElement('div');
+        tab.className='active-tab';
+        tab.id='activeCodesTab';
+        tab.innerHTML='<button class="active-toggle" id="activeToggle" type="button"><span>🆕 VER TODOS OS CÓDIGOS ATIVOS</span> <span id="activeCount"></span>　⌄</button><div class="active-panel" id="activePanel"></div>';
+        activeList.parentNode.insertBefore(tab,activeList.nextSibling);
+      }
+
+      var panel=document.getElementById('activePanel');
+      var toggle=document.getElementById('activeToggle');
+      var visibleCount=4;
+
+      var cards=Array.prototype.filter.call(activeList.children,function(el){
+        return el.classList && el.classList.contains('code');
+      });
+      var isOpen=panel && panel.classList.contains('open');
+      cards.forEach(function(card,index){
+        card.classList.toggle('active-extra',!isOpen && index>=visibleCount);
+      });
+
+      if(toggle && !toggle.dataset.bound){
+        toggle.dataset.bound='1';
+        toggle.addEventListener('click',function(){
+          var open=panel.classList.toggle('open');
+          cards.forEach(function(card,index){
+            if(index>=visibleCount) card.classList.toggle('active-extra',!open);
+          });
+          toggle.querySelector('span').textContent=open?'🆕 OCULTAR CÓDIGOS ATIVOS':'🆕 VER TODOS OS CÓDIGOS ATIVOS';
+          toggle.lastChild.textContent=open?'　⌃':'　⌄';
+        });
+      }
+
+      var count=document.getElementById('activeCount');
+      if(count) count.textContent='('+cards.length+')';
+
+      // Botão controla a expansão; não usamos uma caixa com scroll no telemóvel.
       var style=document.getElementById('yunaActiveCodesMobileStyle');
       if(!style){
         style=document.createElement('style');
         style.id='yunaActiveCodesMobileStyle';
-        style.textContent='@media(max-width:600px){#activeCodesList{max-height:68vh!important;overflow-y:auto!important;overflow-x:hidden!important;padding:2px 4px 8px!important;scrollbar-width:thin;-webkit-overflow-scrolling:touch}#activeCodesList::-webkit-scrollbar{width:6px}#activeCodesList::-webkit-scrollbar-thumb{background:#a85cff;border-radius:8px}.codes>button.copy,.codes>a.iphone{display:none!important}.yuna-active-hint{display:block!important}}@media(min-width:601px){.yuna-active-hint{display:none!important}}.yuna-active-hint{margin:4px 0 9px;text-align:center;color:#d99cff;font-size:11px;font-weight:800;}';
+        style.textContent='.active-tab{margin-top:10px;border-top:1px solid rgba(255,255,255,.1)}.active-toggle{width:100%;border:0;background:transparent;color:#d99cff;padding:15px 17px;font-size:16px;font-weight:900;cursor:pointer;text-align:center}.active-toggle:hover{background:rgba(168,92,255,.08)}.active-panel{display:none}.active-panel.open{display:block}.active-extra{display:none!important}@media(max-width:600px){.active-toggle{font-size:14px;padding:14px 10px}}';
         document.head.appendChild(style);
-      }
-      if(!document.querySelector('.yuna-active-hint')){
-        var hint=document.createElement('div');
-        hint.className='yuna-active-hint';
-        hint.textContent='↕ Desliza para ver todos os códigos ativos';
-        activeList.parentNode.insertBefore(hint,activeList);
       }
     }
 
@@ -63,10 +99,38 @@
         card.innerHTML='<div class="gift">🎁</div><div class="cinfo"><strong>'+code+'</strong><small>🆕 Código novo de 15/08/2026</small></div><div class="reward-icons" aria-label="Recompensas"><span class="reward-chip"><span class="reward-unknown">🎁</span><b>Recompensa</b></span></div><button class="copy" type="button">▣ COPIAR</button><a class="iphone" href="'+item[2]+'" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a>';
         var btn=card.querySelector('.copy');
         btn.addEventListener('click',function(){
-          navigator.clipboard.writeText(code).then(function(){btn.textContent='✓ COPIADO!';setTimeout(function(){btn.textContent='▣ COPIAR';},1500);}).catch(function(){alert('Código: '+code);});
+          navigator.clipboard.writeText(code).then(function(){
+            btn.textContent='✓ COPIADO!';
+            setTimeout(function(){btn.textContent='▣ COPIAR';},1500);
+          }).catch(function(){alert('Código: '+code);});
         });
         list.insertBefore(card,list.firstChild);
       });
+
+      // Recalcula a aba depois de inserir códigos novos.
+      var panel=document.getElementById('activePanel');
+      var toggle=document.getElementById('activeToggle');
+      var cards=Array.prototype.filter.call(list.children,function(el){
+        return el.classList && el.classList.contains('code');
+      });
+      var visibleCount=4;
+      var isOpen=panel && panel.classList.contains('open');
+      cards.forEach(function(card,index){
+        card.classList.toggle('active-extra',!isOpen && index>=visibleCount);
+      });
+      var count=document.getElementById('activeCount');
+      if(count) count.textContent='('+cards.length+')';
+      if(toggle && !toggle.dataset.bound){
+        toggle.dataset.bound='1';
+        toggle.addEventListener('click',function(){
+          var open=panel.classList.toggle('open');
+          cards.forEach(function(card,index){
+            if(index>=visibleCount) card.classList.toggle('active-extra',!open);
+          });
+          toggle.querySelector('span').textContent=open?'🆕 OCULTAR CÓDIGOS ATIVOS':'🆕 VER TODOS OS CÓDIGOS ATIVOS';
+          toggle.lastChild.textContent=open?'　⌃':'　⌄';
+        });
+      }
     }
 
     if(typeof window.updateExpiredCodes==='function') window.updateExpiredCodes();
