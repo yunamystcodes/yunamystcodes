@@ -27,6 +27,25 @@
       whats.parentNode.insertBefore(mobile,whats.nextSibling);
     }
 
+    // No telemóvel, mostrar todos os códigos ativos dentro de uma área própria com scroll.
+    // Isto evita que a lista fique cortada e impede botões soltos de aparecerem fora dos cartões.
+    var activeList=document.getElementById('activeCodesList');
+    if(activeList){
+      var style=document.getElementById('yunaActiveCodesMobileStyle');
+      if(!style){
+        style=document.createElement('style');
+        style.id='yunaActiveCodesMobileStyle';
+        style.textContent='@media(max-width:600px){#activeCodesList{max-height:68vh!important;overflow-y:auto!important;overflow-x:hidden!important;padding:2px 4px 8px!important;scrollbar-width:thin;-webkit-overflow-scrolling:touch}#activeCodesList::-webkit-scrollbar{width:6px}#activeCodesList::-webkit-scrollbar-thumb{background:#a85cff;border-radius:8px}.codes>button.copy,.codes>a.iphone{display:none!important}.yuna-active-hint{display:block!important}}@media(min-width:601px){.yuna-active-hint{display:none!important}}.yuna-active-hint{margin:4px 0 9px;text-align:center;color:#d99cff;font-size:11px;font-weight:800;}';
+        document.head.appendChild(style);
+      }
+      if(!document.querySelector('.yuna-active-hint')){
+        var hint=document.createElement('div');
+        hint.className='yuna-active-hint';
+        hint.textContent='↕ Desliza para ver todos os códigos ativos';
+        activeList.parentNode.insertBefore(hint,activeList);
+      }
+    }
+
     // Garante os códigos publicados em 15/08/2026.
     var list=document.getElementById('activeCodesList');
     if(list){
