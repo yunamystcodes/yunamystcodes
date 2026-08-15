@@ -1,0 +1,49 @@
+name: Corrigir index.html
+
+on:
+  push:
+    paths:
+      - ".github/workflows/repair-index.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Corrigir meta description quebrada
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path("index.html")
+          text = p.read_text(encoding="utf-8")
+
+          pattern = r'<meta\s+content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas\.\.\.\s*<style>'
+          replacement = '<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas, códigos de resgate e como usar os códigos no jogo." name="description"/>\n<style>'
+
+          fixed, count = re.subn(pattern, replacement, text, count=1, flags=re.S)
+          if count == 0:
+              print("Meta já está correta ou não foi encontrada.")
+          else:
+              p.write_text(fixed, encoding="utf-8")
+              print("Meta description corrigida.")
+          PY
+
+      - name: Publicar correção
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "Nenhuma alteração necessária."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add index.html
+            git commit -m "Corrigir HTML quebrado do index"
+            git push
+          fi
