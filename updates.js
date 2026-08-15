@@ -5,26 +5,20 @@
       p.textContent=p.textContent.replace('com o YunaMyst Codes','com a YunaMyst Codes');
     });
 
-    // PC: a parceria fica no topo direito da caixa da FAQ, como estava antes.
+    // PC: remove a parceria da caixa da FAQ. A parceria fica apenas no topo,
+    // logo abaixo do botão do WhatsApp, como no telemóvel.
     var desktop=document.getElementById('yunaDesktopPartnershipButton');
-    var faq=document.getElementById('faq');
-    if(desktop && faq){
-      faq.style.position='relative';
-      faq.insertBefore(desktop,faq.firstChild);
-      desktop.style.cssText='display:flex!important;position:absolute!important;top:7px!important;right:7px!important;margin:0!important;width:auto!important;max-width:155px!important;min-height:46px!important;padding:7px 9px!important;z-index:5!important;';
-      var picon=desktop.querySelector('.picon');
-      if(picon) picon.style.cssText='width:30px!important;height:30px!important;font-size:16px!important;';
-      var small=desktop.querySelector('small');
-      if(small) small.style.cssText='font-size:8px!important;';
-      var strong=desktop.querySelector('strong');
-      if(strong) strong.style.cssText='font-size:15px!important;';
+    if(desktop){
+      desktop.style.setProperty('display','none','important');
+      desktop.style.setProperty('position','static','important');
     }
 
-    // Telemóvel: parceria logo depois do WhatsApp.
+    // Telemóvel e PC: parceria logo depois do WhatsApp.
     var mobile=document.getElementById('yunaPartnershipButton');
     var whats=document.querySelector('.hero .whats');
     if(mobile && whats && whats.parentNode){
       whats.parentNode.insertBefore(mobile,whats.nextSibling);
+      mobile.style.setProperty('display','flex','important');
     }
 
     var activeList=document.getElementById('activeCodesList');
