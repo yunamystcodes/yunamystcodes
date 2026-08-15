@@ -1,4 +1,4 @@
-name: Adicionar botão de parceria
+name: Corrigir botão de parceria PC e telemóvel
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Adicionar parceria sem alterar o restante do site
+      - name: Aplicar somente as correções da parceria
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -21,39 +21,46 @@ jobs:
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
 
-          if 'id="yunaPartnershipButton"' in s:
-              print('PARCERIA_JA_EXISTE')
-              raise SystemExit(0)
+          # Corrigir o texto pedido.
+          s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?',
+                        'Queres fazer uma parceria com a YunaMyst Codes?')
 
-          button = '''\n<a href="#" class="partnership" id="yunaPartnershipButton" aria-label="Abrir informações de parceria">\n  <span class="picon">🤝</span>\n  <span><b>FAZER PARCERIA</b><small>Colabora com o YunaMyst Codes</small></span>\n  <strong>›</strong>\n</a>\n'''
+          # O botão existente fica apenas no telemóvel.
+          if 'id="yunaPartnershipButton"' not in s:
+              raise SystemExit('BOTAO_MOBILE_NAO_ENCONTRADO')
 
-          pattern = r'(<a[^>]*class=["\'][^"\']*\bwhats\b[^"\']*["\'][^>]*>[\s\S]*?</a>)'
-          s2, n = re.subn(pattern, lambda m: m.group(1) + button, s, count=1, flags=re.I)
-          if n != 1:
-              raise SystemExit('BLOCO_WHATSAPP_NAO_ENCONTRADO')
-          s = s2
+          # Criar o botão exclusivo do PC na coluna direita, antes da FAQ.
+          if 'id="yunaDesktopPartnershipButton"' not in s:
+              desktop_button = '''\n<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria">\n  <span class="picon">🤝</span>\n  <span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst Codes</small></span>\n  <strong>›</strong>\n</a>\n'''
+              pattern = r'(<div[^>]*class=["\'][^"\']*\\bfaq\\b[^"\']*["\'])'
+              s2, n = re.subn(pattern, desktop_button + r'\1', s, count=1, flags=re.I)
+              if n != 1:
+                  # Fallback: colocar no início da coluna direita.
+                  pattern2 = r'(<aside[^>]*class=["\'][^"\']*\\bright\\b[^"\']*["\'][^>]*>)'
+                  s2, n = re.subn(pattern2, r'\1' + desktop_button, s, count=1, flags=re.I)
+              if n != 1:
+                  raise SystemExit('FAQ_OU_COLUNA_DIREITA_NAO_ENCONTRADA')
+              s = s2
 
-          css = '''\n.partnership{margin:0 auto 22px;max-width:760px;display:flex;align-items:center;gap:14px;text-align:left;padding:11px 17px;border-radius:18px;text-decoration:none;color:#fff;background:linear-gradient(90deg,rgba(20,8,40,.96),rgba(34,13,57,.96));border:1px solid #f3bd52;box-shadow:0 0 28px rgba(243,189,82,.14);cursor:pointer}.picon{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#f3bd52,#9b5b1f);color:#17100a;font-size:27px;flex:none}.partnership b{display:block;color:#f3d27a;font-size:18px}.partnership small{display:block;font-size:13px;color:#d0c7da;margin-top:4px}.partnership>strong{margin-left:auto;font-size:25px}.partnership:hover{filter:brightness(1.08)}\n.yuna-partnership-modal{display:none;position:fixed;inset:0;z-index:100;background:rgba(2,1,9,.78);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:18px}.yuna-partnership-modal.open{display:flex}.yuna-partnership-box{width:min(520px,100%);background:linear-gradient(180deg,#17102b,#080615);border:1px solid #a85cff;border-radius:20px;box-shadow:0 25px 70px rgba(0,0,0,.65);padding:24px;text-align:center;position:relative}.yuna-partnership-box h2{color:#f3d27a;font:900 27px Georgia,serif;margin-bottom:10px}.yuna-partnership-box p{color:#d0c8db;font-size:14px;line-height:1.6}.yuna-partnership-close{position:absolute;right:12px;top:10px;width:34px;height:34px;border:1px solid #5c397b;border-radius:9px;background:#17102a;color:#fff;font-size:22px;cursor:pointer}.yuna-partnership-close:hover{border-color:#a85cff}\n@media(max-width:850px){.partnership{margin-left:0;margin-right:0;max-width:100%;padding:11px 13px;gap:11px}.picon{width:48px;height:48px;font-size:25px}.partnership b{font-size:16px}.partnership small{font-size:12px}.partnership>strong{font-size:22px}}\n@media(max-width:600px){.partnership{padding:11px 12px;border-radius:16px}.picon{width:46px;height:46px;font-size:24px}.partnership b{font-size:15px;line-height:1.2}.partnership small{font-size:11px;line-height:1.35}}\n'''
-          s = s.replace('</style>', css + '</style>', 1)
+          css = '''\n<style id="yuna-partnership-responsive-final">\n@media (min-width:851px){\n  #yunaPartnershipButton{display:none!important}\n  #yunaDesktopPartnershipButton{display:flex!important;margin:12px 0 12px!important;max-width:none!important;width:100%!important}\n}\n@media (max-width:850px){\n  #yunaPartnershipButton{display:flex!important}\n  #yunaDesktopPartnershipButton{display:none!important}\n}\n</style>\n'''
+          # Remover apenas regras antigas que controlavam os dois botões para evitar conflito.
+          s = re.sub(r'<style>\s*/\* YUNA PARTNERSHIP MOBILE ONLY \*/[\s\S]*?</style>', '', s, flags=re.I)
+          s = s.replace('</head>', css + '</head>', 1)
 
-          modal = '''\n<div class="yuna-partnership-modal" id="yunaPartnershipModal" aria-hidden="true">\n  <div class="yuna-partnership-box" role="dialog" aria-modal="true" aria-labelledby="yunaPartnershipTitle">\n    <button class="yuna-partnership-close" id="yunaPartnershipClose" aria-label="Fechar">×</button>\n    <h2 id="yunaPartnershipTitle">🤝 PARCERIA YUNAMYST CODES</h2>\n    <p>Queres fazer uma parceria com o YunaMyst Codes? Este espaço é para criadores, marcas e projetos relacionados com Summoners War.</p>\n    <p>Entra em contacto através das redes sociais do YunaMyst para apresentar a tua proposta.</p>\n  </div>\n</div>\n<script>\n(function(){\n  const b=document.getElementById('yunaPartnershipButton');\n  const m=document.getElementById('yunaPartnershipModal');\n  const c=document.getElementById('yunaPartnershipClose');\n  if(!b||!m||!c)return;\n  function close(){m.classList.remove('open');m.setAttribute('aria-hidden','true');}\n  b.addEventListener('click',function(e){e.preventDefault();m.classList.add('open');m.setAttribute('aria-hidden','false');});\n  c.addEventListener('click',close);\n  m.addEventListener('click',function(e){if(e.target===m)close();});\n  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});\n})();\n</script>\n'''
-          s = s.replace('</body>', modal + '</body>', 1)
+          # O clique deve abrir a mesma janela tanto no PC como no telemóvel.
+          old = "const b=document.getElementById('yunaPartnershipButton');"
+          new = "const buttons=[document.getElementById('yunaPartnershipButton'),document.getElementById('yunaDesktopPartnershipButton')].filter(Boolean);"
+          s = s.replace(old, new)
+          s = s.replace("if(!b||!m||!c)return;", "if(!buttons.length||!m||!c)return;")
+          s = s.replace("b.addEventListener('click',function(e){e.preventDefault();m.classList.add('open');m.setAttribute('aria-hidden','false');});", "buttons.forEach(b=>b.addEventListener('click',function(e){e.preventDefault();m.classList.add('open');m.setAttribute('aria-hidden','false');}));")
 
           p.write_text(s, encoding='utf-8')
-          print('PARCERIA_ADICIONADA')
           PY
-      - name: Publicar com segurança
+      - name: Publicar
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Adicionar botão de parceria abaixo do WhatsApp"
-          for i in 1 2 3 4 5; do
-            git fetch origin main
-            git rebase origin/main || git rebase --abort
-            if git push origin HEAD:main; then exit 0; fi
-            git reset --hard origin/main
-            sleep 2
-          done
-          exit 1
+          git commit -m "Corrigir parceria no PC e telemóvel"
+          git push
