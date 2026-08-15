@@ -42,11 +42,18 @@ jobs:
           p.write_text(s, encoding='utf-8')
           print('PARCERIA_ADICIONADA')
           PY
-      - name: Publicar
+      - name: Publicar com segurança
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && exit 0
           git commit -m "Adicionar botão de parceria abaixo do WhatsApp"
-          git push
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main || git rebase --abort
+            if git push origin HEAD:main; then exit 0; fi
+            git reset --hard origin/main
+            sleep 2
+          done
+          exit 1
