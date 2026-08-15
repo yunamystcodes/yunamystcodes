@@ -1,0 +1,71 @@
+name: Ajustar aba de novos codigos no telemovel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix-mobile-active-tab:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Ajustar index.html
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("index.html")
+          s = p.read_text(encoding="utf-8")
+          css = """
+          @media(max-width:850px){
+            .mobile-active-toggle{display:block;width:100%;border:0;background:transparent;color:#d99cff;padding:15px 17px;font-size:16px;font-weight:900;cursor:pointer;text-align:center;border-top:1px solid rgba(255,255,255,.1);border-bottom:1px solid rgba(255,255,255,.08)}
+            .mobile-active-toggle:hover{background:rgba(168,92,255,.08)}
+            .codes.mobile-active-collapsed .mobile-extra-code{display:none!important}
+            .codes.mobile-active-open .mobile-extra-code{display:grid!important}
+          }
+          @media(min-width:851px){.mobile-active-toggle{display:none!important}}
+          """
+          js = """
+          <script>
+          document.addEventListener('DOMContentLoaded',function(){
+            const box=document.querySelector('.codes');
+            if(!box || box.dataset.activeTabReady==='1') return;
+            box.dataset.activeTabReady='1';
+            const cards=[...box.querySelectorAll('.code:not(.expired)')];
+            if(cards.length<=2) return;
+            cards.slice(2).forEach(c=>c.classList.add('mobile-extra-code'));
+            box.classList.add('mobile-active-collapsed');
+            const btn=document.createElement('button');
+            btn.type='button';
+            btn.className='mobile-active-toggle';
+            btn.innerHTML='🆕 VER TODOS OS NOVOS CÓDIGOS <span style="margin-left:8px">⌄</span>';
+            const expired=box.querySelector('.expired-tab');
+            if(expired) box.insertBefore(btn,expired); else box.appendChild(btn);
+            btn.addEventListener('click',function(){
+              const open=box.classList.toggle('mobile-active-open');
+              box.classList.toggle('mobile-active-collapsed',!open);
+              btn.innerHTML=open?'🆕 OCULTAR CÓDIGOS NOVOS <span style="margin-left:8px">⌃</span>':'🆕 VER TODOS OS NOVOS CÓDIGOS <span style="margin-left:8px">⌄</span>';
+            });
+          });
+          </script>
+          """
+          if 'mobile-active-toggle' not in s:
+              s=s.replace('</style>', css+'\n</style>', 1)
+              s=s.replace('</body>', js+'\n</body>', 1)
+              p.write_text(s,encoding='utf-8')
+          else:
+              print('Aba já aplicada')
+          PY
+      - name: Publicar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Adicionar aba para ver todos os novos codigos no telemovel"
+          git push
