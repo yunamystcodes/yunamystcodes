@@ -1,4 +1,4 @@
-name: Finalizar correção do HTML
+name: Corrigir parceria e códigos atuais
 on:
   push:
     branches: [main]
@@ -6,7 +6,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: fix-html-final
+  group: fix-partnership-codes
   cancel-in-progress: false
 jobs:
   fix:
@@ -15,36 +15,52 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Corrigir HTML e publicar
+      - name: Atualizar index sem alterar o restante do site
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for attempt in 1 2 3 4 5; do
-            git fetch origin main
-            git reset --hard origin/main
-            python - <<'PY'
+          python - <<'PY'
           from pathlib import Path
           p = Path('index.html')
-          lines = p.read_text(encoding='utf-8').splitlines()
-          changed = False
-          for i, line in enumerate(lines):
-              if line.startswith('<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas'):
-                  lines[i] = '<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas, códigos de resgate e como usar os códigos no jogo." name="description"/>'
-                  changed = True
-                  break
-          if changed:
-              p.write_text('\n'.join(lines) + '\n', encoding='utf-8')
-          print('CORRIGIDO' if changed else 'JA_CORRETO')
+          s = p.read_text(encoding='utf-8')
+          original = s
+
+          # Corrige o texto da parceria.
+          s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst Codes?')
+
+          # Garante a posição correta do botão de parceria no PC e no telemóvel.
+          marker = '/* YUNAMYST PARTNERSHIP FINAL */'
+          if marker in s and '/* YUNAMYST PARTNERSHIP POSITION FINAL */' not in s:
+              s = s.replace('</head>', '''<style id="yuna-partnership-position-final">
+          @media (min-width:851px){#yunaDesktopPartnershipButton{display:flex!important;margin:0 0 12px!important;width:100%!important;max-width:none!important}#yunaPartnershipButton{display:none!important}}
+          @media (max-width:850px){#yunaPartnershipButton{display:flex!important;margin:0 auto 22px!important;width:100%!important;max-width:760px!important}#yunaDesktopPartnershipButton{display:none!important}}
+          </style></head>''')
+
+          # Adiciona os 2 códigos publicados em 15/08/2026, apenas se ainda não existirem.
+          codes = [
+              ('YYDSSWC26ZAN', '2026-08-22T00:00:00', 'https://withhive.me/313/YYDSSWC26ZAN'),
+              ('4MINGYIDAOXIAN', '2026-08-22T00:00:00', 'https://withhive.me/313/4MINGYIDAOXIAN'),
+          ]
+          insert_at = s.find('<div class="codes" id="activeCodesList">')
+          if insert_at != -1:
+              insert_at = s.find('>', insert_at) + 1
+              cards = []
+              for code, expiry, link in codes:
+                  if f'data-code="{code}"' not in s:
+                      cards.append(f'''<article class="code" data-code="{code}" data-expires="{expiry}"><div class="gift">🎁</div><div class="cinfo"><strong>{code}</strong><small>🆕 Código novo de 15/08/2026</small></div><div class="reward-icons" aria-label="Recompensas"><span class="reward-chip"><span class="reward-unknown">🎁</span><b>Recompensa do código</b></span></div><button class="copy" onclick="copiarCodigo('{code}',this)"><span data-i18n="copy">▣ COPIAR</span></button><a class="iphone" href="{link}" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>''')
+              if cards:
+                  s = s[:insert_at] + ''.join(cards) + s[insert_at:]
+
+          if s != original:
+              p.write_text(s, encoding='utf-8')
+              print('ALTERADO')
+          else:
+              print('JA_CORRETO')
           PY
-            if git diff --quiet -- index.html; then
-              echo "HTML já está correto"
-              exit 0
-            fi
-            git add index.html
-            git commit -m "Corrigir meta description do site"
-            if git push origin HEAD:main; then
-              exit 0
-            fi
-            sleep 2
-          done
-          exit 1
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteração necessária"
+            exit 0
+          fi
+          git commit -m "Corrigir parceria e adicionar códigos de 15 agosto"
+          git push origin HEAD:main
