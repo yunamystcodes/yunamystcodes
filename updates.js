@@ -5,15 +5,27 @@
       p.textContent=p.textContent.replace('com o YunaMyst Codes','com a YunaMyst Codes');
     });
 
-    // Garante o botão de parceria no PC junto da FAQ.
+    // PC: a parceria fica no topo direito da caixa da FAQ, como estava antes.
     var desktop=document.getElementById('yunaDesktopPartnershipButton');
     var faq=document.getElementById('faq');
-    if(desktop && faq && faq.parentNode){faq.parentNode.insertBefore(desktop,faq);}
+    if(desktop && faq){
+      faq.style.position='relative';
+      faq.insertBefore(desktop,faq.firstChild);
+      desktop.style.cssText='display:flex!important;position:absolute!important;top:7px!important;right:7px!important;margin:0!important;width:auto!important;max-width:155px!important;min-height:46px!important;padding:7px 9px!important;z-index:5!important;';
+      var picon=desktop.querySelector('.picon');
+      if(picon) picon.style.cssText='width:30px!important;height:30px!important;font-size:16px!important;';
+      var small=desktop.querySelector('small');
+      if(small) small.style.cssText='font-size:8px!important;';
+      var strong=desktop.querySelector('strong');
+      if(strong) strong.style.cssText='font-size:15px!important;';
+    }
 
-    // Garante o botão no telemóvel logo depois do WhatsApp.
+    // Telemóvel: parceria logo depois do WhatsApp.
     var mobile=document.getElementById('yunaPartnershipButton');
     var whats=document.querySelector('.hero .whats');
-    if(mobile && whats && whats.parentNode){whats.parentNode.insertBefore(mobile,whats.nextSibling);}
+    if(mobile && whats && whats.parentNode){
+      whats.parentNode.insertBefore(mobile,whats.nextSibling);
+    }
 
     // Garante os códigos publicados em 15/08/2026.
     var list=document.getElementById('activeCodesList');
@@ -38,7 +50,6 @@
       });
     }
 
-    // Usa o mecanismo existente do site para mover automaticamente códigos expirados.
     if(typeof window.updateExpiredCodes==='function') window.updateExpiredCodes();
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run,{once:true});
