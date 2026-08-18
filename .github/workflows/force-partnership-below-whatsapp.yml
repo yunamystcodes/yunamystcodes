@@ -1,7 +1,8 @@
-name: Forçar parceria abaixo do WhatsApp
+name: Proteger layout da parceria
 
 on:
   push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -15,31 +16,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Garantir botão de parceria abaixo do WhatsApp
+      - name: Remover botão dourado legado e manter texto correto
         run: |
           python - <<'PY'
           from pathlib import Path
           import re
-
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
 
-          # Remove a versão anterior deste botão, se existir, para evitar duplicados.
-          s = re.sub(r'\s*<a[^>]*id=["\']yunaDesktopPartnershipButton["\'][^>]*>[\s\S]*?</a>', '', s, flags=re.I)
-          s = re.sub(r'\s*<div[^>]*id=["\']yunaMobilePartnershipButton["\'][^>]*>[\s\S]*?</div>', '', s, flags=re.I)
+          s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst?')
+          s = s.replace('Queres fazer uma parceria com a YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst?')
+          s = s.replace('Colabora com a YunaMyst Codes', 'Colabora com a YunaMyst')
 
-          button = '''\n<a id="yunaDesktopPartnershipButton" class="yuna-partnership-below-whatsapp" href="mailto:solange.hannah90@gmail.com?subject=Parceria%20YunaMyst%20Codes" aria-label="Fazer parceria">🤝 FAZER PARCERIA</a>\n'''
-
-          # O primeiro elemento com class="whats" é o botão/link oficial do WhatsApp.
-          m = re.search(r'<a\b[^>]*class=["\'][^"\']*\bwhats\b[^"\']*["\'][^>]*>[\s\S]*?</a>', s, flags=re.I)
-          if not m:
-              raise SystemExit('LINK_WHATSAPP_NAO_ENCONTRADO')
-
-          s = s[:m.end()] + button + s[m.end():]
-
-          css = '''\n.yuna-partnership-below-whatsapp{display:flex!important;align-items:center;justify-content:center;width:min(760px,100%);margin:0 auto 22px;padding:13px 18px;border-radius:14px;border:1px solid #f3bd52;background:linear-gradient(180deg,#f3c866,#b77b22);color:#241300!important;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 24px rgba(0,0,0,.28);transition:.2s}.yuna-partnership-below-whatsapp:hover{filter:brightness(1.08);transform:translateY(-1px)}@media(max-width:850px){.yuna-partnership-below-whatsapp{width:100%;margin:0 0 18px;padding:12px 14px;font-size:14px}}\n'''
-          if '.yuna-partnership-below-whatsapp{' not in s:
-              s = s.replace('</style>', css + '</style>', 1)
+          # O workflow antigo criava um segundo botão dourado abaixo do WhatsApp.
+          s = re.sub(r'\s*<a[^>]*id=["\']yunaDesktopPartnershipButton["\'][^>]*>\s*🤝\s*FAZER PARCERIA\s*</a>\s*', '\n', s, flags=re.I)
+          s = re.sub(r'\s*<a[^>]*class=["\'][^"\']*yuna-partnership-below-whatsapp[^"\']*["\'][^>]*>[\s\S]*?</a>\s*', '\n', s, flags=re.I)
 
           p.write_text(s, encoding='utf-8')
           PY
@@ -50,5 +41,5 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m 'Adicionar parceria abaixo do WhatsApp'
+          git commit -m 'Remover parceria duplicada e manter layout'
           git push origin HEAD:main
