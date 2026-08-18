@@ -1,0 +1,46 @@
+name: Fix header logo live on PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  fix-header:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 1
+
+      - name: Apply final wide header fix
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = 'YUNAMYST-WIDE-HEADER-FINAL-FIX'
+          css = '''\n<style id="yuna-wide-header-final-fix">\n/* YUNAMYST-WIDE-HEADER-FINAL-FIX */\n.logo-mark,.logo-text{display:none!important}\n.logo{display:block!important;width:190px!important;height:64px!important;background-image:url("assets/yunamyst-header.svg?v=20260818-final")!important;background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;color:transparent!important;font-size:0!important;line-height:0!important;text-indent:-9999px!important;overflow:hidden!important}\n.logo small{display:none!important}\n@media(max-width:600px){.logo{width:175px!important;height:58px!important}}\n</style>\n'''
+          if marker not in s:
+              s = re.sub(r'</head>', css + '</head>', s, count=1, flags=re.I)
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commit final header fix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Header já está corrigido"
+            exit 0
+          fi
+          git commit -m "Corrigir logo larga do cabeçalho [skip ci]"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
