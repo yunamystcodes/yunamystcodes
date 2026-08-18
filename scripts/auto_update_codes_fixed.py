@@ -1,14 +1,27 @@
 import html
+import json
 import re
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
 
-SOURCE_URL = "https://summonerswarcodes.us/"
 INDEX = Path("index.html")
+HISTORY = Path("data/code_history.json")
 CODE_RE = re.compile(r"\b[A-Z0-9]{8,24}\b")
-FALLBACK_CODES = {"HURRASWC2026": "Recompensas não informadas"}
+
+# Seis fontes independentes. As quatro primeiras têm listas de códigos; as duas últimas
+# funcionam como radar comunitário para detectar códigos recém-publicados.
+SOURCES = [
+    ("summonerswarcodes.us", "https://summonerswarcodes.us/", "table"),
+    ("SWGT", "https://swgt.io/gamecodes/", "table"),
+    ("SWQuery", "https://swquery.net/", "table"),
+    ("SWQ", "https://swq.jp/l/en-US/index.html", "table"),
+    ("Reddit r/summonerswar", "https://www.reddit.com/r/summonerswar/new/.json?limit=100", "reddit"),
+    ("Reddit r/redeemgiftcodes", "https://www.reddit.com/r/redeemgiftcodes/new/.json?limit=100", "reddit"),
+]
+
 KNOWN_REWARDS = {
     "INVOCATEUREU26": [("mana", "100,000"), ("mystic", "2")],
     "SWCTICKET2HAMBURG": [("mystic", "1")],
@@ -16,35 +29,131 @@ KNOWN_REWARDS = {
     "SWXFRIEREN2026": [("energy", "100"), ("mana", "300,000"), ("mystic", "3")],
 }
 
+STOPWORDS = {
+    "SUMMONERS", "SUMMONERSWAR", "WAR", "CODES", "CODE", "ACTIVE", "PROMO",
+    "REDEEM", "REWARDS", "NEW", "LATEST", "TODAY", "JULY", "AUGUST", "JUNE",
+    "REDDIT", "SWGT", "SWQUERY", "QUERY", "HTTPS", "WITHHIVE", "ANDROID", "IOS",
+}
+
 
 def clean(text):
     return re.sub(r"\s+", " ", html.unescape(text or "")).strip()
 
 
-def fetch_codes():
-    response = requests.get(SOURCE_URL, timeout=30, headers={"User-Agent": "YunaMystCodes/1.0 (+https://yunacodes.com/)"})
+def normalise_code(value):
+    value = re.sub(r"[^A-Z0-9]", "", value.upper())
+    if not 8 <= len(value) <= 24 or value in STOPWORDS:
+        return None
+    # Evita capturar palavras comuns que por acaso tenham 8-24 caracteres.
+    if not any(c.isdigit() for c in value):
+        return None
+    return value
+
+
+def extract_codes(text):
+    found = []
+    for raw in CODE_RE.findall(text.upper()):
+        code = normalise_code(raw)
+        if code and code not in found:
+            found.append(code)
+    return found
+
+
+def fetch_html(url):
+    response = requests.get(
+        url,
+        timeout=30,
+        headers={"User-Agent": "YunaMystCodes/2.0 (+https://yunacodes.com/)"},
+    )
     response.raise_for_status()
-    soup = BeautifulSoup(response.text, "html.parser")
-    found, seen = [], set()
+    return response.text
+
+
+def parse_table_source(name, url):
+    soup = BeautifulSoup(fetch_html(url), "html.parser")
+    found = {}
     for row in soup.select("tr"):
         cells = [clean(c.get_text(" ", strip=True)) for c in row.find_all(["td", "th"])]
-        if not cells or not ("active" in " | ".join(cells).lower() or "ativo" in " | ".join(cells).lower()):
+        if not cells:
             continue
-        match = next((CODE_RE.search(cell.upper()) for cell in cells if CODE_RE.search(cell.upper())), None)
-        if not match:
-            continue
-        code = match.group(0).upper()
-        if code in seen:
-            continue
-        seen.add(code)
-        reward = cells[1] if len(cells) > 1 else "Recompensas não informadas"
-        found.append({"code": code, "reward": reward[:180]})
-    for code, reward in FALLBACK_CODES.items():
-        if code not in seen:
-            found.insert(0, {"code": code, "reward": reward})
-    if not found:
-        raise RuntimeError("Nenhum código ativo encontrado na fonte.")
+        row_text = " | ".join(cells).lower()
+        status_active = any(x in row_text for x in ("active", "ativo", "valid", "válido"))
+        status_expired = any(x in row_text for x in ("expired", "expirado", "invalid", "invalido", "inválido"))
+        codes = []
+        for cell in cells:
+            codes.extend(extract_codes(cell))
+        for code in dict.fromkeys(codes):
+            if status_expired and not status_active:
+                continue
+            found[code] = {
+                "code": code,
+                "reward": cells[1] if len(cells) > 1 else "Recompensa não informada",
+                "source": name,
+            }
     return found
+
+
+def parse_reddit_source(name, url):
+    response = requests.get(
+        url,
+        timeout=30,
+        headers={"User-Agent": "YunaMystCodes/2.0 (+https://yunacodes.com/)"},
+    )
+    response.raise_for_status()
+    data = response.json()
+    found = {}
+    cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+    for child in data.get("data", {}).get("children", []):
+        post = child.get("data", {})
+        created = datetime.fromtimestamp(post.get("created_utc", 0), tz=timezone.utc)
+        if created < cutoff:
+            continue
+        body = " ".join([post.get("title", ""), post.get("selftext", "")])
+        for code in extract_codes(body):
+            found[code] = {
+                "code": code,
+                "reward": "Recompensa não informada",
+                "source": name,
+            }
+    return found
+
+
+def collect_sources():
+    merged = {}
+    expired_hints = set()
+    successful = 0
+    errors = []
+    for name, url, kind in SOURCES:
+        try:
+            found = parse_table_source(name, url) if kind == "table" else parse_reddit_source(name, url)
+            successful += 1
+            for code, item in found.items():
+                if code not in merged:
+                    merged[code] = item
+                else:
+                    # Prefere recompensa mais informativa e mantém todas as fontes.
+                    if merged[code]["reward"] == "Recompensa não informada" and item["reward"] != "Recompensa não informada":
+                        merged[code]["reward"] = item["reward"]
+                    merged[code]["source"] += ", " + item["source"]
+        except Exception as exc:
+            errors.append(f"{name}: {exc}")
+    if successful < 3:
+        raise RuntimeError("Poucas fontes responderam: " + " | ".join(errors))
+    return merged, successful, errors
+
+
+def load_history():
+    HISTORY.parent.mkdir(parents=True, exist_ok=True)
+    if not HISTORY.exists():
+        return {}
+    try:
+        return json.loads(HISTORY.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def save_history(history):
+    HISTORY.write_text(json.dumps(history, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def reward_items(code, reward):
@@ -56,7 +165,8 @@ def reward_items(code, reward):
         ("fire", r"fire\s*scroll|scroll\s*fire|pergaminho\s*de\s*fogo"),
         ("water", r"water\s*scroll|scroll\s*water|pergaminho\s*de\s*[aá]gua"),
         ("wind", r"wind\s*scroll|scroll\s*wind|pergaminho\s*de\s*vento"),
-        ("mana", r"mana"), ("crystal", r"crystal|crystals|cristal|cristais"),
+        ("mana", r"mana"),
+        ("crystal", r"crystal|crystals|cristal|cristais"),
         ("energy", r"energy|energia"),
     ]
     items = []
@@ -80,108 +190,95 @@ def reward_html(code, reward):
     return "".join(out)
 
 
-def card(item):
+def card(item, expired=False):
     code = html.escape(item["code"])
-    rewards = reward_html(item["code"], item["reward"])
-    return (
-        f'<article class="code" data-code="{code}"><div class="gift">🎁</div>'
-        f'<div class="cinfo"><strong>{code}</strong><small>🔄 Atualizado automaticamente</small></div>'
-        f'<div class="reward-icons" aria-label="Recompensas">{rewards}</div>'
+    rewards = reward_html(item["code"], item.get("reward", ""))
+    expired_class = " expired" if expired else ""
+    buttons = "" if expired else (
         f'<button class="copy" onclick="copiarCodigo(\'{code}\',this)"><span data-i18n="copy">▣ COPIAR</span></button>'
         f'<a class="iphone" href="https://withhive.me/313/{code}" target="_blank" rel="noopener">'
-        f'<span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>'
+        f'<span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a>'
+    )
+    return (
+        f'<article class="code{expired_class}" data-code="{code}"><div class="gift">🎁</div>'
+        f'<div class="cinfo"><strong>{code}</strong><small>{"Código expirado" if expired else "Atualizado automaticamente"}</small></div>'
+        f'<div class="reward-icons" aria-label="Recompensas">{rewards}</div>{buttons}</article>'
     )
 
 
-ACTIVE_TAB_CSS = """
-<style id="active-codes-tab-style">
-.active-codes-tab{margin-top:10px;border-top:1px solid rgba(255,255,255,.1)}
-.active-codes-toggle{width:100%;border:0;background:transparent;color:#d99cff;padding:15px 17px;font-size:16px;font-weight:900;cursor:pointer;text-align:center}
-.active-codes-toggle:hover{background:rgba(168,92,255,.08)}
-.active-codes-toggle .active-arrow{display:inline-block;margin-left:6px;transition:transform .2s ease}
-.active-codes-toggle.open .active-arrow{transform:rotate(180deg)}
-.active-codes-hidden{display:none!important}
-@media(max-width:600px){.active-codes-toggle{font-size:14px;padding:14px 10px}}
-</style>
-"""
+def update_index(active_items, expired_items):
+    soup = BeautifulSoup(INDEX.read_text(encoding="utf-8"), "html.parser")
+    active = soup.find(id="activeCodesList")
+    if active is None:
+        raise RuntimeError("Bloco activeCodesList não encontrado.")
+    active.clear()
+    for item in active_items:
+        active.append(BeautifulSoup(card(item), "html.parser"))
 
-ACTIVE_TAB_JS = """
-<script id="active-codes-tab-script">
-(function(){
-  function setupActiveCodesTab(){
-    var list=document.getElementById('activeCodesList');
-    var tab=document.getElementById('activeCodesTab');
-    var button=document.getElementById('activeCodesToggle');
-    if(!list||!tab||!button)return;
-    var cards=Array.prototype.slice.call(list.querySelectorAll(':scope > .code:not(.expired)'));
-    var visibleCount=4;
-    function update(){
-      var open=button.classList.contains('open');
-      cards.forEach(function(card,index){card.classList.toggle('active-codes-hidden',!open && index>=visibleCount);});
-      button.setAttribute('aria-expanded',open?'true':'false');
-      var label=button.querySelector('[data-active-label]');
-      if(label)label.textContent=open?'RECOLHER CÓDIGOS ATIVOS':'VER TODOS OS CÓDIGOS ATIVOS';
-      var arrow=button.querySelector('.active-arrow');
-      if(arrow)arrow.textContent=open?'⌃':'⌄';
-    }
-    button.onclick=function(){button.classList.toggle('open');update();};
-    update();
-    tab.style.display=cards.length>visibleCount?'block':'none';
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setupActiveCodesTab);else setupActiveCodesTab();
-})();
-</script>
-"""
+    expired_panel = soup.find(class_="expired-panel")
+    if expired_panel is not None:
+        expired_panel.clear()
+        if expired_items:
+            for item in expired_items:
+                expired_panel.append(BeautifulSoup(card(item, expired=True), "html.parser"))
+        else:
+            empty = soup.new_tag("div", attrs={"class": "expired-empty"})
+            empty.string = "Nenhum código expirado registrado."
+            expired_panel.append(empty)
+
+    INDEX.write_text(str(soup), encoding="utf-8")
 
 
-def ensure_active_codes_ui(text):
-    if 'id="active-codes-tab-style"' not in text:
-        text = text.replace('</head>', ACTIVE_TAB_CSS + '\n</head>', 1)
-    if 'id="active-codes-tab-script"' not in text:
-        text = text.replace('</body>', ACTIVE_TAB_JS + '\n</body>', 1)
-    return text
+def main():
+    merged, successful, errors = collect_sources()
+    now = datetime.now(timezone.utc)
+    history = load_history()
 
+    # Atualiza histórico. Um código só passa para expirados após 3 execuções consecutivas
+    # sem aparecer em nenhuma das fontes que responderam; isso evita expirar códigos por
+    # uma falha temporária de uma fonte.
+    active_codes = set(merged)
+    for code, item in merged.items():
+        record = history.get(code, {})
+        record.update({
+            "code": code,
+            "reward": item.get("reward", record.get("reward", "Recompensa não informada")),
+            "sources": sorted(set(record.get("sources", []) + [s.strip() for s in item.get("source", "").split(",") if s.strip()])),
+            "last_seen": now.isoformat(),
+            "missing_runs": 0,
+            "status": "active",
+        })
+        history[code] = record
 
-def remove_loose_code_buttons(text):
-    marker = '<div class="active-codes-tab" id="activeCodesTab">'
-    expired = '<div class="expired-tab"'
-    start = text.find(marker)
-    if start == -1:
-        return text
-    end = text.find(expired, start)
-    if end == -1:
-        return text
-    block = text[start:end]
-    block = re.sub(r'\s*<button class="copy"[^>]*>.*?</button>\s*<a class="iphone"[^>]*>.*?</a>\s*', '\n', block, flags=re.S)
-    return text[:start] + block + text[end:]
+    for code, record in list(history.items()):
+        if code in active_codes:
+            continue
+        if record.get("status") == "expired":
+            continue
+        record["missing_runs"] = int(record.get("missing_runs", 0)) + 1
+        record["status"] = "active" if record["missing_runs"] < 3 else "expired"
+        history[code] = record
 
+    save_history(history)
 
-def update_index(codes):
-    text = INDEX.read_text(encoding="utf-8")
-    text = ensure_active_codes_ui(text)
-    marker = '<div class="codes" id="activeCodesList">'
-    start = text.find(marker)
-    if start == -1:
-        raise RuntimeError("Bloco da lista de códigos ativos não encontrado.")
-    content_start = start + len(marker)
-    section = re.search(r'<div[^>]*class="[^"]*(?:expired-tab|more)[^"]*"', text[content_start:], re.I)
-    if not section:
-        raise RuntimeError("Secção de códigos expirados não encontrada.")
-    section_start = content_start + section.start()
-    end = text.rfind('</div>', content_start, section_start)
-    if end == -1:
-        raise RuntimeError("Fim da lista de códigos ativos não encontrado.")
-    end += len('</div>')
-    cards = "\n".join(card(item) for item in codes)
-    active_tab = '''\n<div class="active-codes-tab" id="activeCodesTab"><button class="active-codes-toggle" id="activeCodesToggle" type="button" aria-expanded="false"><span data-active-label>VER TODOS OS CÓDIGOS ATIVOS</span> <span class="active-arrow">⌄</span></button></div>'''
-    tail = text[end:]
-    tail = re.sub(r'\n<div class="active-codes-tab" id="activeCodesTab">.*?</div>\n', '\n', tail, count=1, flags=re.S)
-    new_text = text[:content_start] + "\n" + cards + "\n</div>" + active_tab + tail
-    new_text = remove_loose_code_buttons(new_text)
-    INDEX.write_text(new_text, encoding="utf-8")
+    active_items = sorted(
+        [v for v in history.values() if v.get("status") == "active"],
+        key=lambda x: x.get("last_seen", ""),
+        reverse=True,
+    )[:8]
+    expired_items = sorted(
+        [v for v in history.values() if v.get("status") == "expired"],
+        key=lambda x: x.get("last_seen", ""),
+        reverse=True,
+    )
+
+    update_index(active_items, expired_items)
+    print(f"Fontes OK: {successful}/{len(SOURCES)}")
+    print("Códigos ativos únicos:", ", ".join(x["code"] for x in active_items))
+    print("Códigos expirados arquivados:", len(expired_items))
+    if errors:
+        print("Avisos:", " | ".join(errors))
 
 
 if __name__ == "__main__":
-    codes = fetch_codes()
-    update_index(codes)
-    print("Códigos ativos atualizados:", ", ".join(x["code"] for x in codes))
+    main()
