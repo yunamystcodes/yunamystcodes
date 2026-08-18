@@ -12,23 +12,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Corrigir apenas o texto da parceria
+      - name: Corrigir texto da parceria
         run: |
           python - <<'PY'
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          old = 'Queres fazer uma parceria com o YunaMyst Codes?'
-          new = 'Queres fazer uma parceria com a YunaMyst Codes?'
-          if old not in s:
-              print('TEXTO_JA_CORRETO_OU_NAO_ENCONTRADO')
-              raise SystemExit(0)
-          s = s.replace(old, new)
+
+          substituicoes = {
+              'Queres fazer uma parceria com o YunaMyst Codes?': 'Queres fazer uma parceria com a YunaMyst?',
+              'Colabora com o YunaMyst Codes': 'Colabora com a YunaMyst',
+              'Colabora com a YunaMyst Codes': 'Colabora com a YunaMyst',
+          }
+
+          for old, new in substituicoes.items():
+              s = s.replace(old, new)
+
           p.write_text(s, encoding='utf-8')
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Corrigir texto para a YunaMyst Codes"
+          git commit -m "Corrigir texto da parceria"
           git push
