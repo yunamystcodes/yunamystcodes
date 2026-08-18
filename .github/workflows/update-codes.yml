@@ -45,6 +45,16 @@ jobs:
           p.write_text(s, encoding="utf-8")
           PY
 
+      - name: Corrigir texto da parceria no PC e no telemóvel
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("index.html")
+          s = p.read_text(encoding="utf-8")
+          s = s.replace("Colabora com o YunaMyst Codes", "Colabora com a YunaMyst")
+          p.write_text(s, encoding="utf-8")
+          PY
+
       - name: Publicar alterações
         run: |
           git config user.name "github-actions[bot]"
@@ -53,7 +63,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Nenhuma alteração nos códigos."
           else
-            git commit -m "Corrigir atualização automática dos códigos"
+            git commit -m "Corrigir texto da parceria"
             git pull --rebase origin main
             git push
           fi
