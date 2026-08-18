@@ -1,0 +1,51 @@
+name: Finalize YunaMyst logo
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Save the uploaded logo before legacy workflows can overwrite it
+        run: cp assets/yunamyst-mark.webp /tmp/yunamyst-mark.webp
+
+      - name: Wait for legacy logo workflows to finish
+        run: sleep 90
+
+      - name: Restore and synchronize the logo everywhere
+        run: |
+          cp /tmp/yunamyst-mark.webp assets/yunamyst-mark.webp
+          python3 - <<'PY'
+          from pathlib import Path
+          import base64
+          import re
+
+          asset = Path('assets/yunamyst-mark.webp')
+          b64 = base64.b64encode(asset.read_bytes()).decode('ascii')
+          data_uri = 'data:image/webp;base64,' + b64
+
+          p = Path('updates.js')
+          s = p.read_text(encoding='utf-8')
+          s, n = re.subn(r"var logoData='data:image/webp;base64,[^']*';", "var logoData='" + data_uri + "';", s, count=1)
+          if n != 1:
+              raise SystemExit('Could not find embedded logoData in updates.js')
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit final logo
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/yunamyst-mark.webp updates.js
+          if git diff --cached --quiet; then echo "Logo already correct"; exit 0; fi
+          git commit -m "Fixar nova logo YunaMyst [skip ci]"
+          git push
