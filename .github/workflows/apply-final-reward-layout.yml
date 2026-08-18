@@ -24,16 +24,14 @@ jobs:
           path = Path('index.html')
           html = path.read_text(encoding='utf-8')
 
-          # Corrigir somente o texto de parceria.
-          html = html.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst Codes?')
+          html = html.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst?')
+          html = html.replace('Colabora com a YunaMyst Codes', 'Colabora com a YunaMyst')
 
-          # Remover regras antigas que escondiam a parceria no PC.
           html = re.sub(r'<style[^>]*>\s*/\* YUNA PARTNERSHIP MOBILE ONLY \*/[\s\S]*?</style>\s*', '', html, flags=re.I)
           html = re.sub(r'<style[^>]*>\s*/\* YUNAMYST_PARTNERSHIP_MOBILE_ONLY \*/[\s\S]*?</style>\s*', '', html, flags=re.I)
 
-          # No PC, criar o botão ao lado da área da FAQ; no telemóvel manter o botão original abaixo do WhatsApp.
           if 'id="yunaDesktopPartnershipButton"' not in html:
-              desktop_button = '''<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst Codes</small></span><strong>›</strong></a>\n'''
+              desktop_button = '''<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst</small></span><strong>›</strong></a>\n'''
               target = '<section class="panel faq" id="faq">'
               if target in html:
                   html = html.replace(target, desktop_button + target, 1)
@@ -44,12 +42,10 @@ jobs:
           html = re.sub(r'<style id="yuna-partnership-final">[\s\S]*?</style>\s*', '', html, flags=re.I)
           html = html.replace('</head>', partnership_css + '</head>', 1)
 
-          # Fazer os dois botões abrirem a mesma janela de parceria.
           html = html.replace("const b=document.getElementById('yunaPartnershipButton');", "const buttons=[document.getElementById('yunaPartnershipButton'),document.getElementById('yunaDesktopPartnershipButton')].filter(Boolean);")
           html = html.replace("if(!b||!m||!c)return;", "if(!buttons.length||!m||!c)return;")
           html = html.replace("b.addEventListener('click',function(e){e.preventDefault();m.classList.add('open');m.setAttribute('aria-hidden','false');});", "buttons.forEach(b=>b.addEventListener('click',function(e){e.preventDefault();m.classList.add('open');m.setAttribute('aria-hidden','false');}));")
 
-          # Aplicar o layout das recompensas apenas se ainda não existir.
           marker = '/* FINAL REWARD LAYOUT V2 */'
           if marker not in html:
               css = r'''
