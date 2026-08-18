@@ -15,16 +15,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Não esconder parceria no PC
+      - name: Manter apenas o texto final da parceria
         run: |
           python - <<'PY'
           from pathlib import Path
-          import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst Codes?')
-          s = re.sub(r'<style[^>]*>\s*/\* YUNAMYST_PARTNERSHIP_MOBILE_ONLY \*/[\s\S]*?</style>\s*', '', s, flags=re.I)
-          s = re.sub(r'<style[^>]*>\s*/\* YUNA PARTNERSHIP MOBILE ONLY \*/[\s\S]*?</style>\s*', '', s, flags=re.I)
+          s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst?')
+          s = s.replace('Queres fazer uma parceria com a YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst?')
+          s = s.replace('Colabora com a YunaMyst Codes', 'Colabora com a YunaMyst')
           p.write_text(s, encoding='utf-8')
           PY
       - name: Publicar
@@ -33,5 +32,5 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'Manter parceria no PC e telemóvel'
+          git commit -m 'Manter texto final da parceria'
           git push origin HEAD:main
