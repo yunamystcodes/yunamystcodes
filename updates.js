@@ -41,7 +41,7 @@
 
       var panel=document.getElementById('activePanel');
       var toggle=document.getElementById('activeToggle');
-      var visibleCount=4;
+      var visibleCount=8;
 
       var cards=Array.prototype.filter.call(activeList.children,function(el){
         return el.classList && el.classList.contains('code');
@@ -107,7 +107,7 @@
       var cards=Array.prototype.filter.call(list.children,function(el){
         return el.classList && el.classList.contains('code');
       });
-      var visibleCount=4;
+      var visibleCount=8;
       var isOpen=panel && panel.classList.contains('open');
       cards.forEach(function(card,index){
         card.classList.toggle('active-extra',!isOpen && index>=visibleCount);
