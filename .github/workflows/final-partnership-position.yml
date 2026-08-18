@@ -20,15 +20,15 @@ jobs:
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
 
-          s=s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst Codes?')
+          s=s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst?')
+          s=s.replace('Colabora com a YunaMyst Codes', 'Colabora com a YunaMyst')
 
-          # Retirar o botão desktop da posição atual e colocá-lo imediatamente antes da FAQ, na coluna direita.
           m=re.search(r'<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton"[\s\S]*?</a>\s*', s, flags=re.I)
           if m:
               desktop=m.group(0)
               s=s[:m.start()]+s[m.end():]
           else:
-              desktop='''<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst Codes</small></span><strong>›</strong></a>\n'''
+              desktop='''<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst</small></span><strong>›</strong></a>\n'''
 
           faq='<section class="panel faq" id="faq">'
           if 'id="yunaDesktopPartnershipButton"' not in s:
