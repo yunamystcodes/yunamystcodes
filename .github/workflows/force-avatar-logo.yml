@@ -1,0 +1,42 @@
+name: Force YunaMyst avatar logo
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  force-avatar:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Wait for existing logo workflow
+        run: sleep 60
+      - name: Force the selected logo into the avatar
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path('updates.js')
+          s = p.read_text(encoding='utf-8')
+          m = re.search(r"var logoData='(data:image/webp;base64,[^']+)'", s)
+          if not m:
+              raise SystemExit('logoData not found in updates.js')
+          logo = m.group(1)
+          marker = 'FORCE_YUNAMYST_AVATAR_V2'
+          if marker not in s:
+              patch = f'''\n/* {marker} */\n(function(){{\n  function forceAvatar(){{\n    var nodes=document.querySelectorAll('.avatar');\n    nodes.forEach(function(el){{\n      el.style.backgroundImage='url("{logo}")';\n      el.style.backgroundPosition='center';\n      el.style.backgroundSize='cover';\n      el.style.backgroundRepeat='no-repeat';\n      el.style.fontSize='0';\n      el.textContent='';\n    }});\n  }}\n  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',forceAvatar);\n  else forceAvatar();\n  setTimeout(forceAvatar,500);\n  setTimeout(forceAvatar,1500);\n}})();\n'''
+              p.write_text(s + patch, encoding='utf-8')
+          PY
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add updates.js
+          git diff --cached --quiet || git commit -m "Force selected YunaMyst avatar [skip ci]"
+          git push
