@@ -1,0 +1,49 @@
+name: Install YunaMyst header logo
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  install-header-logo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Replace text header logo with image header
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          path = Path("index.html")
+          text = path.read_text(encoding="utf-8")
+
+          pattern = r'<([A-Za-z0-9]+)([^>]*class=["\'][^"\']*\blogo\b[^"\']*["\'][^>]*)>.*?</\1>'
+          replacement = '<a class="logo" href="/"><img src="assets/yunamyst-header.svg?v=2" alt="YunaMyst Summoners War"></a>'
+          new_text, count = re.subn(pattern, replacement, text, count=1, flags=re.S | re.I)
+
+          if count != 1:
+              raise SystemExit("Não encontrei o elemento .logo no index.html")
+
+          css = '''\n.logo{width:230px;height:70px;display:flex;align-items:center;flex:none;text-shadow:none}.logo img{width:100%;height:100%;display:block;object-fit:contain}.logo small{display:none}\n@media(max-width:600px){.logo{width:195px;height:62px}}\n'''
+          if '.logo img{width:100%;height:100%;display:block;object-fit:contain}' not in new_text:
+              new_text = new_text.replace('</style>', css + '</style>', 1)
+
+          path.write_text(new_text, encoding="utf-8")
+      - name: Commit header change
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Header já está atualizado."
+            exit 0
+          fi
+          git commit -m "Atualizar logo do cabeçalho [skip ci]"
+          git push
