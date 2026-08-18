@@ -39,7 +39,7 @@ jobs:
               raise SystemExit('index.html não encontrado')
 
           s = p.read_text(encoding='utf-8')
-          version = '20260818-header-wide-final-4'
+          version = '20260818-header-wide-final-5'
 
           for ident in [
               'yunamyst-header-logo-final',
@@ -67,7 +67,7 @@ jobs:
             text-indent:-9999px !important;
             overflow:hidden !important;
           }}
-          .logo small {{ display:none !important; }}
+          .logo-mark, .logo-text, .logo small {{ display:none !important; }}
           @media(max-width:600px) {{
             .logo {{ width:175px !important; height:58px !important; }}
           }}
@@ -81,7 +81,8 @@ jobs:
         run: |
           test -s assets/yunamyst-header-small.webp
           grep -q 'yunamyst-header-logo-final' index.html
-          grep -q 'assets/yunamyst-header-small.webp?v=20260818-header-wide-final-4' index.html
+          grep -q 'assets/yunamyst-header-small.webp?v=20260818-header-wide-final-5' index.html
+          grep -q '.logo-mark, .logo-text' index.html
           echo 'Cabeçalho usa a nova logo larga; avatar/perfil não foi alterado.'
 
       - name: Publicar
