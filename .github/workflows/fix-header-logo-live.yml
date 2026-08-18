@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     types: [opened, synchronize, reopened]
+  schedule:
+    - cron: "*/5 * * * *"
 
 permissions:
   contents: write
@@ -30,49 +32,11 @@ jobs:
           css = '''
 <style id="yuna-wide-header-final-fix">
 /* YUNAMYST HEADER - referência visual solicitada */
-.topbar{
-  position:sticky!important;
-  top:0!important;
-  z-index:20!important;
-  background:linear-gradient(90deg,#070611 0%,#171525 50%,#070611 100%)!important;
-  backdrop-filter:none!important;
-  border-bottom:1px solid rgba(168,92,255,.20)!important;
-}
+.topbar{position:sticky!important;top:0!important;z-index:20!important;background:linear-gradient(90deg,#070611 0%,#171525 50%,#070611 100%)!important;backdrop-filter:none!important;border-bottom:1px solid rgba(168,92,255,.20)!important}
 .topbar .container{width:min(1280px,calc(100% - 32px))!important;margin:auto!important}
-.nav{
-  height:54px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:space-between!important;
-}
-.logo{
-  width:180px!important;
-  max-width:180px!important;
-  height:52px!important;
-  max-height:52px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:flex-start!important;
-  flex:0 0 180px!important;
-  margin:0!important;
-  padding:0!important;
-  background:none!important;
-  color:transparent!important;
-  font-size:0!important;
-  line-height:0!important;
-  text-indent:0!important;
-  overflow:hidden!important;
-}
-.logo img,.logo-mark{
-  width:180px!important;
-  max-width:180px!important;
-  height:48px!important;
-  max-height:48px!important;
-  object-fit:contain!important;
-  object-position:left center!important;
-  display:block!important;
-  margin:0!important;
-}
+.nav{height:54px!important;display:flex!important;align-items:center!important;justify-content:space-between!important}
+.logo{width:180px!important;max-width:180px!important;height:52px!important;max-height:52px!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 0 180px!important;margin:0!important;padding:0!important;background:none!important;color:transparent!important;font-size:0!important;line-height:0!important;text-indent:0!important;overflow:hidden!important}
+.logo img,.logo-mark{width:180px!important;max-width:180px!important;height:48px!important;max-height:48px!important;object-fit:contain!important;object-position:left center!important;display:block!important;margin:0!important}
 .logo small,.logo-text{display:none!important}
 .menu{display:flex!important;align-items:center!important;justify-content:center!important;gap:24px!important;margin:0 auto!important}
 .menu a{color:#fff!important;text-decoration:none!important;font-weight:800!important;font-size:12px!important;white-space:nowrap!important}
@@ -80,20 +44,8 @@ jobs:
 .lang-wrap{display:flex!important;align-items:center!important;gap:7px!important;flex:0 0 auto!important}
 .audio-mute{width:38px!important;height:38px!important;border-radius:10px!important;background:#0b0a13!important;border:1px solid #a85cff!important}
 .lang{height:38px!important;padding:0 13px!important;border-radius:10px!important;background:#0b0a13!important;border:1px solid #a85cff!important;font-size:11px!important}
-@media(max-width:850px){
-  .nav{height:62px!important}
-  .logo{width:165px!important;max-width:165px!important;height:54px!important;max-height:54px!important;flex-basis:165px!important}
-  .logo img,.logo-mark{width:165px!important;max-width:165px!important;height:48px!important;max-height:48px!important}
-  .menu{display:none!important}
-}
-@media(max-width:600px){
-  .topbar .container{width:calc(100% - 18px)!important}
-  .nav{height:60px!important}
-  .logo{width:155px!important;max-width:155px!important;height:50px!important;max-height:50px!important;flex-basis:155px!important}
-  .logo img,.logo-mark{width:155px!important;max-width:155px!important;height:44px!important;max-height:44px!important}
-  .audio-mute{width:36px!important;height:36px!important}
-  .lang{height:36px!important;padding:0 10px!important;font-size:10px!important}
-}
+@media(max-width:850px){.nav{height:62px!important}.logo{width:165px!important;max-width:165px!important;height:54px!important;max-height:54px!important;flex-basis:165px!important}.logo img,.logo-mark{width:165px!important;max-width:165px!important;height:48px!important;max-height:48px!important}.menu{display:none!important}}
+@media(max-width:600px){.topbar .container{width:calc(100% - 18px)!important}.nav{height:60px!important}.logo{width:155px!important;max-width:155px!important;height:50px!important;max-height:50px!important;flex-basis:155px!important}.logo img,.logo-mark{width:155px!important;max-width:155px!important;height:44px!important;max-height:44px!important}.audio-mute{width:36px!important;height:36px!important}.lang{height:36px!important;padding:0 10px!important;font-size:10px!important}}
 </style>
 '''
 
@@ -101,12 +53,23 @@ jobs:
           s = re.sub(r'</head>', css + '</head>', s, count=1, flags=re.I)
           p.write_text(s, encoding='utf-8')
 
-      - name: Commit ajuste no index
+      - name: Desativar este agendamento depois da aplicação
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('.github/workflows/fix-header-logo-live.yml')
+          s = p.read_text(encoding='utf-8')
+          s = re.sub(r'\n  schedule:\n    - cron: "\*/5 \* \* \* \*"\n', '\n', s)
+          p.write_text(s, encoding='utf-8')
+        env:
+          PYTHONUNBUFFERED: '1'
+
+      - name: Commit ajuste no index e desativar agendamento
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
+          git add index.html .github/workflows/fix-header-logo-live.yml
           if git diff --cached --quiet; then
             echo "Cabeçalho já está ajustado"
             exit 0
