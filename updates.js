@@ -127,6 +127,25 @@
       }
     }
 
+    // O index.html tem um script antigo que limitava a visualização do PC a 4.
+    // Depois de todos os scripts carregarem, força a mesma regra nas duas plataformas:
+    // até 8 códigos ativos visíveis no PC e no telemóvel.
+    setTimeout(function(){
+      var finalList=document.getElementById('activeCodesList');
+      if(!finalList) return;
+      var finalCards=Array.prototype.filter.call(finalList.children,function(el){
+        return el.classList && el.classList.contains('code') && !el.classList.contains('expired');
+      });
+      var maxVisible=8;
+      finalCards.forEach(function(card,index){
+        card.classList.remove('active-codes-hidden');
+        if(index>=maxVisible) card.classList.add('active-codes-hidden');
+        card.classList.toggle('active-extra',index>=maxVisible);
+      });
+      var finalTab=document.getElementById('activeCodesTab');
+      if(finalTab) finalTab.style.display=finalCards.length>maxVisible?'block':'none';
+    },0);
+
     if(typeof window.updateExpiredCodes==='function') window.updateExpiredCodes();
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',run,{once:true});
