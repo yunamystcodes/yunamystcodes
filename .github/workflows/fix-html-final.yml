@@ -17,11 +17,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Preparar a nova imagem larga do cabeçalho
+      - name: Preparar a imagem larga do cabeçalho
         run: |
-          test -f assets/yunamyst-header-small.webp.b64
-          base64 -d assets/yunamyst-header-small.webp.b64 > assets/yunamyst-header-small.webp
-          test -s assets/yunamyst-header-small.webp
+          test -f "assets/ChatGPT Image 18_08_2026, 13_09_25.png"
+          test -s "assets/ChatGPT Image 18_08_2026, 13_09_25.png"
 
       - name: Atualizar index sem alterar o restante do site
         run: |
@@ -32,14 +31,11 @@ jobs:
           s = p.read_text(encoding='utf-8')
           original = s
 
-          # Texto final da parceria.
           s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst?')
           s = s.replace('Colabora com a YunaMyst Codes', 'Colabora com a YunaMyst')
 
-          # Remove o botão dourado legado.
           s = re.sub(r'\s*<a[^>]*id=["\']yunaDesktopPartnershipButton["\'][^>]*>\s*🤝\s*FAZER PARCERIA\s*</a>\s*', '\n', s, flags=re.I)
 
-          # Adiciona os códigos publicados em 15/08/2026, apenas se ainda não existirem.
           codes = [
               ('YYDSSWC26ZAN', '2026-08-22T00:00:00', 'https://withhive.me/313/YYDSSWC26ZAN'),
               ('4MINGYIDAOXIAN', '2026-08-22T00:00:00', 'https://withhive.me/313/4MINGYIDAOXIAN'),
@@ -54,7 +50,6 @@ jobs:
               if cards:
                   s = s[:insert_at] + ''.join(cards) + s[insert_at:]
 
-          # Remove todos os overrides antigos do cabeçalho e instala SOMENTE a imagem larga nova.
           for ident in [
               'yunamyst-header-logo-final',
               'yunamyst-new-logo-final',
@@ -65,14 +60,16 @@ jobs:
               s = re.sub(r'<style id="' + re.escape(ident) + r'">.*?</style>\s*', '', s, flags=re.S | re.I)
               s = re.sub(r'<script id="' + re.escape(ident) + r'">.*?</script>\s*', '', s, flags=re.S | re.I)
 
-          version = '20260818-header-wide-final-5'
+          version = '20260818-header-wide-image-6'
+          image = 'assets/ChatGPT%20Image%2018_08_2026%2C%2013_09_25.png'
           css = f'''<style id="yunamyst-header-logo-final">
           /* YUNAMYST-WIDE-HEADER-{version} */
           .logo {{
-            width:190px !important;
-            height:64px !important;
+            width:420px !important;
+            height:120px !important;
+            max-width:45vw !important;
             display:block !important;
-            background-image:url("assets/yunamyst-header-small.webp?v={version}") !important;
+            background-image:url("{image}?v={version}") !important;
             background-size:contain !important;
             background-position:center !important;
             background-repeat:no-repeat !important;
@@ -83,8 +80,11 @@ jobs:
             overflow:hidden !important;
           }}
           .logo small {{ display:none !important; }}
+          @media(max-width:900px) {{
+            .logo {{ width:340px !important; height:100px !important; max-width:48vw !important; }}
+          }}
           @media(max-width:600px) {{
-            .logo {{ width:175px !important; height:58px !important; }}
+            .logo {{ width:280px !important; height:90px !important; max-width:58vw !important; }}
           }}
           </style>'''
           s = re.sub(r'</head>', css + '\n</head>', s, count=1, flags=re.I)
@@ -98,20 +98,20 @@ jobs:
 
       - name: Validar
         run: |
-          test -s assets/yunamyst-header-small.webp
-          grep -q 'YUNAMYST-WIDE-HEADER-20260818-header-wide-final-5' index.html
-          grep -q 'assets/yunamyst-header-small.webp?v=20260818-header-wide-final-5' index.html
+          test -s "assets/ChatGPT Image 18_08_2026, 13_09_25.png"
+          grep -q 'YUNAMYST-WIDE-HEADER-20260818-header-wide-image-6' index.html
+          grep -q 'ChatGPT%20Image%2018_08_2026%2C%2013_09_25.png?v=20260818-header-wide-image-6' index.html
 
       - name: Publicar
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html assets/yunamyst-header-small.webp
+          git add index.html
           if git diff --cached --quiet; then
             echo "Nenhuma alteração necessária"
             exit 0
           fi
-          git commit -m "Aplicar logo larga definitiva no cabeçalho [skip ci]"
+          git commit -m "Aplicar imagem larga definitiva no cabeçalho [skip ci]"
           for i in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main || true
