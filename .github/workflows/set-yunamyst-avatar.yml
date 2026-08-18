@@ -15,35 +15,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install the exact uploaded avatar
-        env:
-          AVATAR_B64: "UklGRtQhAABXRUJQVlA4WAoAAAAQAAAA4wAAABgAAQUxQSAIAAAAAAAABAAEAQU5JTkNAAQAAAABAAQAAQUxQSAIAAAAAAAABAAEAQU5JTkNAAQAAAABAAQAAQ=="
-        run: |
-          mkdir -p assets
-          python - <<'PY'
-          import base64, os
-          data = base64.b64decode(os.environ['AVATAR_B64'])
-          open('assets/yunamyst-avatar.webp','wb').write(data)
-          PY
-
-      - name: Patch avatar on desktop and mobile
+      - name: Use the current YunaMyst logo from assets
         run: |
           python - <<'PY'
           from pathlib import Path
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
           marker = '/* YUNAMYST AVATAR OVERRIDE */'
-          if marker not in s:
-              css = '''\n<style>\n/* YUNAMYST AVATAR OVERRIDE */\n.avatar{\n  background-image:url("assets/yunamyst-avatar.webp") !important;\n  background-size:cover !important;\n  background-position:center !important;\n  background-repeat:no-repeat !important;\n  color:transparent !important;\n  font-size:0 !important;\n  line-height:0 !important;\n  overflow:hidden !important;\n  border:3px solid #a85cff !important;\n  box-shadow:0 0 30px rgba(168,92,255,.65) !important;\n}\n</style>\n'''
-              s = s.replace('</head>', css + '</head>', 1)
-              p.write_text(s, encoding='utf-8')
+          css = '''\n<style>\n/* YUNAMYST AVATAR OVERRIDE */\n.avatar{\n  background-image:url("assets/yunamyst-mark.webp") !important;\n  background-size:cover !important;\n  background-position:center !important;\n  background-repeat:no-repeat !important;\n  color:transparent !important;\n  font-size:0 !important;\n  line-height:0 !important;\n  overflow:hidden !important;\n  border:3px solid #a85cff !important;\n  box-shadow:0 0 30px rgba(168,92,255,.65) !important;\n}\n</style>\n'''
+          if marker in s:
+              import re
+              s = re.sub(r'\\n<style>\\n/\\* YUNAMYST AVATAR OVERRIDE \\*/.*?</style>\\n', '\\n', s, flags=re.S)
+          s = s.replace('</head>', css + '</head>', 1)
+          p.write_text(s, encoding='utf-8')
           PY
 
-      - name: Commit avatar
+      - name: Commit avatar reference
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html assets/yunamyst-avatar.webp
+          git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Fix YunaMyst avatar on desktop and mobile [skip ci]"
+          git commit -m "Use current YunaMyst logo on desktop and mobile [skip ci]"
           git push
