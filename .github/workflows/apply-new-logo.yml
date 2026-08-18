@@ -1,0 +1,83 @@
+name: Aplicar nova logo YunaMyst
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  apply-logo:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Aplicar a nova logo no perfil e cabeçalho
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          if not p.exists():
+              raise SystemExit('index.html não encontrado')
+
+          s = p.read_text(encoding='utf-8')
+          marker = '/* YUNAMYST-NEW-LOGO-FINAL */'
+
+          # Cache-bust da imagem do perfil para impedir que o navegador continue usando a logo antiga.
+          s = s.replace('url(\"assets/yunamyst-mark.webp\")', 'url(\"assets/yunamyst-mark.webp?v=20260818\")')
+
+          css = f'''<style id="yunamyst-new-logo-final">
+          {marker}
+          .avatar, .profile .avatar, .mobile-profile .avatar {{
+            background-image:url("assets/yunamyst-mark.webp?v=20260818") !important;
+            background-size:cover !important;
+            background-position:center !important;
+            background-repeat:no-repeat !important;
+            color:transparent !important;
+            font-size:0 !important;
+            text-indent:-9999px !important;
+            overflow:hidden !important;
+          }}
+          .logo {{
+            width:190px !important;
+            height:62px !important;
+            background-image:url("assets/yunamyst-mark.webp?v=20260818") !important;
+            background-size:contain !important;
+            background-position:center !important;
+            background-repeat:no-repeat !important;
+            color:transparent !important;
+            font-size:0 !important;
+            text-indent:-9999px !important;
+            overflow:hidden !important;
+            display:block !important;
+          }}
+          .logo small {{ display:none !important; }}
+          @media(max-width:600px) {{
+            .logo {{ width:145px !important; height:58px !important; }}
+          }}
+          </style>'''
+
+          if marker not in s:
+              s = s.replace('</head>', css + '\n</head>', 1)
+          else:
+              s = re.sub(r'<style id="yunamyst-new-logo-final">.*?</style>', css, s, count=1, flags=re.S)
+
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit alteração
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/apply-new-logo.yml
+          if git diff --cached --quiet; then
+            echo "Logo já aplicada"
+            exit 0
+          fi
+          git commit -m "Aplicar nova logo YunaMyst [skip ci]"
+          git push
