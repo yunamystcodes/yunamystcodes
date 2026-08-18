@@ -9,10 +9,11 @@ permissions:
 
 jobs:
   fix:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Ajustar somente a parceria
+      - name: Ajustar parceria e cabeçalho
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -36,10 +37,34 @@ jobs:
                   raise SystemExit('FAQ_NAO_ENCONTRADA')
               s=s.replace(faq, desktop+faq, 1)
 
-          marker='/* YUNAMYST PARTNERSHIP FINAL POSITION */'
-          css=f'''\n<style id="yuna-partnership-final-position">\n{marker}\n@media (min-width:851px){{\n  #yunaPartnershipButton{{display:none!important}}\n  #yunaDesktopPartnershipButton{{display:flex!important;margin:0 0 12px!important;width:100%!important;max-width:none!important}}\n}}\n@media (max-width:850px){{\n  #yunaPartnershipButton{{display:flex!important}}\n  #yunaDesktopPartnershipButton{{display:none!important}}\n}}\n</style>\n'''
           s=re.sub(r'<style id="yuna-partnership-final-position">[\s\S]*?</style>\s*','',s,flags=re.I)
-          s=s.replace('</head>',css+'</head>',1)
+          partnership_css='''
+<style id="yuna-partnership-final-position">
+/* YUNAMYST PARTNERSHIP FINAL POSITION */
+@media (min-width:851px){
+  #yunaPartnershipButton{display:none!important}
+  #yunaDesktopPartnershipButton{display:flex!important;margin:0 0 12px!important;width:100%!important;max-width:none!important}
+}
+@media (max-width:850px){
+  #yunaPartnershipButton{display:flex!important}
+  #yunaDesktopPartnershipButton{display:none!important}
+}
+</style>
+'''
+
+          s=re.sub(r'<style id="yunamyst-header-logo-final">[\s\S]*?</style>\s*','',s,flags=re.I)
+          header_css='''
+<style id="yunamyst-header-logo-final">
+/* YUNAMYST-WIDE-HEADER-FINAL-SIZE */
+.nav{height:76px!important;align-items:center!important}
+.logo{width:250px!important;max-width:250px!important;height:62px!important;max-height:62px!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;background-image:none!important;color:transparent!important;font-size:0!important;line-height:0!important;text-indent:0!important;overflow:hidden!important;flex:0 0 auto!important;margin:0!important;padding:0!important}
+.logo-mark{display:block!important;width:250px!important;max-width:250px!important;height:62px!important;max-height:62px!important;object-fit:contain!important;object-position:center!important;margin:0!important}
+.logo-text,.logo small{display:none!important}
+@media(max-width:850px){.logo{width:220px!important;max-width:220px!important;height:58px!important;max-height:58px!important}.logo-mark{width:220px!important;max-width:220px!important;height:58px!important;max-height:58px!important}}
+@media(max-width:600px){.nav{height:70px!important}.logo{width:195px!important;max-width:195px!important;height:52px!important;max-height:52px!important}.logo-mark{width:195px!important;max-width:195px!important;height:52px!important;max-height:52px!important}}
+</style>
+'''
+          s=s.replace('</head>',header_css+partnership_css+'</head>',1)
           p.write_text(s,encoding='utf-8')
           PY
       - name: Publicar
@@ -48,5 +73,5 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'Posicionar parceria ao lado da FAQ no PC'
+          git commit -m 'Fixar tamanho da logo do cabeçalho [skip ci]'
           git push origin HEAD:main
