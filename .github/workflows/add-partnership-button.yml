@@ -18,19 +18,20 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          tag='<script src="updates.js"></script>'
-          if tag not in s:
-              s=s.replace('</body>',tag+'</body>',1)
-              p.write_text(s,encoding='utf-8')
+          # Força uma versão nova do updates.js para evitar cache do navegador/CDN.
+          s=re.sub(r'<script\s+src="updates\.js(?:\?[^\"]*)?"></script>', '', s, flags=re.I)
+          s=s.replace('</body>','<script src="updates.js?v=20260818-1059"></script></body>',1)
+          p.write_text(s,encoding='utf-8')
           PY
       - name: Publicar
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add index.html
-          git commit -m 'Carregar correções finais do site' || exit 0
+          git commit -m 'Forcar carregamento da correção final' || exit 0
           for i in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main || { git rebase --abort || true; git reset --hard origin/main; continue; }
