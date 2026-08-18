@@ -27,18 +27,31 @@ jobs:
             import re
             p=Path('index.html')
             s=p.read_text(encoding='utf-8')
+
             pattern=r'<meta\s+content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas\.\.\.\s*<style>'
             replacement='<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas, códigos de resgate e como usar os códigos no jogo." name="description"/>\n<style>'
             s2,n=re.subn(pattern,replacement,s,count=1,flags=re.S)
             if n:
-                p.write_text(s2,encoding='utf-8')
+                s=s2
                 print('HTML corrigido')
             else:
                 print('HTML já corrigido')
+
+            old='.topbar{position:sticky;top:0;z-index:20;background:rgba(5,4,13,.82);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.12)}'
+            new='.topbar{position:sticky;top:0;z-index:20;background:#000 !important;backdrop-filter:none;border-bottom:1px solid rgba(255,255,255,.12)}'
+            if old in s:
+                s=s.replace(old,new,1)
+                print('Barra superior definida como preta')
+            elif new in s:
+                print('Barra superior já está preta')
+            else:
+                print('Não encontrei o estilo atual da barra superior')
+
+            p.write_text(s,encoding='utf-8')
             PY
             if git diff --quiet -- index.html; then exit 0; fi
             git add index.html
-            git commit -m "Corrigir HTML quebrado do index"
+            git commit -m "Set topbar background to solid black"
             if git push origin HEAD:main; then exit 0; fi
             git reset --hard origin/main
             sleep 2
