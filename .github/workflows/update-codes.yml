@@ -55,6 +55,20 @@ jobs:
           p.write_text(s, encoding="utf-8")
           PY
 
+      - name: Garantir barra superior preta
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("index.html")
+          s = p.read_text(encoding="utf-8")
+          old = '.topbar{position:sticky;top:0;z-index:20;background:rgba(5,4,13,.82);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.12)}'
+          new = '.topbar{position:sticky;top:0;z-index:20;background:#000 !important;backdrop-filter:none;border-bottom:1px solid rgba(255,255,255,.12)}'
+          if old in s:
+              s = s.replace(old, new, 1)
+          p.write_text(s, encoding="utf-8")
+          print("Barra superior preta garantida")
+          PY
+
       - name: Publicar alterações
         run: |
           git config user.name "github-actions[bot]"
@@ -63,7 +77,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Nenhuma alteração nos códigos."
           else
-            git commit -m "Corrigir texto da parceria"
+            git commit -m "Corrigir texto da parceria e barra superior"
             git pull --rebase origin main
             git push
           fi
