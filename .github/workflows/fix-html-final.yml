@@ -1,4 +1,4 @@
-name: Corrigir parceria e códigos atuais
+name: Corrigir parceria, códigos e cabeçalho
 on:
   push:
     branches: [main]
@@ -6,35 +6,40 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: fix-partnership-codes
+  group: fix-site-final
   cancel-in-progress: false
 jobs:
   fix:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Preparar a nova imagem larga do cabeçalho
+        run: |
+          test -f assets/yunamyst-header-small.webp.b64
+          base64 -d assets/yunamyst-header-small.webp.b64 > assets/yunamyst-header-small.webp
+          test -s assets/yunamyst-header-small.webp
+
       - name: Atualizar index sem alterar o restante do site
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           python - <<'PY'
           from pathlib import Path
+          import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
           original = s
 
-          # Texto final da parceria: exatamente como definido para o site.
+          # Texto final da parceria.
           s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst?')
-          s = s.replace('Queres fazer uma parceria com a YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst?')
           s = s.replace('Colabora com a YunaMyst Codes', 'Colabora com a YunaMyst')
 
-          # Remove o botão dourado legado que era inserido por um workflow antigo.
-          import re
+          # Remove o botão dourado legado.
           s = re.sub(r'\s*<a[^>]*id=["\']yunaDesktopPartnershipButton["\'][^>]*>\s*🤝\s*FAZER PARCERIA\s*</a>\s*', '\n', s, flags=re.I)
 
-          # Adiciona os 2 códigos publicados em 15/08/2026, apenas se ainda não existirem.
+          # Adiciona os códigos publicados em 15/08/2026, apenas se ainda não existirem.
           codes = [
               ('YYDSSWC26ZAN', '2026-08-22T00:00:00', 'https://withhive.me/313/YYDSSWC26ZAN'),
               ('4MINGYIDAOXIAN', '2026-08-22T00:00:00', 'https://withhive.me/313/4MINGYIDAOXIAN'),
@@ -49,16 +54,69 @@ jobs:
               if cards:
                   s = s[:insert_at] + ''.join(cards) + s[insert_at:]
 
+          # Remove todos os overrides antigos do cabeçalho e instala SOMENTE a imagem larga nova.
+          for ident in [
+              'yunamyst-header-logo-final',
+              'yunamyst-new-logo-final',
+              'yuna-header-logo',
+              'yunamyst-final-logo-override',
+              'yunamyst-new-logo-wide'
+          ]:
+              s = re.sub(r'<style id="' + re.escape(ident) + r'">.*?</style>\s*', '', s, flags=re.S | re.I)
+              s = re.sub(r'<script id="' + re.escape(ident) + r'">.*?</script>\s*', '', s, flags=re.S | re.I)
+
+          version = '20260818-header-wide-final-5'
+          css = f'''<style id="yunamyst-header-logo-final">
+          /* YUNAMYST-WIDE-HEADER-{version} */
+          .logo {{
+            width:190px !important;
+            height:64px !important;
+            display:block !important;
+            background-image:url("assets/yunamyst-header-small.webp?v={version}") !important;
+            background-size:contain !important;
+            background-position:center !important;
+            background-repeat:no-repeat !important;
+            color:transparent !important;
+            font-size:0 !important;
+            line-height:0 !important;
+            text-indent:-9999px !important;
+            overflow:hidden !important;
+          }}
+          .logo small {{ display:none !important; }}
+          @media(max-width:600px) {{
+            .logo {{ width:175px !important; height:58px !important; }}
+          }}
+          </style>'''
+          s = re.sub(r'</head>', css + '\n</head>', s, count=1, flags=re.I)
+
           if s != original:
               p.write_text(s, encoding='utf-8')
               print('ALTERADO')
           else:
               print('JA_CORRETO')
           PY
-          git add index.html
+
+      - name: Validar
+        run: |
+          test -s assets/yunamyst-header-small.webp
+          grep -q 'YUNAMYST-WIDE-HEADER-20260818-header-wide-final-5' index.html
+          grep -q 'assets/yunamyst-header-small.webp?v=20260818-header-wide-final-5' index.html
+
+      - name: Publicar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html assets/yunamyst-header-small.webp
           if git diff --cached --quiet; then
             echo "Nenhuma alteração necessária"
             exit 0
           fi
-          git commit -m "Fix partnership text and keep current codes"
-          git push origin HEAD:main
+          git commit -m "Aplicar logo larga definitiva no cabeçalho [skip ci]"
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main || true
+            if git push origin HEAD:main; then exit 0; fi
+            git reset --hard origin/main
+            sleep 3
+          done
+          exit 1
