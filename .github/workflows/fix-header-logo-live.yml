@@ -57,12 +57,11 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
+          import re
           p = Path('.github/workflows/fix-header-logo-live.yml')
           s = p.read_text(encoding='utf-8')
           s = re.sub(r'\n  schedule:\n    - cron: "\*/5 \* \* \* \*"\n', '\n', s)
           p.write_text(s, encoding='utf-8')
-        env:
-          PYTHONUNBUFFERED: '1'
 
       - name: Commit ajuste no index e desativar agendamento
         shell: bash
