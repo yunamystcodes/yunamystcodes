@@ -1,8 +1,9 @@
-name: Corrigir cabeçalho para nova logo
+name: Aplicar logo larga no cabeçalho
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -21,7 +22,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Colocar a nova logo larga somente no cabeçalho
+      - name: Criar o ficheiro da nova logo do cabeçalho
+        run: |
+          test -f assets/yunamyst-header-small.webp.b64
+          base64 -d assets/yunamyst-header-small.webp.b64 > assets/yunamyst-header-small.webp
+          test -s assets/yunamyst-header-small.webp
+
+      - name: Aplicar a nova logo larga somente no cabeçalho
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -32,12 +39,18 @@ jobs:
               raise SystemExit('index.html não encontrado')
 
           s = p.read_text(encoding='utf-8')
-          version = '20260818-header-svg-final'
+          version = '20260818-header-wide-final-3'
 
-          # Remove overrides antigos para evitar conflito.
-          s = re.sub(r'<style id="yunamyst-header-logo-final">.*?</style>\s*', '', s, flags=re.S | re.I)
-          s = re.sub(r'<style id="yunamyst-new-logo-final">.*?</style>\s*', '', s, flags=re.S | re.I)
-          s = re.sub(r'<script id="yunamyst-final-logo-override">.*?</script>\s*', '', s, flags=re.S | re.I)
+          # Remove somente os overrides antigos do cabeçalho.
+          for ident in [
+              'yunamyst-header-logo-final',
+              'yunamyst-new-logo-final',
+              'yuna-header-logo',
+              'yunamyst-final-logo-override',
+              'yunamyst-new-logo-wide'
+          ]:
+              s = re.sub(r'<style id="' + re.escape(ident) + r'">.*?</style>\s*', '', s, flags=re.S | re.I)
+              s = re.sub(r'<script id="' + re.escape(ident) + r'">.*?</script>\s*', '', s, flags=re.S | re.I)
 
           css = f'''<style id="yunamyst-header-logo-final">
           /* YUNAMYST-WIDE-HEADER-{version} */
@@ -45,7 +58,7 @@ jobs:
             width:190px !important;
             height:64px !important;
             display:block !important;
-            background-image:url("assets/yunamyst-header.svg?v={version}") !important;
+            background-image:url("assets/yunamyst-header-small.webp?v={version}") !important;
             background-size:contain !important;
             background-position:center !important;
             background-repeat:no-repeat !important;
@@ -61,24 +74,34 @@ jobs:
           }}
           </style>'''
 
+          if re.search(r'</head>', s, flags=re.I) is None:
+              raise SystemExit('</head> não encontrado')
           s = re.sub(r'</head>', css + '\n</head>', s, count=1, flags=re.I)
           p.write_text(s, encoding='utf-8')
           PY
 
       - name: Validar
         run: |
+          test -s assets/yunamyst-header-small.webp
           grep -q 'yunamyst-header-logo-final' index.html
-          grep -q 'assets/yunamyst-header.svg?v=20260818-header-svg-final' index.html
-          echo 'Cabeçalho configurado para a nova logo larga. A logo circular do perfil permanece intacta.'
+          grep -q 'assets/yunamyst-header-small.webp?v=20260818-header-wide-final-3' index.html
+          echo 'Cabeçalho usa a nova logo larga; avatar/perfil não foi alterado.'
 
       - name: Publicar
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
+          git add index.html assets/yunamyst-header-small.webp
           if git diff --cached --quiet; then
             echo "Nenhuma alteração necessária"
             exit 0
           fi
           git commit -m "Aplicar nova logo larga no cabeçalho [skip ci]"
-          git push origin HEAD:main
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main || true
+            if git push origin HEAD:main; then exit 0; fi
+            git reset --hard origin/main
+            sleep 3
+          done
+          exit 1
