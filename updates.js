@@ -2,7 +2,7 @@
   function run(){
     // Correção de texto da parceria.
     document.querySelectorAll('.yuna-partnership-box p').forEach(function(p){
-      p.textContent=p.textContent.replace('com o YunaMyst Codes','com a YunaMyst Codes');
+      p.textContent=p.textContent.replace('com o YunaMyst Codes','com a YunaMyst');
     });
 
     // PC: remove a parceria da caixa da FAQ. A parceria fica apenas no topo,
