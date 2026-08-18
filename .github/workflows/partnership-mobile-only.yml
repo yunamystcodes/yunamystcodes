@@ -21,15 +21,16 @@ jobs:
           import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst Codes?')
-          desktop = '<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst Codes</small></span><strong>›</strong></a>\n'
+          s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst?')
+          s = s.replace('Colabora com a YunaMyst Codes', 'Colabora com a YunaMyst')
+          desktop = '<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst</small></span><strong>›</strong></a>\n'
           pat = r'<a href="#" class="partnership partnership-desktop" id="yunaDesktopPartnershipButton"[\s\S]*?</a>\s*'
           s = re.sub(pat, '', s, count=1, flags=re.I)
           target = '<section class="panel faq" id="faq">'
           if target not in s:
               raise SystemExit('FAQ_NAO_ENCONTRADA')
           s = s.replace(target, desktop + target, 1)
-          mobile = '<a href="#" class="partnership" id="yunaPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst Codes</small></span><strong>›</strong></a>\n'
+          mobile = '<a href="#" class="partnership" id="yunaPartnershipButton" aria-label="Abrir informações de parceria"><span class="picon">🤝</span><span><b>FAZER PARCERIA</b><small>Colabora com a YunaMyst</small></span><strong>›</strong></a>\n'
           if 'id="yunaPartnershipButton"' not in s:
               wa_end = '</a>\n</section>'
               pos = s.find(wa_end, s.find('<a class="whats"'))
