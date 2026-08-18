@@ -17,10 +17,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Preparar a imagem larga do cabeçalho
+      - name: Preparar a nova imagem larga do cabeçalho
         run: |
-          test -f "assets/ChatGPT Image 18_08_2026, 13_09_25.png"
-          test -s "assets/ChatGPT Image 18_08_2026, 13_09_25.png"
+          test -f assets/yunamyst-header-small.webp.b64
+          base64 -d assets/yunamyst-header-small.webp.b64 > assets/yunamyst-header-small.webp
+          test -s assets/yunamyst-header-small.webp
 
       - name: Atualizar index sem alterar o restante do site
         run: |
@@ -33,7 +34,6 @@ jobs:
 
           s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst?')
           s = s.replace('Colabora com a YunaMyst Codes', 'Colabora com a YunaMyst')
-
           s = re.sub(r'\s*<a[^>]*id=["\']yunaDesktopPartnershipButton["\'][^>]*>\s*🤝\s*FAZER PARCERIA\s*</a>\s*', '\n', s, flags=re.I)
 
           codes = [
@@ -60,16 +60,15 @@ jobs:
               s = re.sub(r'<style id="' + re.escape(ident) + r'">.*?</style>\s*', '', s, flags=re.S | re.I)
               s = re.sub(r'<script id="' + re.escape(ident) + r'">.*?</script>\s*', '', s, flags=re.S | re.I)
 
-          version = '20260818-header-wide-image-6'
-          image = 'assets/ChatGPT%20Image%2018_08_2026%2C%2013_09_25.png'
+          version = '20260818-header-wide-image-8'
           css = f'''<style id="yunamyst-header-logo-final">
-          /* YUNAMYST-WIDE-HEADER-{version} / trigger-7 */
+          /* YUNAMYST-WIDE-HEADER-{version} */
           .logo {{
             width:420px !important;
             height:120px !important;
             max-width:45vw !important;
             display:block !important;
-            background-image:url("{image}?v={version}") !important;
+            background-image:url("assets/yunamyst-header-small.webp?v={version}") !important;
             background-size:contain !important;
             background-position:center !important;
             background-repeat:no-repeat !important;
@@ -98,15 +97,15 @@ jobs:
 
       - name: Validar
         run: |
-          test -s "assets/ChatGPT Image 18_08_2026, 13_09_25.png"
-          grep -q 'YUNAMYST-WIDE-HEADER-20260818-header-wide-image-6' index.html
-          grep -q 'ChatGPT%20Image%2018_08_2026%2C%2013_09_25.png?v=20260818-header-wide-image-6' index.html
+          test -s assets/yunamyst-header-small.webp
+          grep -q 'YUNAMYST-WIDE-HEADER-20260818-header-wide-image-8' index.html
+          grep -q 'assets/yunamyst-header-small.webp?v=20260818-header-wide-image-8' index.html
 
       - name: Publicar
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
+          git add index.html assets/yunamyst-header-small.webp
           if git diff --cached --quiet; then
             echo "Nenhuma alteração necessária"
             exit 0
