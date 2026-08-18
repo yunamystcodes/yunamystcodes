@@ -63,7 +63,7 @@ jobs:
           version = '20260818-header-wide-image-6'
           image = 'assets/ChatGPT%20Image%2018_08_2026%2C%2013_09_25.png'
           css = f'''<style id="yunamyst-header-logo-final">
-          /* YUNAMYST-WIDE-HEADER-{version} */
+          /* YUNAMYST-WIDE-HEADER-{version} / trigger-7 */
           .logo {{
             width:420px !important;
             height:120px !important;
