@@ -1,0 +1,48 @@
+name: Fixar nova logo no site
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix-logo:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Forçar a nova logo depois dos scripts existentes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = 'YUNAMYST-FINAL-LOGO-OVERRIDE-20260818'
+          if marker in s:
+              print('Override da logo já existe')
+              raise SystemExit(0)
+
+          script = '''\n<script id="yunamyst-final-logo-override">\n/* YUNAMYST-FINAL-LOGO-OVERRIDE-20260818 */\n(function(){\n  var logo='assets/yunamyst-mark.webp?v=20260818-final';\n  function applyLogo(){\n    document.querySelectorAll('.avatar, .profile .avatar, .mobile-profile .avatar').forEach(function(el){\n      el.style.backgroundImage='url("'+logo+'")';\n      el.style.backgroundSize='cover';\n      el.style.backgroundPosition='center';\n      el.style.backgroundRepeat='no-repeat';\n      el.style.color='transparent';\n      el.style.fontSize='0';\n      el.textContent='';\n    });\n    document.querySelectorAll('.logo').forEach(function(el){\n      el.style.backgroundImage='url("'+logo+'")';\n      el.style.backgroundSize='contain';\n      el.style.backgroundPosition='center';\n      el.style.backgroundRepeat='no-repeat';\n      el.style.color='transparent';\n      el.style.fontSize='0';\n      el.style.width='190px';\n      el.style.height='62px';\n      el.style.display='block';\n      var small=el.querySelector('small');\n      if(small) small.style.display='none';\n    });\n  }\n  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',applyLogo);\n  else applyLogo();\n  setTimeout(applyLogo,300);\n  setTimeout(applyLogo,1000);\n  setTimeout(applyLogo,2500);\n})();\n</script>\n'''
+          s = re.sub(r'</body>', script + '</body>', s, count=1, flags=re.I)
+          if marker not in s:
+              raise SystemExit('Não foi possível inserir o override da logo')
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit e publicar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .github/workflows/fix-logo-final.yml
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteração necessária"
+            exit 0
+          fi
+          git commit -m "Forçar nova logo no site [skip ci]"
+          git push
