@@ -39,9 +39,8 @@ jobs:
               raise SystemExit('index.html não encontrado')
 
           s = p.read_text(encoding='utf-8')
-          version = '20260818-header-wide-final-3'
+          version = '20260818-header-wide-final-4'
 
-          # Remove somente os overrides antigos do cabeçalho.
           for ident in [
               'yunamyst-header-logo-final',
               'yunamyst-new-logo-final',
@@ -74,8 +73,6 @@ jobs:
           }}
           </style>'''
 
-          if re.search(r'</head>', s, flags=re.I) is None:
-              raise SystemExit('</head> não encontrado')
           s = re.sub(r'</head>', css + '\n</head>', s, count=1, flags=re.I)
           p.write_text(s, encoding='utf-8')
           PY
@@ -84,7 +81,7 @@ jobs:
         run: |
           test -s assets/yunamyst-header-small.webp
           grep -q 'yunamyst-header-logo-final' index.html
-          grep -q 'assets/yunamyst-header-small.webp?v=20260818-header-wide-final-3' index.html
+          grep -q 'assets/yunamyst-header-small.webp?v=20260818-header-wide-final-4' index.html
           echo 'Cabeçalho usa a nova logo larga; avatar/perfil não foi alterado.'
 
       - name: Publicar
