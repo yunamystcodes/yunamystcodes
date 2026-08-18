@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" role="img" aria-label="YunaMyst Summoners War">
+<defs>
+  <radialGradient id="bg" cx="50%" cy="50%" r="70%"><stop offset="0" stop-color="#16052b"/><stop offset=".6" stop-color="#080312"/><stop offset="1" stop-color="#000000"/></radialGradient>
+  <linearGradient id="gold" x1="0" x2="1"><stop stop-color="#fff2b0"/><stop offset=".45" stop-color="#f2bd55"/><stop offset="1" stop-color="#fff0a5"/></linearGradient>
+  <linearGradient id="silver" x1="0" x2="1"><stop stop-color="#ffffff"/><stop offset=".5" stop-color="#d9c8ff"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+  <filter id="glow"><feGaussianBlur stdDeviation="9" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
+</defs>
+<rect width="1200" height="400" fill="url(#bg)"/>
+<ellipse cx="600" cy="210" rx="540" ry="145" fill="#6b16d9" opacity=".12" filter="url(#soft)"/>
+<path d="M35 205 C90 130 125 90 190 65 C170 120 174 168 210 210 C175 255 170 302 192 345 C125 315 75 275 35 205Z" fill="#8c28ff" opacity=".32" filter="url(#glow)"/>
+<path d="M105 245 C75 190 95 125 155 91 C138 148 154 205 202 235 C166 262 142 295 145 329 C124 305 112 277 105 245Z" fill="#c04cff" opacity=".8"/>
+<!-- stylized fox -->
+<g transform="translate(105 48)" filter="url(#glow)">
+  <path d="M125 60 L160 5 L190 62 L230 32 L214 105 C207 155 175 190 128 193 C82 190 49 155 42 105 L25 32 L66 62 Z" fill="#f5a92f" stroke="#ffd66c" stroke-width="5"/>
+  <path d="M62 102 C76 88 96 84 128 94 C160 84 180 88 194 102 C183 158 161 177 128 179 C95 177 73 158 62 102Z" fill="#fff4df"/>
+  <path d="M93 108 L111 115 L128 108 L145 115 L163 108 L151 139 C143 151 113 151 105 139Z" fill="#30103f"/>
+  <circle cx="93" cy="103" r="7" fill="#c66cff"/><circle cx="163" cy="103" r="7" fill="#c66cff"/>
+  <path d="M128 130 L137 139 L128 147 L119 139Z" fill="#15101c"/>
+  <path d="M70 64 C49 97 54 148 83 173 C52 160 29 130 27 88 L25 32Z" fill="#6e22d4" opacity=".9"/>
+</g>
+<text x="345" y="220" font-family="Georgia, 'Times New Roman', serif" font-size="145" font-weight="700" fill="url(#silver)" stroke="#a85cff" stroke-width="2" paint-order="stroke" filter="url(#glow)">Yuna<tspan fill="url(#gold)">Myst</tspan></text>
+<path d="M385 255 H815" stroke="#f0bd58" stroke-width="3" opacity=".9"/>
+<path d="M365 255 l18 -8 18 8-18 8z M817 255 l18 -8 18 8-18 8z" fill="#f0bd58"/>
+<text x="600" y="300" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" font-weight="700" letter-spacing="12" fill="url(#gold)">SUMMONERS WAR</text>
+<path d="M900 105 C970 55 1045 85 1080 145 C1110 198 1088 275 1015 315 C1040 270 1038 225 1005 195 C974 166 938 145 900 105Z" fill="#8c28ff" opacity=".45"/>
+<path d="M1045 118 C1110 145 1140 205 1120 270 C1104 320 1060 345 1010 350 C1055 320 1070 278 1050 240 C1033 208 1018 170 1045 118Z" fill="#ffb83f" opacity=".8"/>
+</svg>
