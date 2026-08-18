@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Corrigir texto da parceria
+      - name: Corrigir textos da parceria e redes sociais
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -23,6 +23,8 @@ jobs:
               'Queres fazer uma parceria com o YunaMyst Codes?': 'Queres fazer uma parceria com a YunaMyst?',
               'Colabora com o YunaMyst Codes': 'Colabora com a YunaMyst',
               'Colabora com a YunaMyst Codes': 'Colabora com a YunaMyst',
+              'redes sociais do YunaMyst': 'redes sociais da YunaMyst',
+              'redes sociais do YunaMyst.': 'redes sociais da YunaMyst.',
           }
 
           for old, new in substituicoes.items():
@@ -34,7 +36,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Corrigir texto da parceria"
+          git commit -m "Corrigir texto das redes sociais"
           git push
-
-          # Garantir que a correção da parceria seja aplicada no index atual.
