@@ -34,6 +34,13 @@ jobs:
           if '.logo img{width:100%;height:100%;display:block;object-fit:contain}' not in new_text:
               new_text = new_text.replace('</style>', css + '</style>', 1)
 
+          topbar_old = '.topbar{position:sticky;top:0;z-index:20;background:rgba(5,4,13,.82);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.12)}'
+          topbar_new = '.topbar{position:sticky;top:0;z-index:20;background:#000 !important;backdrop-filter:none;border-bottom:1px solid rgba(255,255,255,.12)}'
+          if topbar_old in new_text:
+              new_text = new_text.replace(topbar_old, topbar_new, 1)
+          elif topbar_new not in new_text:
+              raise SystemExit("Não encontrei o estilo .topbar no index.html")
+
           path.write_text(new_text, encoding="utf-8")
       - name: Commit header change
         shell: bash
@@ -45,5 +52,5 @@ jobs:
             echo "Header já está atualizado."
             exit 0
           fi
-          git commit -m "Atualizar logo do cabeçalho [skip ci]"
+          git commit -m "Atualizar logo e deixar barra do cabeçalho preta [skip ci]"
           git push
