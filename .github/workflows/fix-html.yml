@@ -10,17 +10,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Corrigir meta description
+      - name: Corrigir meta description e barra superior
         run: |
           python - <<'PY'
           from pathlib import Path
           p = Path('index.html')
-          lines = p.read_text(encoding='utf-8').splitlines()
+          s = p.read_text(encoding='utf-8')
+          lines = s.splitlines()
           for i, line in enumerate(lines):
               if line.startswith('<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas'):
                   lines[i] = '<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas, códigos de resgate e como usar os códigos no jogo." name="description"/>'
                   break
-          p.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          s = '\n'.join(lines) + '\n'
+          old = '.topbar{position:sticky;top:0;z-index:20;background:rgba(5,4,13,.82);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.12)}'
+          new = '.topbar{position:sticky;top:0;z-index:20;background:#000 !important;backdrop-filter:none;border-bottom:1px solid rgba(255,255,255,.12)}'
+          if old in s:
+              s = s.replace(old, new, 1)
+              print('Barra superior atualizada para preto sólido')
+          elif new in s:
+              print('Barra superior já está preta')
+          else:
+              print('Estilo atual da barra superior não encontrado')
+          p.write_text(s, encoding='utf-8')
           PY
       - name: Publicar correção
         run: |
@@ -30,6 +41,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "HTML já está correto"
           else
-            git commit -m "Corrigir meta description do site"
+            git commit -m "Deixar barra superior preta"
             git push
           fi
