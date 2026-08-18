@@ -1,88 +1,96 @@
 {
   "4MINGYIDAOXIAN": {
     "code": "4MINGYIDAOXIAN",
-    "last_seen": "2026-08-18T11:03:57.968467+00:00",
+    "last_seen": "2026-08-18T11:06:45.146625+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Scroll Mystical ×1",
     "sources": [
       "SWGT",
+      "SWQuery",
       "summonerswarcodes.us"
     ],
     "status": "active"
   },
   "912XUXIECHUANQI": {
     "code": "912XUXIECHUANQI",
-    "last_seen": "2026-08-18T11:03:57.968467+00:00",
+    "last_seen": "2026-08-18T11:06:45.146625+00:00",
     "missing_runs": 0,
     "reward": "Mana ×200,000, Scroll Mystical ×1",
     "sources": [
       "SWGT",
+      "SWQuery",
       "summonerswarcodes.us"
     ],
     "status": "active"
   },
   "AUGSW2026V7N": {
     "code": "AUGSW2026V7N",
-    "last_seen": "2026-08-18T11:03:57.968467+00:00",
+    "last_seen": "2026-08-18T11:06:45.146625+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Fire Scroll ×3",
     "sources": [
       "SWGT",
+      "SWQuery",
       "summonerswarcodes.us"
     ],
     "status": "active"
   },
   "H4MBURGISWAITING": {
     "code": "H4MBURGISWAITING",
-    "last_seen": "2026-08-18T11:03:57.968467+00:00",
+    "last_seen": "2026-08-18T11:06:45.146625+00:00",
     "missing_runs": 0,
     "reward": "Mana ×100,000, Scroll Mystical ×1",
     "sources": [
       "SWGT",
+      "SWQuery",
       "summonerswarcodes.us"
     ],
     "status": "active"
   },
   "HURRASWC2026": {
     "code": "HURRASWC2026",
-    "last_seen": "2026-08-18T11:03:57.968467+00:00",
+    "last_seen": "2026-08-18T11:06:45.146625+00:00",
     "missing_runs": 0,
     "reward": "Scroll Mystical ×1",
     "sources": [
       "SWGT",
+      "SWQuery",
       "summonerswarcodes.us"
     ],
     "status": "active"
   },
   "SWC2026JUELEBA": {
     "code": "SWC2026JUELEBA",
-    "last_seen": "2026-08-18T11:03:57.968467+00:00",
+    "last_seen": "2026-08-18T11:06:45.146625+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Scroll Mystical ×1",
     "sources": [
       "SWGT",
+      "SWQuery",
       "summonerswarcodes.us"
     ],
     "status": "active"
   },
   "SWXFRIEREN2026": {
     "code": "SWXFRIEREN2026",
-    "last_seen": "2026-08-18T11:03:57.968467+00:00",
+    "last_seen": "2026-08-18T11:06:45.146625+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Mana ×300,000, Scroll Mystical ×3",
     "sources": [
       "SWGT",
+      "SWQuery",
       "summonerswarcodes.us"
     ],
     "status": "active"
   },
   "YYDSSWC26ZAN": {
     "code": "YYDSSWC26ZAN",
-    "last_seen": "2026-08-18T11:03:57.968467+00:00",
+    "last_seen": "2026-08-18T11:06:45.146625+00:00",
     "missing_runs": 0,
     "reward": "Mana ×200,000, Scroll Mystical ×1",
     "sources": [
       "SWGT",
+      "SWQuery",
       "summonerswarcodes.us"
     ],
     "status": "active"
