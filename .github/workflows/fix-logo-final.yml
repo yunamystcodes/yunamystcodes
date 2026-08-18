@@ -7,6 +7,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: fix-logo-final
+  cancel-in-progress: false
+
 jobs:
   fix-logo:
     if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
@@ -14,28 +18,71 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Forçar a nova logo depois dos scripts existentes
+      - name: Aplicar nova logo no perfil e cabeçalho
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
 
           p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-          marker = 'YUNAMYST-FINAL-LOGO-OVERRIDE-20260818'
-          if marker in s:
-              print('Override da logo já existe')
-              raise SystemExit(0)
+          if not p.exists():
+              raise SystemExit('index.html não encontrado')
 
-          script = '''\n<script id="yunamyst-final-logo-override">\n/* YUNAMYST-FINAL-LOGO-OVERRIDE-20260818 */\n(function(){\n  var logo='assets/yunamyst-mark.webp?v=20260818-final';\n  function applyLogo(){\n    document.querySelectorAll('.avatar, .profile .avatar, .mobile-profile .avatar').forEach(function(el){\n      el.style.backgroundImage='url("'+logo+'")';\n      el.style.backgroundSize='cover';\n      el.style.backgroundPosition='center';\n      el.style.backgroundRepeat='no-repeat';\n      el.style.color='transparent';\n      el.style.fontSize='0';\n      el.textContent='';\n    });\n    document.querySelectorAll('.logo').forEach(function(el){\n      el.style.backgroundImage='url("'+logo+'")';\n      el.style.backgroundSize='contain';\n      el.style.backgroundPosition='center';\n      el.style.backgroundRepeat='no-repeat';\n      el.style.color='transparent';\n      el.style.fontSize='0';\n      el.style.width='190px';\n      el.style.height='62px';\n      el.style.display='block';\n      var small=el.querySelector('small');\n      if(small) small.style.display='none';\n    });\n  }\n  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',applyLogo);\n  else applyLogo();\n  setTimeout(applyLogo,300);\n  setTimeout(applyLogo,1000);\n  setTimeout(applyLogo,2500);\n})();\n</script>\n'''
-          s = re.sub(r'</body>', script + '</body>', s, count=1, flags=re.I)
-          if marker not in s:
-              raise SystemExit('Não foi possível inserir o override da logo')
+          s = p.read_text(encoding='utf-8')
+          version = '20260818-header-final-2'
+
+          # Remove overrides antigos para não acumular scripts/estilos conflitantes.
+          s = re.sub(r'<script id="yunamyst-final-logo-override">.*?</script>\s*', '', s, flags=re.S | re.I)
+          s = re.sub(r'<style id="yunamyst-new-logo-final">.*?</style>\s*', '', s, flags=re.S | re.I)
+
+          css = f'''<style id="yunamyst-header-logo-final">
+          /* YUNAMYST-HEADER-LOGO-FINAL-{version} */
+          .logo {{
+            width:190px !important;
+            height:62px !important;
+            display:block !important;
+            background-image:url("assets/yunamyst-mark.webp?v={version}") !important;
+            background-size:contain !important;
+            background-position:center !important;
+            background-repeat:no-repeat !important;
+            color:transparent !important;
+            font-size:0 !important;
+            line-height:0 !important;
+            text-indent:-9999px !important;
+            overflow:hidden !important;
+          }}
+          .logo small {{ display:none !important; }}
+          .avatar, .profile .avatar, .mobile-profile .avatar {{
+            background-image:url("assets/yunamyst-mark.webp?v={version}") !important;
+            background-size:cover !important;
+            background-position:center !important;
+            background-repeat:no-repeat !important;
+            color:transparent !important;
+            font-size:0 !important;
+            text-indent:-9999px !important;
+            overflow:hidden !important;
+          }}
+          @media(max-width:600px) {{
+            .logo {{ width:145px !important; height:58px !important; }}
+          }}
+          </style>'''
+
+          if '</head>' not in s.lower():
+              raise SystemExit('</head> não encontrado')
+          s = re.sub(r'</head>', css + '\n</head>', s, count=1, flags=re.I)
           p.write_text(s, encoding='utf-8')
           PY
 
-      - name: Commit e publicar
+      - name: Validar HTML
+        run: |
+          grep -q 'yunamyst-header-logo-final' index.html
+          grep -q 'assets/yunamyst-mark.webp?v=20260818-header-final-2' index.html
+          echo 'Nova logo aplicada ao cabeçalho e perfil.'
+
+      - name: Commit e publicar com retry
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -44,5 +91,12 @@ jobs:
             echo "Nenhuma alteração necessária"
             exit 0
           fi
-          git commit -m "Forçar nova logo no site [skip ci]"
-          git push
+          git commit -m "Aplicar nova logo no cabeçalho [skip ci]"
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git rebase origin/main && git push origin HEAD:main && exit 0
+            git rebase --abort || true
+            sleep 3
+          done
+          echo "Não foi possível publicar após 5 tentativas"
+          exit 1
