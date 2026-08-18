@@ -25,16 +25,14 @@ jobs:
           s = p.read_text(encoding='utf-8')
           original = s
 
-          # Corrige o texto da parceria.
-          s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst Codes?')
+          # Texto final da parceria: exatamente como definido para o site.
+          s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst?')
+          s = s.replace('Queres fazer uma parceria com a YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst?')
+          s = s.replace('Colabora com a YunaMyst Codes', 'Colabora com a YunaMyst')
 
-          # Garante a posição correta do botão de parceria no PC e no telemóvel.
-          marker = '/* YUNAMYST PARTNERSHIP FINAL */'
-          if marker in s and '/* YUNAMYST PARTNERSHIP POSITION FINAL */' not in s:
-              s = s.replace('</head>', '''<style id="yuna-partnership-position-final">
-          @media (min-width:851px){#yunaDesktopPartnershipButton{display:flex!important;margin:0 0 12px!important;width:100%!important;max-width:none!important}#yunaPartnershipButton{display:none!important}}
-          @media (max-width:850px){#yunaPartnershipButton{display:flex!important;margin:0 auto 22px!important;width:100%!important;max-width:760px!important}#yunaDesktopPartnershipButton{display:none!important}}
-          </style></head>''')
+          # Remove o botão dourado legado que era inserido por um workflow antigo.
+          import re
+          s = re.sub(r'\s*<a[^>]*id=["\']yunaDesktopPartnershipButton["\'][^>]*>\s*🤝\s*FAZER PARCERIA\s*</a>\s*', '\n', s, flags=re.I)
 
           # Adiciona os 2 códigos publicados em 15/08/2026, apenas se ainda não existirem.
           codes = [
@@ -62,5 +60,5 @@ jobs:
             echo "Nenhuma alteração necessária"
             exit 0
           fi
-          git commit -m "Corrigir parceria e adicionar códigos de 15 agosto"
+          git commit -m "Fix partnership text and keep current codes"
           git push origin HEAD:main
