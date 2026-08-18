@@ -519,12 +519,20 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   .codes .code{column-gap:6px!important}
 }
 </style>
+
+<style id="yuna-header-logo">
+.logo{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;white-space:nowrap!important;line-height:1!important}
+.logo-mark{width:52px!important;height:52px!important;border-radius:50%!important;object-fit:cover!important;border:2px solid #a85cff!important;box-shadow:0 0 18px rgba(168,92,255,.55)!important;display:block!important;flex:none!important}
+.logo-text{display:flex!important;flex-direction:column!important;align-items:flex-start!important;font-family:Georgia,serif!important;font-size:36px!important;font-weight:900!important;letter-spacing:1px!important;line-height:.9!important;text-shadow:0 0 18px #8b45ff!important}
+.logo-text small{display:block!important;width:auto!important;font:700 8px Arial!important;letter-spacing:4px!important;color:#f1ca76!important;text-align:left!important;margin-top:5px!important;line-height:1.1!important}
+@media(max-width:600px){.logo{gap:8px!important}.logo-mark{width:46px!important;height:46px!important}.logo-text{font-size:28px!important}.logo-text small{font-size:7px!important;letter-spacing:3px!important;margin-top:4px!important}}
+</style>
 </head>
 <body>
 <div class="bg"></div>
 <audio autoplay="" id="yunaBgMusic" loop="" playsinline="" preload="auto" src="assets/One%20More%20Scroll.mp3"></audio>
 <header class="topbar"><div class="container nav">
-<div class="logo">YunaMyst<small>SUMMONERS WAR</small></div>
+<div class="logo"><img class="logo-mark" src="assets/yunamyst-mark.webp" alt="YunaMyst"><span class="logo-text">YunaMyst<small>SUMMONERS WAR</small></span></div>
 <nav class="menu"><a data-i18n="home" href="#inicio">⌂ INÍCIO</a><a data-i18n="codesNav" href="#codigos">🎁 CÓDIGOS</a><a data-i18n="howNav" href="#como">❔ COMO USAR</a><a data-i18n="faqNav" href="#faq">❔ FAQ</a></nav>
 <div class="lang-wrap"><button aria-label="Mutar música" class="audio-mute" id="audioMute" title="Mutar música" type="button">🔇</button><button class="lang" id="langBtn" type="button">🇧🇷 PT/BR⌄</button><div class="lang-menu" id="langMenu"><button data-lang="pt" type="button">🇧🇷 PT/BR</button><button data-lang="en" type="button">🇺🇸 ENG</button></div></div>
 </div></header>
