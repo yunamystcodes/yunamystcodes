@@ -36,3 +36,5 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -m "Corrigir texto da parceria"
           git push
+
+          # Garantir que a correção da parceria seja aplicada no index atual.
