@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Adicionar botão de email sem alterar o layout
+      - name: Corrigir texto da parceria e adicionar email
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -20,17 +20,24 @@ jobs:
 
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          marker = 'yuna-partnership-email'
+          original = s
 
+          # Correção ortográfica solicitada: "do YunaMyst" -> "da YunaMyst".
+          s = s.replace('redes sociais do YunaMyst', 'redes sociais da YunaMyst')
+
+          marker = 'yuna-partnership-email'
           if marker in s:
-              print('EMAIL_PARCEIRA_JA_EXISTE')
+              if s != original:
+                  p.write_text(s, encoding='utf-8')
+                  print('TEXTO_PARCEIRA_CORRIGIDO')
+              else:
+                  print('PARCEIRA_JA_CORRETA')
               raise SystemExit(0)
 
           email_html = '''\n    <a class="yuna-partnership-email" href="mailto:solange.hannah90@gmail.com?subject=Parceria%20YunaMyst%20Codes">📧 ENVIAR E-MAIL PARA PARCERIA</a>\n'''
           css = '''\n.yuna-partnership-email{display:inline-flex;align-items:center;justify-content:center;margin-top:16px;padding:11px 18px;border-radius:10px;border:1px solid #f3bd52;background:linear-gradient(180deg,#f3c866,#b77b22);color:#241300;text-decoration:none;font-weight:900;font-size:14px;box-shadow:0 8px 20px rgba(0,0,0,.25)}.yuna-partnership-email:hover{filter:brightness(1.08)}\n'''
 
-          # Add the button only inside the partnership modal, immediately after its contact text.
-          pattern = r'(<div class="yuna-partnership-box"[\s\S]*?<p>Entra em contacto através das redes sociais do YunaMyst para apresentar a tua proposta\.</p>)'
+          pattern = r'(<div class="yuna-partnership-box"[\s\S]*?<p>Entra em contacto através das redes sociais da YunaMyst para apresentar a tua proposta\.</p>)'
           s2, n = re.subn(pattern, lambda m: m.group(1) + email_html, s, count=1, flags=re.I)
           if n != 1:
               raise SystemExit('MODAL_PARCEIRA_NAO_ENCONTRADO')
@@ -45,7 +52,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           git diff --cached --quiet && exit 0
-          git commit -m "Adicionar email para propostas de parceria"
+          git commit -m "Corrigir texto da parceria para da YunaMyst"
           for i in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main || git rebase --abort
