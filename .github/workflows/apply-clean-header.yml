@@ -26,17 +26,47 @@ jobs:
           import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
+
+          # Remove the previous generated header override.
           ident = 'yunamyst-clean-header-20260819'
           s = re.sub(r'<style id="' + ident + r'">.*?</style>\s*', '', s, flags=re.S | re.I)
+
+          # Keep the header on one black bar and crop only the bottom of the logo image,
+          # so the small "SUMMONERS WAR" subtitle is not shown in the header.
           css = '''<style id="yunamyst-clean-header-20260819">
           .topbar { height:70px !important; background:#000 !important; background-image:none !important; border-bottom:1px solid rgba(255,255,255,.12) !important; }
           .nav { height:70px !important; min-height:70px !important; align-items:center !important; }
-          .logo { width:360px !important; max-width:360px !important; height:64px !important; max-height:64px !important; display:flex !important; align-items:flex-start !important; justify-content:flex-start !important; background-image:url("assets/yunamyst-header-small.webp?v=20260819-clean2") !important; background-size:100% auto !important; background-position:left top !important; background-repeat:no-repeat !important; background-color:transparent !important; color:transparent !important; font-size:0 !important; line-height:0 !important; text-indent:-9999px !important; overflow:hidden !important; clip-path:inset(0 0 14px 0) !important; flex:0 0 auto !important; margin:0 !important; padding:0 !important; }
+          .logo { width:360px !important; max-width:360px !important; height:54px !important; max-height:54px !important; display:flex !important; align-items:flex-start !important; justify-content:flex-start !important; background-image:url("assets/yunamyst-header-small.webp?v=20260819-header-final") !important; background-size:100% auto !important; background-position:left top !important; background-repeat:no-repeat !important; background-color:transparent !important; color:transparent !important; font-size:0 !important; line-height:0 !important; text-indent:-9999px !important; overflow:hidden !important; clip-path:inset(0 0 8px 0) !important; flex:0 0 auto !important; margin:0 !important; padding:0 !important; }
           .logo img, .logo small { display:none !important; }
-          @media(max-width:850px) { .topbar,.nav { height:66px !important; min-height:66px !important; } .logo { width:320px !important; max-width:320px !important; height:60px !important; max-height:60px !important; clip-path:inset(0 0 13px 0) !important; } }
-          @media(max-width:600px) { .topbar,.nav { height:62px !important; min-height:62px !important; } .logo { width:290px !important; max-width:290px !important; height:56px !important; max-height:56px !important; clip-path:inset(0 0 12px 0) !important; } }
+          @media(max-width:1050px) and (min-width:851px) { .logo { width:330px !important; max-width:330px !important; height:54px !important; max-height:54px !important; } .menu { gap:12px !important; } }
+          @media(max-width:850px) { .topbar,.nav { height:66px !important; min-height:66px !important; } .logo { width:320px !important; max-width:320px !important; height:51px !important; max-height:51px !important; clip-path:inset(0 0 7px 0) !important; } }
+          @media(max-width:600px) { .topbar,.nav { height:62px !important; min-height:62px !important; } .logo { width:290px !important; max-width:290px !important; height:48px !important; max-height:48px !important; clip-path:inset(0 0 7px 0) !important; } }
           </style>'''
           s = re.sub(r'</head>', css + '\n</head>', s, count=1, flags=re.I)
+
+          # Fix the expired-code counter. The current markup stores expired cards
+          # directly inside #expiredPanel, while the old script looked for a
+          # non-existent #expiredCodesList and therefore always left (0).
+          old = re.search(r'function updateExpiredCodes\(\)\{.*?\}\s*updateExpiredCodes\(\);setInterval\(updateExpiredCodes,60000\);', s, flags=re.S)
+          new = '''function updateExpiredCodes(){
+            const activeList=document.getElementById('activeCodesList');
+            const expiredPanel=document.getElementById('expiredPanel');
+            const count=document.getElementById('expiredCount');
+            if(!expiredPanel)return;
+            const now=Date.now();
+            activeList?.querySelectorAll('.code[data-expires]').forEach(card=>{
+              const expiry=Date.parse(card.dataset.expires);
+              if(Number.isFinite(expiry)&&expiry<=now){card.classList.add('expired');expiredPanel.appendChild(card)}
+            });
+            const n=expiredPanel.querySelectorAll('.code.expired').length;
+            if(count)count.textContent='('+n+')';
+          }
+          updateExpiredCodes();setInterval(updateExpiredCodes,60000);'''
+          if old:
+              s = s[:old.start()] + new + s[old.end():]
+          else:
+              raise SystemExit('Não encontrei a função updateExpiredCodes no index.html')
+
           p.write_text(s, encoding='utf-8')
           PY
 
@@ -46,5 +76,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m "Ajustar cabeçalho e remover Summoners War [skip ci]"
+          git commit -m "Corrigir cabeçalho e contador de códigos expirados [skip ci]"
           git push origin HEAD:main
