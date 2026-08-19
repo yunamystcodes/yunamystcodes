@@ -560,7 +560,7 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 }
 </style>
 <style id="yunamyst-header-logo-final">
-/* YUNAMYST-CLEAN-HEADER-20260819-header-clean-1 */
+/* YUNAMYST-BIGGER-HEADER-20260819-header-bigger-2 */
 .topbar {
   height:70px !important;
   background:#000 !important;
@@ -569,21 +569,17 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   -webkit-backdrop-filter:none !important;
   border-bottom:1px solid rgba(255,255,255,.12) !important;
 }
-.nav {
-  height:70px !important;
-  min-height:70px !important;
-  align-items:center !important;
-}
+.nav { height:70px !important; min-height:70px !important; align-items:center !important; }
 .logo {
-  width:230px !important;
-  max-width:230px !important;
+  width:360px !important;
+  max-width:360px !important;
   height:64px !important;
   max-height:64px !important;
   display:flex !important;
   align-items:center !important;
   justify-content:flex-start !important;
-  background-image:url("assets/yunamyst-header-small.webp?v=20260819-header-clean-1") !important;
-  background-size:contain !important;
+  background-image:url("assets/yunamyst-header-small.webp?v=20260819-header-bigger-2") !important;
+  background-size:100% auto !important;
   background-position:left center !important;
   background-repeat:no-repeat !important;
   background-color:transparent !important;
@@ -598,15 +594,19 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 }
 .logo img { display:none !important; }
 .logo small { display:none !important; }
+@media(max-width:1050px) and (min-width:851px) {
+  .logo { width:330px !important; max-width:330px !important; height:64px !important; max-height:64px !important; }
+  .menu { gap:12px !important; }
+}
 @media(max-width:850px) {
   .topbar { height:66px !important; }
   .nav { height:66px !important; min-height:66px !important; }
-  .logo { width:205px !important; max-width:205px !important; height:58px !important; max-height:58px !important; }
+  .logo { width:300px !important; max-width:300px !important; height:58px !important; max-height:58px !important; }
 }
 @media(max-width:600px) {
   .topbar { height:62px !important; }
   .nav { height:62px !important; min-height:62px !important; }
-  .logo { width:190px !important; max-width:190px !important; height:56px !important; max-height:56px !important; }
+  .logo { width:280px !important; max-width:280px !important; height:56px !important; max-height:56px !important; }
 }
 </style>
 </head>
