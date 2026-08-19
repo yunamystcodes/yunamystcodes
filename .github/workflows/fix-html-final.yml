@@ -1,4 +1,4 @@
-name: Corrigir parceria, códigos e cabeçalho
+name: Corrigir cabeçalho e contador de expirados
 on:
   push:
     branches: [main]
@@ -16,106 +16,40 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Preparar a nova imagem larga do cabeçalho
+      - name: Preparar logo
         run: |
           test -f assets/yunamyst-header-small.webp.b64
           base64 -d assets/yunamyst-header-small.webp.b64 > assets/yunamyst-header-small.webp
           test -s assets/yunamyst-header-small.webp
-
-      - name: Atualizar index sem alterar o restante do site
+      - name: Corrigir index sem mexer no restante
         run: |
-          python - <<'PY'
+          python3 - <<'PY'
           from pathlib import Path
           import re
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-          original = s
-
-          s = s.replace('Queres fazer uma parceria com o YunaMyst Codes?', 'Queres fazer uma parceria com a YunaMyst?')
-          s = s.replace('Colabora com a YunaMyst Codes', 'Colabora com a YunaMyst')
-          s = re.sub(r'\s*<a[^>]*id=["\']yunaDesktopPartnershipButton["\'][^>]*>\s*🤝\s*FAZER PARCERIA\s*</a>\s*', '\n', s, flags=re.I)
-
-          codes = [
-              ('YYDSSWC26ZAN', '2026-08-22T00:00:00', 'https://withhive.me/313/YYDSSWC26ZAN'),
-              ('4MINGYIDAOXIAN', '2026-08-22T00:00:00', 'https://withhive.me/313/4MINGYIDAOXIAN'),
-          ]
-          insert_at = s.find('<div class="codes" id="activeCodesList">')
-          if insert_at != -1:
-              insert_at = s.find('>', insert_at) + 1
-              cards = []
-              for code, expiry, link in codes:
-                  if f'data-code="{code}"' not in s:
-                      cards.append(f'''<article class="code" data-code="{code}" data-expires="{expiry}"><div class="gift">🎁</div><div class="cinfo"><strong>{code}</strong><small>🆕 Código novo de 15/08/2026</small></div><div class="reward-icons" aria-label="Recompensas"><span class="reward-chip"><span class="reward-unknown">🎁</span><b>Recompensa do código</b></span></div><button class="copy" onclick="copiarCodigo('{code}',this)"><span data-i18n="copy">▣ COPIAR</span></button><a class="iphone" href="{link}" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>''')
-              if cards:
-                  s = s[:insert_at] + ''.join(cards) + s[insert_at:]
-
-          for ident in [
-              'yunamyst-header-logo-final',
-              'yunamyst-new-logo-final',
-              'yuna-header-logo',
-              'yunamyst-final-logo-override',
-              'yunamyst-new-logo-wide'
-          ]:
-              s = re.sub(r'<style id="' + re.escape(ident) + r'">.*?</style>\s*', '', s, flags=re.S | re.I)
-              s = re.sub(r'<script id="' + re.escape(ident) + r'">.*?</script>\s*', '', s, flags=re.S | re.I)
-
-          version = '20260818-header-wide-image-8'
-          css = f'''<style id="yunamyst-header-logo-final">
-          /* YUNAMYST-WIDE-HEADER-{version} */
-          .logo {{
-            width:420px !important;
-            height:120px !important;
-            max-width:45vw !important;
-            display:block !important;
-            background-image:url("assets/yunamyst-header-small.webp?v={version}") !important;
-            background-size:contain !important;
-            background-position:center !important;
-            background-repeat:no-repeat !important;
-            color:transparent !important;
-            font-size:0 !important;
-            line-height:0 !important;
-            text-indent:-9999px !important;
-            overflow:hidden !important;
-          }}
-          .logo small {{ display:none !important; }}
-          @media(max-width:900px) {{
-            .logo {{ width:340px !important; height:100px !important; max-width:48vw !important; }}
-          }}
-          @media(max-width:600px) {{
-            .logo {{ width:280px !important; height:90px !important; max-width:58vw !important; }}
-          }}
-          </style>'''
-          s = re.sub(r'</head>', css + '\n</head>', s, count=1, flags=re.I)
-
-          if s != original:
-              p.write_text(s, encoding='utf-8')
-              print('ALTERADO')
-          else:
-              print('JA_CORRETO')
+          p=Path('index.html'); s=p.read_text(encoding='utf-8')
+          # Remove overrides antigos que estavam a encolher/sobrepor o cabeçalho.
+          for ident in ['yunamyst-header-logo-final','yunamyst-new-logo-final','yuna-header-logo','yunamyst-final-logo-override','yunamyst-new-logo-wide','yuna-wide-header-final-fix']:
+              s=re.sub(r'<style id="'+re.escape(ident)+r'">.*?</style>\s*','',s,flags=re.S|re.I)
+          # Corrige a estrutura dos expirados: o JS esperava estes IDs.
+          if 'id="expiredCodesList"' not in s:
+              s=s.replace('<div class="expired-panel" id="expiredPanel">','<div class="expired-panel" id="expiredPanel"><div id="expiredCodesList">',1)
+              marker='</article></div></div>\n</section>'
+              pos=s.find(marker,s.find('id="expiredCodesList"'))
+              if pos!=-1:
+                  s=s[:pos]+'</article></div></div>\n</section>'+s[pos+len(marker):]
+          # Fallback seguro: se o bloco já existir, garantir que a contagem é calculada a partir dele.
+          old='function updateExpiredCodes(){const activeList=document.getElementById(\'activeCodesList\'),expiredList=document.getElementById(\'expiredCodesList\'),empty=document.getElementById(\'expiredEmpty\'),count=document.getElementById(\'expiredCount\');if(!activeList||!expiredList)return;const now=Date.now();activeList.querySelectorAll(\'.code[data-expires]\').forEach(card=>{const expiry=Date.parse(card.dataset.expires);if(Number.isFinite(expiry)&&expiry<=now){card.classList.add(\'expired\');expiredList.appendChild(card)}});const n=expiredList.querySelectorAll(\'.code\').length;if(count)count.textContent=\'(\'+n+\')\';if(empty)empty.style.display=n?\'none\':\'block\';}'
+          if old in s:
+              s=s.replace(old,"function updateExpiredCodes(){const expiredList=document.getElementById('expiredCodesList'),count=document.getElementById('expiredCount'),empty=document.getElementById('expiredEmpty');if(!expiredList)return;const n=expiredList.querySelectorAll('.code.expired,.code').length;if(count)count.textContent='('+n+')';if(empty)empty.style.display=n?'none':'block';}")
+          css='''<style id="yunamyst-header-logo-final">\n/* CABECALHO FINAL: logo maior, sem SUMMONERS WAR */\n.logo{width:360px!important;max-width:42vw!important;height:64px!important;display:block!important;background-image:url("assets/yunamyst-header-small.webp?v=20260819-final")!important;background-size:100% auto!important;background-position:left top!important;background-repeat:no-repeat!important;color:transparent!important;font-size:0!important;line-height:0!important;text-indent:-9999px!important;overflow:hidden!important;clip-path:inset(0 0 13px 0)!important}\n.logo small,.logo-mark,.logo-text{display:none!important}\n@media(max-width:900px){.logo{width:300px!important;max-width:50vw!important;height:60px!important}}\n@media(max-width:600px){.logo{width:250px!important;max-width:62vw!important;height:56px!important;clip-path:inset(0 0 11px 0)!important}}\n</style>'''
+          s=re.sub(r'</head>',css+'\n</head>',s,count=1,flags=re.I)
+          p.write_text(s,encoding='utf-8')
           PY
-
-      - name: Validar
-        run: |
-          test -s assets/yunamyst-header-small.webp
-          grep -q 'YUNAMYST-WIDE-HEADER-20260818-header-wide-image-8' index.html
-          grep -q 'assets/yunamyst-header-small.webp?v=20260818-header-wide-image-8' index.html
-
       - name: Publicar
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html assets/yunamyst-header-small.webp
-          if git diff --cached --quiet; then
-            echo "Nenhuma alteração necessária"
-            exit 0
-          fi
-          git commit -m "Aplicar imagem larga definitiva no cabeçalho [skip ci]"
-          for i in 1 2 3 4 5; do
-            git fetch origin main
-            git rebase origin/main || true
-            if git push origin HEAD:main; then exit 0; fi
-            git reset --hard origin/main
-            sleep 3
-          done
-          exit 1
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Corrigir cabeçalho e contador expirados [skip ci]"
+          git push origin HEAD:main
