@@ -535,6 +535,30 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   #yunaDesktopPartnershipButton{display:none!important}
 }
 </style>
+<style id="yunamyst-feedback-form">
+/* YUNAMYST-FEEDBACK-FORMSPREE */
+.yuna-feedback-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.78);backdrop-filter:blur(7px);align-items:center;justify-content:center;padding:16px}
+.yuna-feedback-modal.open{display:flex}
+.yuna-feedback-box{position:relative;width:min(520px,100%);max-height:92vh;overflow:auto;background:linear-gradient(180deg,#17102b,#080615);border:1px solid #a85cff;border-radius:20px;box-shadow:0 25px 80px rgba(0,0,0,.7);padding:24px;color:#fff}
+.yuna-feedback-box h2{margin:0 35px 7px 0;text-align:center;font:900 27px Georgia,serif;color:#f3d27a}
+.yuna-feedback-box .feedback-subtitle{text-align:center;color:#c8c0d4;font-size:13px;margin-bottom:20px}
+.yuna-feedback-close{position:absolute;right:12px;top:12px;width:36px;height:36px;border:1px solid #5c397b;border-radius:9px;background:#17102a;color:#fff;font-size:23px;cursor:pointer}
+.yuna-feedback-close:hover{border-color:#a85cff;background:#24113d}
+.yuna-feedback-field{margin-top:14px}
+.yuna-feedback-field label{display:block;margin-bottom:7px;color:#e8ddf1;font-size:13px;font-weight:800}
+.yuna-feedback-field input,.yuna-feedback-field textarea{width:100%;border:1px solid rgba(168,92,255,.5);border-radius:10px;background:#0d091a;color:#fff;padding:11px 12px;outline:none;font:inherit}
+.yuna-feedback-field input:focus,.yuna-feedback-field textarea:focus{border-color:#c17cff;box-shadow:0 0 0 3px rgba(168,92,255,.12)}
+.yuna-feedback-field textarea{min-height:120px;resize:vertical}
+.yuna-stars{display:flex;justify-content:center;gap:7px;margin:7px 0 4px;direction:rtl}
+.yuna-stars input{position:absolute;opacity:0;pointer-events:none}
+.yuna-stars label{font-size:38px;line-height:1;color:#4b4058;cursor:pointer;transition:.15s;text-shadow:0 0 0 transparent}
+.yuna-stars label:hover,.yuna-stars label:hover~label,.yuna-stars input:checked~label{color:#f5c85b;text-shadow:0 0 12px rgba(243,189,82,.45)}
+.yuna-rating-note{text-align:center;color:#9f96ad;font-size:11px;min-height:16px}
+.yuna-feedback-submit{width:100%;margin-top:18px;border:1px solid #e7b953;border-radius:11px;padding:12px;background:linear-gradient(180deg,#f3c866,#b77b22);color:#241300;font-weight:900;cursor:pointer;font-size:14px}
+.yuna-feedback-submit:disabled{opacity:.6;cursor:wait}
+.yuna-feedback-status{text-align:center;margin-top:12px;color:#7df0a5;font-weight:800;font-size:13px;min-height:18px}
+@media(max-width:600px){.yuna-feedback-box{padding:20px 16px}.yuna-feedback-box h2{font-size:23px}.yuna-stars label{font-size:34px}}
+</style>
 <style id="yunamyst-header-logo-final">
 /* YUNAMYST-CLEAN-HEADER-20260819-header-clean-1 */
 .topbar {
@@ -545,7 +569,11 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   -webkit-backdrop-filter:none !important;
   border-bottom:1px solid rgba(255,255,255,.12) !important;
 }
-.nav { height:70px !important; min-height:70px !important; align-items:center !important; }
+.nav {
+  height:70px !important;
+  min-height:70px !important;
+  align-items:center !important;
+}
 .logo {
   width:230px !important;
   max-width:230px !important;
@@ -580,30 +608,6 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   .nav { height:62px !important; min-height:62px !important; }
   .logo { width:190px !important; max-width:190px !important; height:56px !important; max-height:56px !important; }
 }
-</style>
-<style id="yunamyst-feedback-form">
-/* YUNAMYST-FEEDBACK-FORMSPREE */
-.yuna-feedback-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.78);backdrop-filter:blur(7px);align-items:center;justify-content:center;padding:16px}
-.yuna-feedback-modal.open{display:flex}
-.yuna-feedback-box{position:relative;width:min(520px,100%);max-height:92vh;overflow:auto;background:linear-gradient(180deg,#17102b,#080615);border:1px solid #a85cff;border-radius:20px;box-shadow:0 25px 80px rgba(0,0,0,.7);padding:24px;color:#fff}
-.yuna-feedback-box h2{margin:0 35px 7px 0;text-align:center;font:900 27px Georgia,serif;color:#f3d27a}
-.yuna-feedback-box .feedback-subtitle{text-align:center;color:#c8c0d4;font-size:13px;margin-bottom:20px}
-.yuna-feedback-close{position:absolute;right:12px;top:12px;width:36px;height:36px;border:1px solid #5c397b;border-radius:9px;background:#17102a;color:#fff;font-size:23px;cursor:pointer}
-.yuna-feedback-close:hover{border-color:#a85cff;background:#24113d}
-.yuna-feedback-field{margin-top:14px}
-.yuna-feedback-field label{display:block;margin-bottom:7px;color:#e8ddf1;font-size:13px;font-weight:800}
-.yuna-feedback-field input,.yuna-feedback-field textarea{width:100%;border:1px solid rgba(168,92,255,.5);border-radius:10px;background:#0d091a;color:#fff;padding:11px 12px;outline:none;font:inherit}
-.yuna-feedback-field input:focus,.yuna-feedback-field textarea:focus{border-color:#c17cff;box-shadow:0 0 0 3px rgba(168,92,255,.12)}
-.yuna-feedback-field textarea{min-height:120px;resize:vertical}
-.yuna-stars{display:flex;justify-content:center;gap:7px;margin:7px 0 4px;direction:rtl}
-.yuna-stars input{position:absolute;opacity:0;pointer-events:none}
-.yuna-stars label{font-size:38px;line-height:1;color:#4b4058;cursor:pointer;transition:.15s;text-shadow:0 0 0 transparent}
-.yuna-stars label:hover,.yuna-stars label:hover~label,.yuna-stars input:checked~label{color:#f5c85b;text-shadow:0 0 12px rgba(243,189,82,.45)}
-.yuna-rating-note{text-align:center;color:#9f96ad;font-size:11px;min-height:16px}
-.yuna-feedback-submit{width:100%;margin-top:18px;border:1px solid #e7b953;border-radius:11px;padding:12px;background:linear-gradient(180deg,#f3c866,#b77b22);color:#241300;font-weight:900;cursor:pointer;font-size:14px}
-.yuna-feedback-submit:disabled{opacity:.6;cursor:wait}
-.yuna-feedback-status{text-align:center;margin-top:12px;color:#7df0a5;font-weight:800;font-size:13px;min-height:18px}
-@media(max-width:600px){.yuna-feedback-box{padding:20px 16px}.yuna-feedback-box h2{font-size:23px}.yuna-stars label{font-size:34px}}
 </style>
 </head>
 <body>
