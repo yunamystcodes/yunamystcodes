@@ -51,3 +51,5 @@ jobs:
             git commit -m "Add feedback option below FAQ [feedback-update]"
             git push
           fi
+
+# trigger feedback deployment
