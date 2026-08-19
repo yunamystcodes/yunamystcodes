@@ -99,9 +99,6 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   text-indent:-9999px !important;
   overflow:hidden !important;
 }
-
-.logo{width:230px;height:70px;display:flex;align-items:center;flex:none;text-shadow:none}.logo img{width:100%;height:100%;display:block;object-fit:contain}.logo small{display:none}
-@media(max-width:600px){.logo{width:195px;height:62px}}
 </style>
 <style id="reward-layout-fix">
 /* Layout limpo das recompensas no PC */
@@ -282,6 +279,34 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 .active-codes-hidden{display:none!important}
 @media(max-width:600px){.active-codes-toggle{font-size:14px;padding:14px 10px}}
 </style>
+<style id="yuna-header-logo">
+.logo{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;white-space:nowrap!important;line-height:1!important}
+.logo-mark{width:52px!important;height:52px!important;border-radius:50%!important;object-fit:cover!important;border:2px solid #a85cff!important;box-shadow:0 0 18px rgba(168,92,255,.55)!important;display:block!important;flex:none!important}
+.logo-text{display:flex!important;flex-direction:column!important;align-items:flex-start!important;font-family:Georgia,serif!important;font-size:36px!important;font-weight:900!important;letter-spacing:1px!important;line-height:.9!important;text-shadow:0 0 18px #8b45ff!important}
+.logo-text small{display:block!important;width:auto!important;font:700 8px Arial!important;letter-spacing:4px!important;color:#f1ca76!important;text-align:left!important;margin-top:5px!important;line-height:1.1!important}
+@media(max-width:600px){.logo{gap:8px!important}.logo-mark{width:46px!important;height:46px!important}.logo-text{font-size:28px!important}.logo-text small{font-size:7px!important;letter-spacing:3px!important;margin-top:4px!important}}
+</style>
+<style id="yunamyst-header-logo-final">
+/* YUNAMYST-WIDE-HEADER-20260818-header-svg-final */
+.logo {
+  width:190px !important;
+  height:64px !important;
+  display:block !important;
+  background-image:url("assets/yunamyst-header.svg?v=20260818-header-svg-final") !important;
+  background-size:contain !important;
+  background-position:center !important;
+  background-repeat:no-repeat !important;
+  color:transparent !important;
+  font-size:0 !important;
+  line-height:0 !important;
+  text-indent:-9999px !important;
+  overflow:hidden !important;
+}
+.logo small { display:none !important; }
+@media(max-width:600px) {
+  .logo { width:175px !important; height:58px !important; }
+}
+</style>
 <style>
 /* YUNAMYST AVATAR OVERRIDE */
 .avatar{
@@ -307,6 +332,17 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   #yunaDesktopPartnershipButton{display:none!important}
 }
 </style>
+<style id="yuna-partnership-final-position">
+/* YUNAMYST PARTNERSHIP FINAL POSITION */
+@media (min-width:851px){
+  #yunaPartnershipButton{display:none!important}
+  #yunaDesktopPartnershipButton{display:flex!important;margin:0 0 12px!important;width:100%!important;max-width:none!important}
+}
+@media (max-width:850px){
+  #yunaPartnershipButton{display:flex!important}
+  #yunaDesktopPartnershipButton{display:none!important}
+}
+</style>
 <style id="yuna-wide-header-final-fix">
 /* YUNAMYST-WIDE-HEADER-FINAL-FIX */
 .logo-mark,.logo-text{display:none!important}
@@ -314,6 +350,64 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 .logo small{display:none!important}
 @media(max-width:600px){.logo{width:175px!important;height:58px!important}}
 </style>
+<style id="final-reward-layout">
+@media (min-width:851px){
+  .code{flex-wrap:nowrap!important;gap:7px!important}
+  .code .cinfo{flex:1 1 auto!important;min-width:120px!important}
+  .code .reward-icons{flex:0 0 auto!important;gap:5px!important;margin:0 2px 0 0!important;justify-content:flex-start!important}
+  .code .reward-chip{gap:4px!important}
+  .code .reward-img{width:30px!important;height:30px!important}
+  .code .reward-energy{width:30px!important;font-size:23px!important}
+  .code .reward-chip b{font-size:12px!important}
+  .code .copy,.code .iphone{flex:0 0 auto!important;width:auto!important;min-width:82px!important;margin:0!important}
+  .code .copy + .iphone{margin-left:0!important}
+}
+
+@media (max-width:600px){
+  /* Os icones/recompensas ficam intocados. Alteramos apenas os dois botoes. */
+  .codes .code .copy,
+  .codes .code .iphone{
+    position:static!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    box-sizing:border-box!important;
+    width:120px!important;
+    min-width:120px!important;
+    max-width:120px!important;
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+    margin:0!important;
+    padding:0 8px!important;
+    flex:none!important;
+    font-size:12px!important;
+    line-height:1!important;
+    border-radius:10px!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+    justify-self:center!important;
+  }
+  .codes .code .copy{grid-column:1!important;grid-row:3!important}
+  .codes .code .iphone{grid-column:2!important;grid-row:3!important}
+  .codes .code{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:8px!important}
+}
+
+@media (max-width:380px){
+  .codes .code .copy,
+  .codes .code .iphone{
+    width:112px!important;
+    min-width:112px!important;
+    max-width:112px!important;
+    height:42px!important;
+    min-height:42px!important;
+    max-height:42px!important;
+    font-size:11px!important;
+  }
+  .codes .code{column-gap:6px!important}
+}
+</style>
+
 <style id="mobile-button-size-final">
 @media (max-width:600px){
   /* SOMENTE os botoes: nao altera os icones/recompensas */
@@ -358,6 +452,7 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   .codes .code{column-gap:6px!important}
 }
 </style>
+
 <style id="mobile-button-final-fix">
 @media (max-width:600px){
   .codes .code{
@@ -445,105 +540,12 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   .codes .code .copy,.codes .code .iphone{height:42px!important;font-size:11px!important}
 }
 </style>
-<style id="yunamyst-header-logo-final">
-/* YUNAMYST-WIDE-HEADER-20260818-header-wide-image-8 */
-.logo {
-  width:420px !important;
-  height:120px !important;
-  max-width:45vw !important;
-  display:block !important;
-  background-image:url("assets/yunamyst-header-small.webp?v=20260818-header-wide-image-8") !important;
-  background-size:contain !important;
-  background-position:center !important;
-  background-repeat:no-repeat !important;
-  color:transparent !important;
-  font-size:0 !important;
-  line-height:0 !important;
-  text-indent:-9999px !important;
-  overflow:hidden !important;
-}
-.logo small { display:none !important; }
-@media(max-width:900px) {
-  .logo { width:340px !important; height:100px !important; max-width:48vw !important; }
-}
-@media(max-width:600px) {
-  .logo { width:280px !important; height:90px !important; max-width:58vw !important; }
-}
-</style>
-<style id="yuna-partnership-final-position">
-/* YUNAMYST PARTNERSHIP FINAL POSITION */
-@media (min-width:851px){
-  #yunaPartnershipButton{display:none!important}
-  #yunaDesktopPartnershipButton{display:flex!important;margin:0 0 12px!important;width:100%!important;max-width:none!important}
-}
-@media (max-width:850px){
-  #yunaPartnershipButton{display:flex!important}
-  #yunaDesktopPartnershipButton{display:none!important}
-}
-</style>
-<style id="final-reward-layout">
-@media (min-width:851px){
-  .code{flex-wrap:nowrap!important;gap:7px!important}
-  .code .cinfo{flex:1 1 auto!important;min-width:120px!important}
-  .code .reward-icons{flex:0 0 auto!important;gap:5px!important;margin:0 2px 0 0!important;justify-content:flex-start!important}
-  .code .reward-chip{gap:4px!important}
-  .code .reward-img{width:30px!important;height:30px!important}
-  .code .reward-energy{width:30px!important;font-size:23px!important}
-  .code .reward-chip b{font-size:12px!important}
-  .code .copy,.code .iphone{flex:0 0 auto!important;width:auto!important;min-width:82px!important;margin:0!important}
-  .code .copy + .iphone{margin-left:0!important}
-}
-
-@media (max-width:600px){
-  /* Os icones/recompensas ficam intocados. Alteramos apenas os dois botoes. */
-  .codes .code .copy,
-  .codes .code .iphone{
-    position:static!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    box-sizing:border-box!important;
-    width:120px!important;
-    min-width:120px!important;
-    max-width:120px!important;
-    height:44px!important;
-    min-height:44px!important;
-    max-height:44px!important;
-    margin:0!important;
-    padding:0 8px!important;
-    flex:none!important;
-    font-size:12px!important;
-    line-height:1!important;
-    border-radius:10px!important;
-    overflow:hidden!important;
-    white-space:nowrap!important;
-    justify-self:center!important;
-  }
-  .codes .code .copy{grid-column:1!important;grid-row:3!important}
-  .codes .code .iphone{grid-column:2!important;grid-row:3!important}
-  .codes .code{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:8px!important}
-}
-
-@media (max-width:380px){
-  .codes .code .copy,
-  .codes .code .iphone{
-    width:112px!important;
-    min-width:112px!important;
-    max-width:112px!important;
-    height:42px!important;
-    min-height:42px!important;
-    max-height:42px!important;
-    font-size:11px!important;
-  }
-  .codes .code{column-gap:6px!important}
-}
-</style>
 </head>
 <body>
 <div class="bg"></div>
 <audio autoplay="" id="yunaBgMusic" loop="" playsinline="" preload="auto" src="assets/One%20More%20Scroll.mp3"></audio>
 <header class="topbar"><div class="container nav">
-<a class="logo" href="/"><img alt="YunaMyst Summoners War" src="assets/yunamyst-header.svg?v=2"/></a>
+<div class="logo"><img alt="YunaMyst" class="logo-mark" src="assets/yunamyst-mark.webp"/><span class="logo-text">YunaMyst<small>SUMMONERS WAR</small></span></div>
 <nav class="menu"><a data-i18n="home" href="#inicio">⌂ INÍCIO</a><a data-i18n="codesNav" href="#codigos">🎁 CÓDIGOS</a><a data-i18n="howNav" href="#como">❔ COMO USAR</a><a data-i18n="faqNav" href="#faq">❔ FAQ</a></nav>
 <div class="lang-wrap"><button aria-label="Mutar música" class="audio-mute" id="audioMute" title="Mutar música" type="button">🔇</button><button class="lang" id="langBtn" type="button">🇧🇷 PT/BR⌄</button><div class="lang-menu" id="langMenu"><button data-lang="pt" type="button">🇧🇷 PT/BR</button><button data-lang="en" type="button">🇺🇸 ENG</button></div></div>
 </div></header>
