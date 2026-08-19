@@ -315,93 +315,6 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   #yunaDesktopPartnershipButton{display:none!important}
 }
 </style>
-<style id="mobile-button-final-fix">
-@media (max-width:600px){
-  .codes .code{
-    display:grid!important;
-    grid-template-columns:44px minmax(0,1fr)!important;
-    grid-template-rows:auto auto auto!important;
-    column-gap:8px!important;
-    row-gap:10px!important;
-    align-items:center!important;
-    position:relative!important;
-    padding:15px 10px 15px!important;
-    min-height:0!important;
-  }
-  .codes .code .gift{
-    grid-column:1!important;grid-row:1!important;
-    width:44px!important;height:44px!important;
-    align-self:start!important;
-  }
-  .codes .code .cinfo{
-    grid-column:2!important;grid-row:1!important;
-    min-width:0!important;
-    align-self:center!important;
-  }
-  .codes .code .cinfo strong{
-    font-size:16px!important;line-height:1.15!important;
-    white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
-  }
-  .codes .code .reward-icons{
-    grid-column:1 / 3!important;grid-row:2!important;
-    display:flex!important;
-    align-items:center!important;justify-content:flex-start!important;
-    flex-wrap:nowrap!important;
-    gap:10px!important;
-    width:100%!important;
-    min-width:0!important;
-    padding:0 0 0 0!important;
-    margin:0!important;
-    position:static!important;
-    order:initial!important;
-    visibility:visible!important;opacity:1!important;
-  }
-  .codes .code .reward-chip{
-    display:inline-flex!important;align-items:center!important;
-    gap:4px!important;flex:0 0 auto!important;
-    white-space:nowrap!important;
-  }
-  .codes .code .reward-img{
-    width:30px!important;height:30px!important;
-    flex:0 0 30px!important;display:inline-block!important;
-    background-size:contain!important;background-position:center!important;
-    background-repeat:no-repeat!important;
-  }
-  .codes .code .reward-energy{
-    width:30px!important;height:30px!important;flex:0 0 30px!important;
-    display:inline-flex!important;align-items:center!important;justify-content:center!important;
-    font-size:22px!important;line-height:30px!important;
-  }
-  .codes .code .reward-chip b{
-    display:inline!important;font-size:11px!important;
-    color:#fff!important;white-space:nowrap!important;
-  }
-  .codes .code .copy,.codes .code .iphone{
-    grid-row:3!important;
-    position:static!important;
-    height:44px!important;
-    margin:0!important;
-    width:100%!important;
-    min-width:0!important;max-width:none!important;
-    justify-self:stretch!important;
-    align-self:center!important;
-    padding:0 8px!important;
-    font-size:12px!important;
-    box-sizing:border-box!important;
-  }
-  .codes .code .copy{grid-column:1!important;}
-  .codes .code .iphone{grid-column:2!important;}
-}
-@media (max-width:380px){
-  .codes .code{grid-template-columns:40px minmax(0,1fr)!important;column-gap:7px!important;row-gap:8px!important;padding:13px 8px 13px!important}
-  .codes .code .gift{width:40px!important;height:40px!important}
-  .codes .code .cinfo strong{font-size:14px!important}
-  .codes .code .reward-icons{gap:7px!important}
-  .codes .code .reward-img,.codes .code .reward-energy{width:27px!important;height:27px!important;flex-basis:27px!important}
-  .codes .code .reward-chip b{font-size:10px!important}
-  .codes .code .copy,.codes .code .iphone{height:42px!important;font-size:11px!important}
-}
-</style>
 <style id="final-reward-layout">
 @media (min-width:851px){
   .code{flex-wrap:nowrap!important;gap:7px!important}
@@ -580,6 +493,94 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 @media (max-width:850px){
   #yunaPartnershipButton{display:flex!important}
   #yunaDesktopPartnershipButton{display:none!important}
+}
+</style>
+
+<style id="mobile-button-final-fix">
+@media (max-width:600px){
+  .codes .code{
+    display:grid!important;
+    grid-template-columns:44px minmax(0,1fr)!important;
+    grid-template-rows:auto auto auto!important;
+    column-gap:8px!important;
+    row-gap:10px!important;
+    align-items:center!important;
+    position:relative!important;
+    padding:15px 10px 15px!important;
+    min-height:0!important;
+  }
+  .codes .code .gift{
+    grid-column:1!important;grid-row:1!important;
+    width:44px!important;height:44px!important;
+    align-self:start!important;
+  }
+  .codes .code .cinfo{
+    grid-column:2!important;grid-row:1!important;
+    min-width:0!important;
+    align-self:center!important;
+  }
+  .codes .code .cinfo strong{
+    font-size:16px!important;line-height:1.15!important;
+    white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  }
+  .codes .code .reward-icons{
+    grid-column:1 / 3!important;grid-row:2!important;
+    display:flex!important;
+    align-items:center!important;justify-content:flex-start!important;
+    flex-wrap:nowrap!important;
+    gap:10px!important;
+    width:100%!important;
+    min-width:0!important;
+    padding:0 0 0 0!important;
+    margin:0!important;
+    position:static!important;
+    order:initial!important;
+    visibility:visible!important;opacity:1!important;
+  }
+  .codes .code .reward-chip{
+    display:inline-flex!important;align-items:center!important;
+    gap:4px!important;flex:0 0 auto!important;
+    white-space:nowrap!important;
+  }
+  .codes .code .reward-img{
+    width:30px!important;height:30px!important;
+    flex:0 0 30px!important;display:inline-block!important;
+    background-size:contain!important;background-position:center!important;
+    background-repeat:no-repeat!important;
+  }
+  .codes .code .reward-energy{
+    width:30px!important;height:30px!important;flex:0 0 30px!important;
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    font-size:22px!important;line-height:30px!important;
+  }
+  .codes .code .reward-chip b{
+    display:inline!important;font-size:11px!important;
+    color:#fff!important;white-space:nowrap!important;
+  }
+  .codes .code .copy,.codes .code .iphone{
+    grid-row:3!important;
+    position:static!important;
+    height:44px!important;
+    margin:0!important;
+    width:100%!important;
+    min-width:0!important;max-width:none!important;
+    justify-self:stretch!important;
+    align-self:center!important;
+    padding:0 8px!important;
+    font-size:12px!important;
+    box-sizing:border-box!important;
+  }
+  .codes .code .copy{grid-column:1!important;}
+  .codes .code .iphone{grid-column:2!important;}
+}
+@media (max-width:380px){
+  .codes .code{grid-template-columns:40px minmax(0,1fr)!important;column-gap:7px!important;row-gap:8px!important;padding:13px 8px 13px!important}
+  .codes .code .gift{width:40px!important;height:40px!important}
+  .codes .code .cinfo strong{font-size:14px!important}
+  .codes .code .reward-icons{gap:7px!important}
+  .codes .code .reward-img,.codes .code .reward-energy{width:27px!important;height:27px!important;flex-basis:27px!important}
+  .codes .code .reward-chip b{font-size:10px!important}
+  .codes .code .copy,.codes .code .iphone{height:42px!important;font-size:11px!important}
 }
 </style>
 </head>
