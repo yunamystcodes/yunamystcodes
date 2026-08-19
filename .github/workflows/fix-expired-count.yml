@@ -1,0 +1,60 @@
+name: Corrigir contador de códigos expirados
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fix-expired-count
+  cancel-in-progress: false
+
+jobs:
+  fix:
+    if: ${{ !contains(github.event.head_commit.message, '[skip ci]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Corrigir contador dos expirados
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          old = r'''function updateExpiredCodes(){const activeList=document.getElementById('activeCodesList'),expiredList=document.getElementById('expiredCodesList'),empty=document.getElementById('expiredEmpty'),count=document.getElementById('expiredCount');if(!activeList||!expiredList)return;const now=Date.now();activeList.querySelectorAll('.code[data-expires]').forEach(card=>{const expiry=Date.parse(card.dataset.expires);if(Number.isFinite(expiry)&&expiry<=now){card.classList.add('expired');expiredList.appendChild(card)}});const n=expiredList.querySelectorAll('.code').length;if(count)count.textContent='('+n+')';if(empty)empty.style.display=n?'none':'block';}'''
+
+          new = r'''function updateExpiredCodes(){const activeList=document.getElementById('activeCodesList'),expiredList=document.getElementById('expiredCodesList'),expiredPanel=document.getElementById('expiredPanel'),empty=document.getElementById('expiredEmpty'),count=document.getElementById('expiredCount');if(!activeList)return;const now=Date.now();if(expiredList){activeList.querySelectorAll('.code[data-expires]').forEach(card=>{const expiry=Date.parse(card.dataset.expires);if(Number.isFinite(expiry)&&expiry<=now){card.classList.add('expired');expiredList.appendChild(card)}});}const source=expiredList||expiredPanel;const n=source?source.querySelectorAll('.code.expired').length:0;if(count)count.textContent='('+n+')';if(empty)empty.style.display=n?'none':'block';}'''
+
+          if old not in s:
+              raise SystemExit('Função esperada não encontrada no index.html')
+          s = s.replace(old, new, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Validar
+        run: |
+          grep -q "expiredPanel" index.html
+          grep -q "source=expiredList||expiredPanel" index.html
+          grep -q "expiredCount" index.html
+
+      - name: Publicar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteração necessária"
+            exit 0
+          fi
+          git commit -m "Corrigir contador de códigos expirados [skip ci]"
+          git push origin HEAD:main
