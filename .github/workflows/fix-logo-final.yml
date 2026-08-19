@@ -28,7 +28,7 @@ jobs:
           base64 -d assets/yunamyst-header-small.webp.b64 > assets/yunamyst-header-small.webp
           test -s assets/yunamyst-header-small.webp
 
-      - name: Aplicar cabeçalho preto com logo compacta
+      - name: Aplicar cabeçalho preto com logo larga
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -47,9 +47,9 @@ jobs:
               s = re.sub(r'<style id="' + re.escape(ident) + r'">.*?</style>\s*', '', s, flags=re.S | re.I)
               s = re.sub(r'<script id="' + re.escape(ident) + r'">.*?</script>\s*', '', s, flags=re.S | re.I)
 
-          version = '20260819-header-clean-1'
+          version = '20260819-header-wide-1'
           css = f'''<style id="yunamyst-header-logo-final">
-          /* YUNAMYST-CLEAN-HEADER-{version} */
+          /* YUNAMYST-WIDE-HEADER-{version} */
           .topbar {{
             height:70px !important;
             background:#000 !important;
@@ -60,8 +60,8 @@ jobs:
           }}
           .nav {{ height:70px !important; min-height:70px !important; align-items:center !important; }}
           .logo {{
-            width:230px !important;
-            max-width:230px !important;
+            width:520px !important;
+            max-width:520px !important;
             height:64px !important;
             max-height:64px !important;
             display:flex !important;
@@ -83,15 +83,19 @@ jobs:
           }}
           .logo img {{ display:none !important; }}
           .logo small {{ display:none !important; }}
+          @media(max-width:1050px) and (min-width:851px) {{
+            .logo {{ width:420px !important; max-width:420px !important; height:64px !important; max-height:64px !important; }}
+            .menu {{ gap:12px !important; }}
+          }}
           @media(max-width:850px) {{
             .topbar {{ height:66px !important; }}
             .nav {{ height:66px !important; min-height:66px !important; }}
-            .logo {{ width:205px !important; max-width:205px !important; height:58px !important; max-height:58px !important; }}
+            .logo {{ width:280px !important; max-width:280px !important; height:58px !important; max-height:58px !important; }}
           }}
           @media(max-width:600px) {{
             .topbar {{ height:62px !important; }}
             .nav {{ height:62px !important; min-height:62px !important; }}
-            .logo {{ width:190px !important; max-width:190px !important; height:56px !important; max-height:56px !important; }}
+            .logo {{ width:250px !important; max-width:250px !important; height:56px !important; max-height:56px !important; }}
           }}
           </style>'''
           s = re.sub(r'</head>', css + '\n</head>', s, count=1, flags=re.I)
@@ -101,8 +105,8 @@ jobs:
       - name: Validar
         run: |
           test -s assets/yunamyst-header-small.webp
-          grep -q 'YUNAMYST-CLEAN-HEADER-20260819-header-clean-1' index.html
-          grep -q 'width:230px' index.html
+          grep -q 'YUNAMYST-WIDE-HEADER-20260819-header-wide-1' index.html
+          grep -q 'width:520px' index.html
           grep -q 'height:64px' index.html
 
       - name: Publicar
@@ -114,7 +118,7 @@ jobs:
             echo "Nenhuma alteração necessária"
             exit 0
           fi
-          git commit -m "Ajustar logo do cabeçalho para tamanho compacto [skip ci]"
+          git commit -m "Aumentar logo do cabeçalho para largura total [skip ci]"
           for i in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main || true
