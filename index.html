@@ -67,4 +67,52 @@
     margin-left: auto !important;
   }
 }
+/* Ajuste final botoes mobile */
+@media(max-width:600px){.code{grid-template-columns:44px minmax(0,1fr) 88px 96px!important;gap:10px!important}.code .copy{grid-column:3!important;width:88px!important;min-width:88px!important;max-width:88px!important;margin-left:0!important;justify-self:start!important}.code .iphone{grid-column:4!important;width:96px!important;min-width:96px!important;max-width:96px!important;margin-left:0!important;justify-self:start!important}}
+@media(max-width:380px){.code{grid-template-columns:40px minmax(0,1fr) 82px 90px!important;gap:9px!important}.code .copy{width:82px!important;min-width:82px!important;max-width:82px!important}.code .iphone{width:90px!important;min-width:90px!important;max-width:90px!important}}
+</style>
+
+<style id="mobile-button-size-final">
+@media (max-width:600px){
+  /* SOMENTE os botoes: nao altera os icones/recompensas */
+  .codes .code .copy,
+  .codes .code .iphone{
+    position:static!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    box-sizing:border-box!important;
+    width:120px!important;
+    min-width:120px!important;
+    max-width:120px!important;
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+    margin:0!important;
+    padding:0 8px!important;
+    flex:none!important;
+    font-size:12px!important;
+    line-height:1!important;
+    border-radius:10px!important;
+    justify-self:center!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+  }
+  .codes .code .copy{grid-column:1!important;grid-row:3!important}
+  .codes .code .iphone{grid-column:2!important;grid-row:3!important}
+  .codes .code{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:8px!important}
+}
+@media (max-width:380px){
+  .codes .code .copy,
+  .codes .code .iphone{
+    width:112px!important;
+    min-width:112px!important;
+    max-width:112px!important;
+    height:42px!important;
+    min-height:42px!important;
+    max-height:42px!important;
+    font-size:11px!important;
+  }
+  .codes .code{column-gap:6px!important}
+}
 </style>
