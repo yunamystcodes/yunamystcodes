@@ -1,0 +1,124 @@
+name: Apply feedback widget
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install feedback widget
+        shell: python
+        run: |
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          s = re.sub(r'(<div class="feedback-option" id="feedback">\s*<a )href="[^"]+"', r'\1href="#feedbackModal"', s, count=1)
+          s = re.sub(r'(<div class="feedback-option" id="mobile-feedback">\s*<a )href="[^"]+"', r'\1href="#feedbackModal"', s, count=1)
+
+          css = r'''
+          <style id="yunamyst-feedback-modal">
+          .ym-feedback-modal{display:none;position:fixed;inset:0;z-index:999;background:rgba(2,1,9,.82);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px}
+          .ym-feedback-modal.open{display:flex}
+          .ym-feedback-box{width:min(520px,100%);max-height:90vh;overflow:auto;background:linear-gradient(180deg,#17102b,#080615);border:1px solid #a85cff;border-radius:20px;box-shadow:0 25px 80px rgba(0,0,0,.7);padding:24px;position:relative}
+          .ym-feedback-box h2{margin:0 34px 7px 0;color:#f3d27a;font:900 26px Georgia,serif}
+          .ym-feedback-box p{margin:0 0 16px;color:#cfc6dc;font-size:13px;line-height:1.5}
+          .ym-feedback-close{position:absolute;right:12px;top:12px;width:34px;height:34px;border:1px solid #5c397b;border-radius:9px;background:#17102a;color:#fff;font-size:22px;cursor:pointer}
+          .ym-feedback-close:hover{border-color:#a85cff;background:#24113d}
+          .ym-feedback-stars{display:flex;justify-content:center;gap:7px;margin:8px 0 18px}
+          .ym-feedback-star{border:0;background:transparent;color:#51465f;font-size:36px;line-height:1;cursor:pointer;padding:2px;transition:.15s;text-shadow:0 0 0 transparent}
+          .ym-feedback-star:hover,.ym-feedback-star.selected{color:#f3bd52;text-shadow:0 0 14px rgba(243,189,82,.35);transform:translateY(-1px)}
+          .ym-feedback-label{display:block;color:#f0eafa;font-size:12px;font-weight:900;margin:0 0 7px}
+          .ym-feedback-name,.ym-feedback-text{width:100%;border:1px solid rgba(168,92,255,.45);border-radius:10px;background:#0d0919;color:#fff;outline:0;padding:11px 12px;font:inherit}
+          .ym-feedback-name{margin-bottom:12px}.ym-feedback-text{min-height:110px;resize:vertical}
+          .ym-feedback-name:focus,.ym-feedback-text:focus{border-color:#a85cff;box-shadow:0 0 0 3px rgba(168,92,255,.1)}
+          .ym-feedback-submit{width:100%;margin-top:14px;border:1px solid #a85cff;border-radius:11px;background:linear-gradient(180deg,#7a34c0,#3a146b);color:#fff;padding:12px;font-weight:900;cursor:pointer}
+          .ym-feedback-submit:hover{filter:brightness(1.1)}
+          .ym-feedback-note{margin-top:9px!important;margin-bottom:0!important;text-align:center;color:#9f96ad!important;font-size:10px!important}
+          .ym-feedback-success{display:none;text-align:center;padding:20px 5px}.ym-feedback-success.show{display:block}.ym-feedback-success .ok{font-size:42px;margin-bottom:8px}.ym-feedback-success h3{color:#f3d27a;margin-bottom:6px}.ym-feedback-success p{margin-bottom:0}
+          .ym-feedback-form.hidden{display:none}
+          @media(max-width:600px){.ym-feedback-box{padding:20px 16px;border-radius:17px}.ym-feedback-box h2{font-size:22px}.ym-feedback-star{font-size:33px}.ym-feedback-stars{gap:4px}}
+          </style>
+          '''
+
+          html = r'''
+          <div class="ym-feedback-modal" id="feedbackModal" aria-hidden="true">
+            <div class="ym-feedback-box" role="dialog" aria-modal="true" aria-labelledby="ymFeedbackTitle">
+              <button class="ym-feedback-close" id="ymFeedbackClose" type="button" aria-label="Fechar">×</button>
+              <div class="ym-feedback-form" id="ymFeedbackFormWrap">
+                <h2 id="ymFeedbackTitle">💜 Deixe o seu feedback</h2>
+                <p>Ajuda a melhorar a YunaMyst. Escolhe de 1 a 5 estrelas e conta-nos o que achaste.</p>
+                <span class="ym-feedback-label">A tua avaliação</span>
+                <div class="ym-feedback-stars" id="ymFeedbackStars" role="radiogroup" aria-label="Avaliação de 1 a 5 estrelas">
+                  <button class="ym-feedback-star" type="button" data-star="1" aria-label="1 estrela">★</button>
+                  <button class="ym-feedback-star" type="button" data-star="2" aria-label="2 estrelas">★</button>
+                  <button class="ym-feedback-star" type="button" data-star="3" aria-label="3 estrelas">★</button>
+                  <button class="ym-feedback-star" type="button" data-star="4" aria-label="4 estrelas">★</button>
+                  <button class="ym-feedback-star" type="button" data-star="5" aria-label="5 estrelas">★</button>
+                </div>
+                <label class="ym-feedback-label" for="ymFeedbackName">Nome (opcional)</label>
+                <input class="ym-feedback-name" id="ymFeedbackName" maxlength="60" placeholder="Como queres aparecer?" />
+                <label class="ym-feedback-label" for="ymFeedbackText">Feedback</label>
+                <textarea class="ym-feedback-text" id="ymFeedbackText" maxlength="1000" placeholder="Escreve a tua opinião, sugestão ou o que gostarias de ver no site..."></textarea>
+                <button class="ym-feedback-submit" id="ymFeedbackSubmit" type="button">⭐ ENVIAR FEEDBACK</button>
+                <p class="ym-feedback-note">A avaliação é de 1 a 5 estrelas. O formulário fica dentro do próprio site.</p>
+              </div>
+              <div class="ym-feedback-success" id="ymFeedbackSuccess">
+                <div class="ok">💜</div><h3>Obrigado pelo feedback!</h3>
+                <p>A tua opinião foi registada neste dispositivo.</p>
+              </div>
+            </div>
+          </div>
+          '''
+
+          js = r'''
+          <script id="yunamyst-feedback-script">
+          (function(){
+            const modal=document.getElementById('feedbackModal');
+            if(!modal)return;
+            const close=document.getElementById('ymFeedbackClose');
+            const form=document.getElementById('ymFeedbackFormWrap');
+            const success=document.getElementById('ymFeedbackSuccess');
+            const stars=[...document.querySelectorAll('.ym-feedback-star')];
+            const name=document.getElementById('ymFeedbackName');
+            const text=document.getElementById('ymFeedbackText');
+            const submit=document.getElementById('ymFeedbackSubmit');
+            let rating=0;
+            function paint(){stars.forEach(s=>s.classList.toggle('selected',Number(s.dataset.star)<=rating));}
+            function open(){modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
+            function hide(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';}
+            document.querySelectorAll('a[href="#feedbackModal"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();open();}));
+            stars.forEach(s=>s.addEventListener('click',()=>{rating=Number(s.dataset.star);paint();}));
+            close.addEventListener('click',hide);
+            modal.addEventListener('click',e=>{if(e.target===modal)hide();});
+            document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
+            submit.addEventListener('click',()=>{
+              if(!rating){alert('Escolhe uma avaliação de 1 a 5 estrelas.');return;}
+              if(!text.value.trim()){alert('Escreve o teu feedback antes de enviar.');text.focus();return;}
+              const item={rating,name:name.value.trim()||'Player',message:text.value.trim(),date:new Date().toISOString()};
+              const list=JSON.parse(localStorage.getItem('yunamyst-feedback')||'[]');list.push(item);localStorage.setItem('yunamyst-feedback',JSON.stringify(list.slice(-100)));
+              form.classList.add('hidden');success.classList.add('show');
+              setTimeout(()=>{hide();form.classList.remove('hidden');success.classList.remove('show');rating=0;paint();name.value='';text.value='';},1800);
+            });
+          })();
+          </script>
+          '''
+
+          if 'id="feedbackModal"' not in s:
+              s = s.replace('</body>', css + html + js + '\n</body>')
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commit changes and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git rm -f .github/workflows/apply-feedback-widget.yml
+          git commit -m "Add on-site 5-star feedback form" || exit 0
+          git push
