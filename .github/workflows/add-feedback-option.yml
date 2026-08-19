@@ -1,0 +1,53 @@
+name: Add feedback option
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - '.github/workflows/add-feedback-option.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  feedback:
+    if: ${{ !contains(github.event.head_commit.message, '[feedback-update]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add feedback option below FAQ
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          css = '''\n<style id="yunamyst-feedback-option">\n.feedback-option{\n  margin-top:12px;\n  padding:16px;\n  border-radius:16px;\n  border:1px solid rgba(168,92,255,.55);\n  background:linear-gradient(135deg,rgba(20,8,40,.96),rgba(8,6,20,.96));\n  box-shadow:0 10px 30px rgba(0,0,0,.28);\n  text-align:center;\n}\n.feedback-option a{\n  display:flex;align-items:center;justify-content:center;gap:10px;\n  width:100%;padding:12px 14px;border-radius:11px;\n  border:1px solid #a85cff;\n  background:linear-gradient(180deg,#6d2bb0,#32115e);\n  color:#fff;text-decoration:none;font-weight:900;font-size:14px;\n  transition:.2s;\n}\n.feedback-option a:hover{filter:brightness(1.12);transform:translateY(-1px);box-shadow:0 0 20px rgba(168,92,255,.25)}\n.feedback-option small{display:block;margin-top:8px;color:#bdb5cd;font-size:11px;line-height:1.4}\n@media(max-width:850px){.feedback-option{margin-top:12px}.feedback-option a{font-size:13px;padding:12px}.feedback-option small{font-size:10px}}\n</style>\n'''
+          if 'id="yunamyst-feedback-option"' not in s:
+              s = s.replace('</head>', css + '</head>', 1)
+
+          block = '''<div class="feedback-option" id="feedback">\n<a href="https://chat.whatsapp.com/KWg53GNpXDA3G5lDT8VwOg?s=cl&amp;p=a&amp;ilr=0" target="_blank" rel="noopener">💬 DEIXE SEU FEEDBACK <span>›</span></a>\n<small>A tua opinião ajuda a melhorar o site e trazer conteúdos melhores para os players.</small>\n</div>'''
+
+          desktop_marker = '</section></aside></main>'
+          if 'id="feedback"' not in s:
+              s = s.replace(desktop_marker, '</section>' + block + '</aside></main>', 1)
+
+          mobile_block = block.replace('id="feedback"','id="mobile-feedback"')
+          mobile_marker = '</section></div>\n<footer'
+          if 'id="mobile-feedback"' not in s:
+              s = s.replace(mobile_marker, '</section>' + mobile_block + '</div>\n<footer', 1)
+
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commit feedback option
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes needed"
+          else
+            git commit -m "Add feedback option below FAQ [feedback-update]"
+            git push
+          fi
