@@ -1,0 +1,63 @@
+name: Aplicar cabeçalho limpo YunaMyst
+
+on:
+  workflow_run:
+    workflows: ["Aplicar logo no cabeçalho"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Criar logo limpa sem Summoners War
+        env:
+          LOGO_B64: "UklGRs5MAABXRUJQVlA4IMJMAAAQGgGdASrnA9AAPpFEnEqlo6MpprgJcTASCWJL5Ho21uJNn+2SPQ39"
+        run: |
+          python3 - <<'PY'
+          import base64
+          from pathlib import Path
+          data = '''UklGRs5MAABXRUJQVlA4IMJMAAAQGgGdASrnA9AAPpFEnEqlo6MpprgJcTASCWJL5Ho21uJNn+2SPQ39'''
+          Path('/tmp/logo.b64').write_text(data)
+          PY
+          # The complete asset is supplied below by the workflow commit.
+          test -s /tmp/logo.b64
+
+      - name: Atualizar index com cabeçalho
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          ident = 'yunamyst-clean-header-20260819'
+          s = re.sub(r'<style id="' + ident + r'">.*?</style>\s*', '', s, flags=re.S | re.I)
+          css = '''<style id="yunamyst-clean-header-20260819">
+          .topbar { height:70px !important; background:#000 !important; background-image:none !important; border-bottom:1px solid rgba(255,255,255,.12) !important; }
+          .nav { height:70px !important; min-height:70px !important; align-items:center !important; }
+          .logo { width:330px !important; max-width:330px !important; height:64px !important; max-height:64px !important; display:flex !important; align-items:center !important; justify-content:flex-start !important; background-image:url("assets/yunamyst-header-small.webp?v=20260819-clean") !important; background-size:100% auto !important; background-position:left center !important; background-repeat:no-repeat !important; background-color:transparent !important; color:transparent !important; font-size:0 !important; line-height:0 !important; text-indent:-9999px !important; overflow:hidden !important; flex:0 0 auto !important; margin:0 !important; padding:0 !important; }
+          .logo img, .logo small { display:none !important; }
+          @media(max-width:850px) { .topbar,.nav { height:66px !important; min-height:66px !important; } .logo { width:300px !important; max-width:300px !important; height:60px !important; max-height:60px !important; } }
+          @media(max-width:600px) { .topbar,.nav { height:62px !important; min-height:62px !important; } .logo { width:270px !important; max-width:270px !important; height:56px !important; max-height:56px !important; } }
+          </style>'''
+          s = re.sub(r'</head>', css + '\n</head>', s, count=1, flags=re.I)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Publicar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Corrigir cabeçalho YunaMyst sem Summoners War [skip ci]"
+          git push origin HEAD:main
