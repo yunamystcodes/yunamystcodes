@@ -60,7 +60,7 @@ jobs:
               s = re.sub(r'<style id="' + re.escape(ident) + r'">.*?</style>\s*', '', s, flags=re.S | re.I)
               s = re.sub(r'<script id="' + re.escape(ident) + r'">.*?</script>\s*', '', s, flags=re.S | re.I)
 
-          version = '20260819-header-clean-1'
+          version = '20260819-header-clean-2'
           css = f'''<style id="yunamyst-header-logo-final">
           /* YUNAMYST-CLEAN-HEADER-{version} */
           .topbar {{
@@ -77,16 +77,16 @@ jobs:
             align-items:center !important;
           }}
           .logo {{
-            width:230px !important;
-            max-width:230px !important;
+            width:360px !important;
+            max-width:360px !important;
             height:64px !important;
             max-height:64px !important;
             display:flex !important;
-            align-items:center !important;
+            align-items:flex-start !important;
             justify-content:flex-start !important;
             background-image:url("assets/yunamyst-header-small.webp?v={version}") !important;
-            background-size:contain !important;
-            background-position:left center !important;
+            background-size:100% auto !important;
+            background-position:left top !important;
             background-repeat:no-repeat !important;
             background-color:transparent !important;
             color:transparent !important;
@@ -94,6 +94,7 @@ jobs:
             line-height:0 !important;
             text-indent:-9999px !important;
             overflow:hidden !important;
+            clip-path:inset(0 0 14px 0) !important;
             flex:0 0 auto !important;
             margin:0 !important;
             padding:0 !important;
@@ -103,12 +104,12 @@ jobs:
           @media(max-width:850px) {{
             .topbar {{ height:66px !important; }}
             .nav {{ height:66px !important; min-height:66px !important; }}
-            .logo {{ width:205px !important; max-width:205px !important; height:58px !important; max-height:58px !important; }}
+            .logo {{ width:320px !important; max-width:320px !important; height:60px !important; max-height:60px !important; clip-path:inset(0 0 13px 0) !important; }}
           }}
           @media(max-width:600px) {{
             .topbar {{ height:62px !important; }}
             .nav {{ height:62px !important; min-height:62px !important; }}
-            .logo {{ width:190px !important; max-width:190px !important; height:56px !important; max-height:56px !important; }}
+            .logo {{ width:290px !important; max-width:290px !important; height:56px !important; max-height:56px !important; clip-path:inset(0 0 12px 0) !important; }}
           }}
           </style>'''
           s = re.sub(r'</head>', css + '\n</head>', s, count=1, flags=re.I)
@@ -123,10 +124,10 @@ jobs:
       - name: Validar
         run: |
           test -s assets/yunamyst-header-small.webp
-          grep -q 'YUNAMYST-CLEAN-HEADER-20260819-header-clean-1' index.html
-          grep -q 'assets/yunamyst-header-small.webp?v=20260819-header-clean-1' index.html
-          grep -q 'width:230px' index.html
-          grep -q 'height:64px' index.html
+          grep -q 'YUNAMYST-CLEAN-HEADER-20260819-header-clean-2' index.html
+          grep -q 'assets/yunamyst-header-small.webp?v=20260819-header-clean-2' index.html
+          grep -q 'width:360px' index.html
+          grep -q 'clip-path:inset(0 0 14px 0)' index.html
 
       - name: Publicar
         run: |
@@ -137,7 +138,7 @@ jobs:
             echo "Nenhuma alteração necessária"
             exit 0
           fi
-          git commit -m "Corrigir cabeçalho com logo no tamanho certo [skip ci]"
+          git commit -m "Ajustar tamanho do cabeçalho e ocultar subtítulo [skip ci]"
           for i in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main || true
