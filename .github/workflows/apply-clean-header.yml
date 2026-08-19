@@ -27,12 +27,9 @@ jobs:
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
 
-          # Remove the previous generated header override.
+          # Corrige o cabeçalho e remove visualmente o subtítulo pequeno da imagem.
           ident = 'yunamyst-clean-header-20260819'
           s = re.sub(r'<style id="' + ident + r'">.*?</style>\s*', '', s, flags=re.S | re.I)
-
-          # Keep the header on one black bar and crop only the bottom of the logo image,
-          # so the small "SUMMONERS WAR" subtitle is not shown in the header.
           css = '''<style id="yunamyst-clean-header-20260819">
           .topbar { height:70px !important; background:#000 !important; background-image:none !important; border-bottom:1px solid rgba(255,255,255,.12) !important; }
           .nav { height:70px !important; min-height:70px !important; align-items:center !important; }
@@ -44,9 +41,7 @@ jobs:
           </style>'''
           s = re.sub(r'</head>', css + '\n</head>', s, count=1, flags=re.I)
 
-          # Fix the expired-code counter. The current markup stores expired cards
-          # directly inside #expiredPanel, while the old script looked for a
-          # non-existent #expiredCodesList and therefore always left (0).
+          # Corrige o contador dos códigos expirados. O HTML usa #expiredPanel.
           old = re.search(r'function updateExpiredCodes\(\)\{.*?\}\s*updateExpiredCodes\(\);setInterval\(updateExpiredCodes,60000\);', s, flags=re.S)
           new = '''function updateExpiredCodes(){
             const activeList=document.getElementById('activeCodesList');
