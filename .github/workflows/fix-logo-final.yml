@@ -28,7 +28,7 @@ jobs:
           base64 -d assets/yunamyst-header-small.webp.b64 > assets/yunamyst-header-small.webp
           test -s assets/yunamyst-header-small.webp
 
-      - name: Aplicar cabeçalho preto com logo maior
+      - name: Corrigir cabeçalho sem cortar a logo
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -42,14 +42,15 @@ jobs:
               'yunamyst-new-logo-final',
               'yuna-header-logo',
               'yunamyst-final-logo-override',
-              'yunamyst-new-logo-wide'
+              'yunamyst-new-logo-wide',
+              'yunamyst-clean-header-20260819'
           ]:
               s = re.sub(r'<style id="' + re.escape(ident) + r'">.*?</style>\s*', '', s, flags=re.S | re.I)
               s = re.sub(r'<script id="' + re.escape(ident) + r'">.*?</script>\s*', '', s, flags=re.S | re.I)
 
-          version = '20260819-header-bigger-2'
+          version = '20260819-header-fit-3'
           css = f'''<style id="yunamyst-header-logo-final">
-          /* YUNAMYST-BIGGER-HEADER-{version} */
+          /* YUNAMYST-HEADER-FIT-{version}: logo inteira, sem corte */
           .topbar {{
             height:70px !important;
             background:#000 !important;
@@ -58,17 +59,19 @@ jobs:
             -webkit-backdrop-filter:none !important;
             border-bottom:1px solid rgba(255,255,255,.12) !important;
           }}
-          .nav {{ height:70px !important; min-height:70px !important; align-items:center !important; }}
+          .nav {{
+            height:70px !important;
+            min-height:70px !important;
+            align-items:center !important;
+          }}
           .logo {{
             width:360px !important;
             max-width:360px !important;
             height:64px !important;
             max-height:64px !important;
-            display:flex !important;
-            align-items:center !important;
-            justify-content:flex-start !important;
+            display:block !important;
             background-image:url("assets/yunamyst-header-small.webp?v={version}") !important;
-            background-size:100% auto !important;
+            background-size:contain !important;
             background-position:left center !important;
             background-repeat:no-repeat !important;
             background-color:transparent !important;
@@ -77,25 +80,25 @@ jobs:
             line-height:0 !important;
             text-indent:-9999px !important;
             overflow:hidden !important;
-            flex:0 0 auto !important;
+            clip-path:none !important;
+            flex:0 0 360px !important;
             margin:0 !important;
             padding:0 !important;
           }}
-          .logo img {{ display:none !important; }}
-          .logo small {{ display:none !important; }}
+          .logo img, .logo small {{ display:none !important; }}
           @media(max-width:1050px) and (min-width:851px) {{
-            .logo {{ width:330px !important; max-width:330px !important; height:64px !important; max-height:64px !important; }}
+            .logo {{ width:330px !important; max-width:330px !important; height:64px !important; max-height:64px !important; flex-basis:330px !important; }}
             .menu {{ gap:12px !important; }}
           }}
           @media(max-width:850px) {{
             .topbar {{ height:66px !important; }}
             .nav {{ height:66px !important; min-height:66px !important; }}
-            .logo {{ width:300px !important; max-width:300px !important; height:58px !important; max-height:58px !important; }}
+            .logo {{ width:300px !important; max-width:300px !important; height:58px !important; max-height:58px !important; flex-basis:300px !important; }}
           }}
           @media(max-width:600px) {{
             .topbar {{ height:62px !important; }}
             .nav {{ height:62px !important; min-height:62px !important; }}
-            .logo {{ width:280px !important; max-width:280px !important; height:56px !important; max-height:56px !important; }}
+            .logo {{ width:280px !important; max-width:280px !important; height:56px !important; max-height:56px !important; flex-basis:280px !important; }}
           }}
           </style>'''
           s = re.sub(r'</head>', css + '\n</head>', s, count=1, flags=re.I)
@@ -105,9 +108,9 @@ jobs:
       - name: Validar
         run: |
           test -s assets/yunamyst-header-small.webp
-          grep -q 'YUNAMYST-BIGGER-HEADER-20260819-header-bigger-2' index.html
-          grep -q 'width:360px' index.html
-          grep -q 'height:64px' index.html
+          grep -q 'YUNAMYST-HEADER-FIT-20260819-header-fit-3' index.html
+          grep -q 'background-size:contain' index.html
+          grep -q 'clip-path:none' index.html
 
       - name: Publicar
         run: |
@@ -118,7 +121,7 @@ jobs:
             echo "Nenhuma alteração necessária"
             exit 0
           fi
-          git commit -m "Aumentar letras da logo no cabeçalho [skip ci]"
+          git commit -m "Corrigir logo do cabeçalho sem corte [skip ci]"
           for i in 1 2 3 4 5; do
             git fetch origin main
             git rebase origin/main || true
