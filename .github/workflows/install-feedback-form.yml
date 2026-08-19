@@ -1,0 +1,133 @@
+name: Instalar formulário de feedback
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  install-feedback-form:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Instalar feedback no index
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          endpoint = 'https://formspree.io/f/mdenpbql'
+
+          s = s.replace(
+              'href="https://chat.whatsapp.com/KWg53GNpXDA3G5lDT8VwOg?s=cl&amp;p=a&amp;ilr=0" rel="noopener" target="_blank">💬 DEIXE SEU FEEDBACK',
+              'href="#yunaFeedbackModal" class="yuna-feedback-open">💬 DEIXE SEU FEEDBACK'
+          )
+
+          marker = '/* YUNAMYST-FEEDBACK-FORMSPREE */'
+          if marker not in s:
+              css = r'''<style id="yunamyst-feedback-form">
+          /* YUNAMYST-FEEDBACK-FORMSPREE */
+          .yuna-feedback-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.78);backdrop-filter:blur(7px);align-items:center;justify-content:center;padding:16px}
+          .yuna-feedback-modal.open{display:flex}
+          .yuna-feedback-box{position:relative;width:min(520px,100%);max-height:92vh;overflow:auto;background:linear-gradient(180deg,#17102b,#080615);border:1px solid #a85cff;border-radius:20px;box-shadow:0 25px 80px rgba(0,0,0,.7);padding:24px;color:#fff}
+          .yuna-feedback-box h2{margin:0 35px 7px 0;text-align:center;font:900 27px Georgia,serif;color:#f3d27a}
+          .yuna-feedback-box .feedback-subtitle{text-align:center;color:#c8c0d4;font-size:13px;margin-bottom:20px}
+          .yuna-feedback-close{position:absolute;right:12px;top:12px;width:36px;height:36px;border:1px solid #5c397b;border-radius:9px;background:#17102a;color:#fff;font-size:23px;cursor:pointer}
+          .yuna-feedback-close:hover{border-color:#a85cff;background:#24113d}
+          .yuna-feedback-field{margin-top:14px}
+          .yuna-feedback-field label{display:block;margin-bottom:7px;color:#e8ddf1;font-size:13px;font-weight:800}
+          .yuna-feedback-field input,.yuna-feedback-field textarea{width:100%;border:1px solid rgba(168,92,255,.5);border-radius:10px;background:#0d091a;color:#fff;padding:11px 12px;outline:none;font:inherit}
+          .yuna-feedback-field input:focus,.yuna-feedback-field textarea:focus{border-color:#c17cff;box-shadow:0 0 0 3px rgba(168,92,255,.12)}
+          .yuna-feedback-field textarea{min-height:120px;resize:vertical}
+          .yuna-stars{display:flex;justify-content:center;gap:7px;margin:7px 0 4px;direction:rtl}
+          .yuna-stars input{position:absolute;opacity:0;pointer-events:none}
+          .yuna-stars label{font-size:38px;line-height:1;color:#4b4058;cursor:pointer;transition:.15s;text-shadow:0 0 0 transparent}
+          .yuna-stars label:hover,.yuna-stars label:hover~label,.yuna-stars input:checked~label{color:#f5c85b;text-shadow:0 0 12px rgba(243,189,82,.45)}
+          .yuna-rating-note{text-align:center;color:#9f96ad;font-size:11px;min-height:16px}
+          .yuna-feedback-submit{width:100%;margin-top:18px;border:1px solid #e7b953;border-radius:11px;padding:12px;background:linear-gradient(180deg,#f3c866,#b77b22);color:#241300;font-weight:900;cursor:pointer;font-size:14px}
+          .yuna-feedback-submit:disabled{opacity:.6;cursor:wait}
+          .yuna-feedback-status{text-align:center;margin-top:12px;color:#7df0a5;font-weight:800;font-size:13px;min-height:18px}
+          @media(max-width:600px){.yuna-feedback-box{padding:20px 16px}.yuna-feedback-box h2{font-size:23px}.yuna-stars label{font-size:34px}}
+          </style>'''
+
+              html = f'''<div class="yuna-feedback-modal" id="yunaFeedbackModal" aria-hidden="true">
+          <div class="yuna-feedback-box" role="dialog" aria-modal="true" aria-labelledby="yunaFeedbackTitle">
+            <button class="yuna-feedback-close" id="yunaFeedbackClose" type="button" aria-label="Fechar">×</button>
+            <h2 id="yunaFeedbackTitle">💬 DEIXE SEU FEEDBACK</h2>
+            <p class="feedback-subtitle">A tua opinião ajuda a melhorar a YunaMyst para todos os players.</p>
+            <form id="yunaFeedbackForm" action="{endpoint}" method="POST">
+              <input type="hidden" name="_subject" value="Novo feedback — YunaMyst Codes">
+              <div class="yuna-feedback-field">
+                <label>A tua avaliação</label>
+                <div class="yuna-stars" id="yunaStars" role="radiogroup" aria-label="Avaliação de 1 a 5 estrelas">
+                  <input id="yunaStar5" name="rating" type="radio" value="5"><label for="yunaStar5" title="5 estrelas">★</label>
+                  <input id="yunaStar4" name="rating" type="radio" value="4"><label for="yunaStar4" title="4 estrelas">★</label>
+                  <input id="yunaStar3" name="rating" type="radio" value="3"><label for="yunaStar3" title="3 estrelas">★</label>
+                  <input id="yunaStar2" name="rating" type="radio" value="2"><label for="yunaStar2" title="2 estrelas">★</label>
+                  <input id="yunaStar1" name="rating" type="radio" value="1" required><label for="yunaStar1" title="1 estrela">★</label>
+                </div>
+                <div class="yuna-rating-note" id="yunaRatingNote">Escolhe de 1 a 5 estrelas</div>
+              </div>
+              <div class="yuna-feedback-field">
+                <label for="yunaFeedbackName">Nome ou apelido <span style="color:#9f96ad;font-weight:400">(opcional)</span></label>
+                <input id="yunaFeedbackName" name="name" type="text" maxlength="80" placeholder="Como queres ser identificado?">
+              </div>
+              <div class="yuna-feedback-field">
+                <label for="yunaFeedbackMessage">O teu feedback</label>
+                <textarea id="yunaFeedbackMessage" name="message" maxlength="1500" required placeholder="Conta-nos o que achaste do site..."></textarea>
+              </div>
+              <button class="yuna-feedback-submit" id="yunaFeedbackSubmit" type="submit">⭐ ENVIAR FEEDBACK</button>
+              <div class="yuna-feedback-status" id="yunaFeedbackStatus" aria-live="polite"></div>
+            </form>
+          </div>
+          </div>'''
+
+              js = r'''<script id="yunamyst-feedback-form-script">
+          (function(){
+            var modal=document.getElementById('yunaFeedbackModal');
+            var close=document.getElementById('yunaFeedbackClose');
+            var form=document.getElementById('yunaFeedbackForm');
+            var status=document.getElementById('yunaFeedbackStatus');
+            var submit=document.getElementById('yunaFeedbackSubmit');
+            var note=document.getElementById('yunaRatingNote');
+            if(!modal||!form)return;
+            var opens=document.querySelectorAll('.yuna-feedback-open');
+            function open(){modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
+            function shut(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';}
+            opens.forEach(function(b){b.addEventListener('click',function(e){e.preventDefault();open();});});
+            close&&close.addEventListener('click',shut);
+            modal.addEventListener('click',function(e){if(e.target===modal)shut();});
+            document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('open'))shut();});
+            document.querySelectorAll('#yunaStars input').forEach(function(input){input.addEventListener('change',function(){note.textContent=this.value+' de 5 estrelas';});});
+            form.addEventListener('submit',function(e){
+              e.preventDefault();
+              if(!form.rating.value){note.textContent='Escolhe uma avaliação de 1 a 5 estrelas';return;}
+              submit.disabled=true;status.textContent='A enviar...';
+              fetch(form.action,{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}})
+                .then(function(r){if(!r.ok)throw new Error('send');return r.json().catch(function(){return {};});})
+                .then(function(){status.textContent='✓ Obrigado! O teu feedback foi enviado.';form.reset();note.textContent='Escolhe de 1 a 5 estrelas';setTimeout(shut,1800);})
+                .catch(function(){status.textContent='Não foi possível enviar agora. Tenta novamente.';})
+                .finally(function(){submit.disabled=false;});
+            });
+          })();
+          </script>'''
+
+              s = s.replace('</head>', css + '\n</head>', 1)
+              s = s.replace('</body>', html + '\n' + js + '\n</body>', 1)
+
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commitar alteração
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Adicionar formulário de feedback com estrelas"
+          git push
