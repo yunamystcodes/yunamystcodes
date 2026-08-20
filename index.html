@@ -372,7 +372,6 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   .codes .code{column-gap:6px!important}
 }
 </style>
-
 <style id="mobile-button-size-final">
 @media (max-width:600px){
   /* SOMENTE os botoes: nao altera os icones/recompensas */
@@ -417,7 +416,6 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   .codes .code{column-gap:6px!important}
 }
 </style>
-
 <style id="mobile-button-final-fix">
 @media (max-width:600px){
   .codes .code{
@@ -590,7 +588,7 @@ const bgMusic=document.getElementById("yunaBgMusic"),audioMute=document.getEleme
     var button=document.getElementById('activeCodesToggle');
     if(!list||!tab||!button)return;
     var cards=Array.prototype.slice.call(list.querySelectorAll(':scope > .code:not(.expired)'));
-    var visibleCount=8;
+    var visibleCount=cards.length;
     cards.forEach(function(card,index){
       card.classList.toggle('active-codes-hidden',index>=visibleCount && !button.classList.contains('open'));
     });
