@@ -27,24 +27,39 @@ jobs:
       - name: Instalar dependências
         run: pip install requests beautifulsoup4
 
-      - name: Remover limite de 8 códigos ativos
-        run: sed -i 's/\[:8\]/[:]/g' scripts/auto_update_codes_fixed.py
+      - name: Atualizar código sem limite de 8
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('scripts/auto_update_codes_fixed.py')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('[:8]', '[:]', 1)
+          p.write_text(s, encoding='utf-8')
+          PY
 
       - name: Agregar códigos de 6 fontes
         run: python scripts/auto_update_codes_fixed.py
 
-      - name: Mostrar todos os códigos ativos
-        run: sed -i 's/var visibleCount=8;/var visibleCount=cards.length;/' index.html
+      - name: Mostrar todos os códigos ativos no index
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('var visibleCount=8;', 'var visibleCount=cards.length;')
+          s = s.replace('var visibleCount = 8;', 'var visibleCount = cards.length;')
+          p.write_text(s, encoding='utf-8')
+          PY
 
       - name: Publicar alterações
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html data/code_history.json
+          git add index.html data/code_history.json scripts/auto_update_codes_fixed.py
           if git diff --cached --quiet; then
             echo "Nenhuma alteração nos códigos."
           else
-            git commit -m "Mostrar todos os códigos ativos"
+            git commit -m "Atualizar todos os códigos ativos no site"
             git pull --rebase origin main
             git push
           fi
