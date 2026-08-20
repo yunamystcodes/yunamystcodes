@@ -27,11 +27,14 @@ jobs:
       - name: Instalar dependências
         run: pip install requests beautifulsoup4
 
+      - name: Remover limite de 8 códigos ativos
+        run: sed -i 's/\[:8\]/[:]/g' scripts/auto_update_codes_fixed.py
+
       - name: Agregar códigos de 6 fontes
         run: python scripts/auto_update_codes_fixed.py
 
-      - name: Garantir 8 códigos visíveis
-        run: sed -i 's/visibleCount=4/visibleCount=8/g' index.html
+      - name: Mostrar todos os códigos ativos
+        run: sed -i 's/var visibleCount=8;/var visibleCount=cards.length;/' index.html
 
       - name: Publicar alterações
         run: |
@@ -41,7 +44,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Nenhuma alteração nos códigos."
           else
-            git commit -m "Atualizar códigos de múltiplas fontes"
+            git commit -m "Mostrar todos os códigos ativos"
             git pull --rebase origin main
             git push
           fi
