@@ -11,8 +11,6 @@ INDEX = Path("index.html")
 HISTORY = Path("data/code_history.json")
 CODE_RE = re.compile(r"\b[A-Z0-9]{8,24}\b")
 
-# Seis fontes independentes. As quatro primeiras têm listas de códigos; as duas últimas
-# funcionam como radar comunitário para detectar códigos recém-publicados.
 SOURCES = [
     ("summonerswarcodes.us", "https://summonerswarcodes.us/", "table"),
     ("SWGT", "https://swgt.io/gamecodes/", "table"),
@@ -35,20 +33,16 @@ STOPWORDS = {
     "REDDIT", "SWGT", "SWQUERY", "QUERY", "HTTPS", "WITHHIVE", "ANDROID", "IOS",
 }
 
-
 def clean(text):
     return re.sub(r"\s+", " ", html.unescape(text or "")).strip()
-
 
 def normalise_code(value):
     value = re.sub(r"[^A-Z0-9]", "", value.upper())
     if not 8 <= len(value) <= 24 or value in STOPWORDS:
         return None
-    # Evita capturar palavras comuns que por acaso tenham 8-24 caracteres.
     if not any(c.isdigit() for c in value):
         return None
     return value
-
 
 def extract_codes(text):
     found = []
@@ -58,16 +52,10 @@ def extract_codes(text):
             found.append(code)
     return found
 
-
 def fetch_html(url):
-    response = requests.get(
-        url,
-        timeout=30,
-        headers={"User-Agent": "YunaMystCodes/2.0 (+https://yunacodes.com/)"},
-    )
+    response = requests.get(url, timeout=30, headers={"User-Agent": "YunaMystCodes/2.0 (+https://yunacodes.com/)"})
     response.raise_for_status()
     return response.text
-
 
 def parse_table_source(name, url):
     soup = BeautifulSoup(fetch_html(url), "html.parser")
@@ -85,20 +73,11 @@ def parse_table_source(name, url):
         for code in dict.fromkeys(codes):
             if status_expired and not status_active:
                 continue
-            found[code] = {
-                "code": code,
-                "reward": cells[1] if len(cells) > 1 else "Recompensa não informada",
-                "source": name,
-            }
+            found[code] = {"code": code, "reward": cells[1] if len(cells) > 1 else "Recompensa não informada", "source": name}
     return found
 
-
 def parse_reddit_source(name, url):
-    response = requests.get(
-        url,
-        timeout=30,
-        headers={"User-Agent": "YunaMystCodes/2.0 (+https://yunacodes.com/)"},
-    )
+    response = requests.get(url, timeout=30, headers={"User-Agent": "YunaMystCodes/2.0 (+https://yunacodes.com/)"})
     response.raise_for_status()
     data = response.json()
     found = {}
@@ -110,17 +89,11 @@ def parse_reddit_source(name, url):
             continue
         body = " ".join([post.get("title", ""), post.get("selftext", "")])
         for code in extract_codes(body):
-            found[code] = {
-                "code": code,
-                "reward": "Recompensa não informada",
-                "source": name,
-            }
+            found[code] = {"code": code, "reward": "Recompensa não informada", "source": name}
     return found
-
 
 def collect_sources():
     merged = {}
-    expired_hints = set()
     successful = 0
     errors = []
     for name, url, kind in SOURCES:
@@ -131,7 +104,6 @@ def collect_sources():
                 if code not in merged:
                     merged[code] = item
                 else:
-                    # Prefere recompensa mais informativa e mantém todas as fontes.
                     if merged[code]["reward"] == "Recompensa não informada" and item["reward"] != "Recompensa não informada":
                         merged[code]["reward"] = item["reward"]
                     merged[code]["source"] += ", " + item["source"]
@@ -140,7 +112,6 @@ def collect_sources():
     if successful < 3:
         raise RuntimeError("Poucas fontes responderam: " + " | ".join(errors))
     return merged, successful, errors
-
 
 def load_history():
     HISTORY.parent.mkdir(parents=True, exist_ok=True)
@@ -151,10 +122,8 @@ def load_history():
     except Exception:
         return {}
 
-
 def save_history(history):
     HISTORY.write_text(json.dumps(history, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-
 
 def reward_items(code, reward):
     if code in KNOWN_REWARDS:
@@ -178,7 +147,6 @@ def reward_items(code, reward):
             items.append((kind, m.group(1).rstrip(",.")))
     return items
 
-
 def reward_html(code, reward):
     items = reward_items(code, reward)
     if not items:
@@ -189,22 +157,12 @@ def reward_html(code, reward):
         out.append(f'<span class="reward-chip" title="{html.escape(kind)}">{icon}<b>×{html.escape(qty)}</b></span>')
     return "".join(out)
 
-
 def card(item, expired=False):
     code = html.escape(item["code"])
     rewards = reward_html(item["code"], item.get("reward", ""))
     expired_class = " expired" if expired else ""
-    buttons = "" if expired else (
-        f'<button class="copy" onclick="copiarCodigo(\'{code}\',this)"><span data-i18n="copy">▣ COPIAR</span></button>'
-        f'<a class="iphone" href="https://withhive.me/313/{code}" target="_blank" rel="noopener">'
-        f'<span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a>'
-    )
-    return (
-        f'<article class="code{expired_class}" data-code="{code}"><div class="gift">🎁</div>'
-        f'<div class="cinfo"><strong>{code}</strong><small>{"Código expirado" if expired else "Atualizado automaticamente"}</small></div>'
-        f'<div class="reward-icons" aria-label="Recompensas">{rewards}</div>{buttons}</article>'
-    )
-
+    buttons = "" if expired else (f'<button class="copy" onclick="copiarCodigo(\'{code}\',this)"><span data-i18n="copy">▣ COPIAR</span></button>' f'<a class="iphone" href="https://withhive.me/313/{code}" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a>')
+    return f'<article class="code{expired_class}" data-code="{code}"><div class="gift">🎁</div><div class="cinfo"><strong>{code}</strong><small>{"Código expirado" if expired else "Atualizado automaticamente"}</small></div><div class="reward-icons" aria-label="Recompensas">{rewards}</div>{buttons}</article>'
 
 def update_index(active_items, expired_items):
     soup = BeautifulSoup(INDEX.read_text(encoding="utf-8"), "html.parser")
@@ -214,7 +172,6 @@ def update_index(active_items, expired_items):
     active.clear()
     for item in active_items:
         active.append(BeautifulSoup(card(item), "html.parser"))
-
     expired_panel = soup.find(class_="expired-panel")
     if expired_panel is not None:
         expired_panel.clear()
@@ -225,31 +182,17 @@ def update_index(active_items, expired_items):
             empty = soup.new_tag("div", attrs={"class": "expired-empty"})
             empty.string = "Nenhum código expirado registrado."
             expired_panel.append(empty)
-
     INDEX.write_text(str(soup), encoding="utf-8")
-
 
 def main():
     merged, successful, errors = collect_sources()
     now = datetime.now(timezone.utc)
     history = load_history()
-
-    # Atualiza histórico. Um código só passa para expirados após 3 execuções consecutivas
-    # sem aparecer em nenhuma das fontes que responderam; isso evita expirar códigos por
-    # uma falha temporária de uma fonte.
     active_codes = set(merged)
     for code, item in merged.items():
         record = history.get(code, {})
-        record.update({
-            "code": code,
-            "reward": item.get("reward", record.get("reward", "Recompensa não informada")),
-            "sources": sorted(set(record.get("sources", []) + [s.strip() for s in item.get("source", "").split(",") if s.strip()])),
-            "last_seen": now.isoformat(),
-            "missing_runs": 0,
-            "status": "active",
-        })
+        record.update({"code": code, "reward": item.get("reward", record.get("reward", "Recompensa não informada")), "sources": sorted(set(record.get("sources", []) + [s.strip() for s in item.get("source", "").split(",") if s.strip()])), "last_seen": now.isoformat(), "missing_runs": 0, "status": "active"})
         history[code] = record
-
     for code, record in list(history.items()):
         if code in active_codes:
             continue
@@ -258,27 +201,15 @@ def main():
         record["missing_runs"] = int(record.get("missing_runs", 0)) + 1
         record["status"] = "active" if record["missing_runs"] < 3 else "expired"
         history[code] = record
-
     save_history(history)
-
-    active_items = sorted(
-        [v for v in history.values() if v.get("status") == "active"],
-        key=lambda x: x.get("last_seen", ""),
-        reverse=True,
-    )[:8]
-    expired_items = sorted(
-        [v for v in history.values() if v.get("status") == "expired"],
-        key=lambda x: x.get("last_seen", ""),
-        reverse=True,
-    )
-
+    active_items = sorted([v for v in history.values() if v.get("status") == "active"], key=lambda x: x.get("last_seen", ""), reverse=True)
+    expired_items = sorted([v for v in history.values() if v.get("status") == "expired"], key=lambda x: x.get("last_seen", ""), reverse=True)
     update_index(active_items, expired_items)
     print(f"Fontes OK: {successful}/{len(SOURCES)}")
     print("Códigos ativos únicos:", ", ".join(x["code"] for x in active_items))
     print("Códigos expirados arquivados:", len(expired_items))
     if errors:
         print("Avisos:", " | ".join(errors))
-
 
 if __name__ == "__main__":
     main()
