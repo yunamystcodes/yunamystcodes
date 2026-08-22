@@ -14,18 +14,18 @@
   "912XUXIECHUANQI": {
     "code": "912XUXIECHUANQI",
     "last_seen": "2026-08-21T23:58:06.893704+00:00",
-    "missing_runs": 2,
+    "missing_runs": 3,
     "reward": "Mana ×200,000, Scroll Mystical ×1",
     "sources": [
       "SWGT",
       "SWQuery",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "AUGSW2026V7N": {
     "code": "AUGSW2026V7N",
-    "last_seen": "2026-08-22T03:11:33.258188+00:00",
+    "last_seen": "2026-08-22T04:57:10.742625+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Fire Scroll ×3",
     "sources": [
@@ -62,14 +62,14 @@
   "SWC2026JUELEBA": {
     "code": "SWC2026JUELEBA",
     "last_seen": "2026-08-21T23:58:06.893704+00:00",
-    "missing_runs": 2,
+    "missing_runs": 3,
     "reward": "Energy ×100, Scroll Mystical ×1",
     "sources": [
       "SWGT",
       "SWQuery",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "SWFR1ERENNOW": {
     "code": "SWFR1ERENNOW",
@@ -85,7 +85,7 @@
   },
   "SWXFRIEREN2026": {
     "code": "SWXFRIEREN2026",
-    "last_seen": "2026-08-22T03:11:33.258188+00:00",
+    "last_seen": "2026-08-22T04:57:10.742625+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Mana ×300,000, Scroll Mystical ×3",
     "sources": [
