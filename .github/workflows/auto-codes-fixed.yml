@@ -1,11 +1,13 @@
 name: Atualizar códigos automaticamente - YunaCodes
 
 on:
-  push:
-    branches: [main]
   schedule:
     - cron: '15 * * * *'
   workflow_dispatch:
+
+concurrency:
+  group: yuna-codes-updater
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -59,7 +61,8 @@ jobs:
           if git diff --cached --quiet; then
             echo "Nenhuma alteração nos códigos."
           else
-            git commit -m "Atualizar todos os códigos ativos no site"
             git pull --rebase origin main
-            git push
+            git add index.html data/code_history.json scripts/auto_update_codes_fixed.py
+            git commit -m "Atualizar todos os códigos ativos no site"
+            git push origin HEAD:main
           fi
