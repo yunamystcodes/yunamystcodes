@@ -2,7 +2,7 @@ name: Atualizar códigos automaticamente - YunaCodes
 
 on:
   schedule:
-    - cron: '15 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
   push:
     branches: [main]
@@ -23,42 +23,38 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-
       - name: Instalar dependências
         run: pip install requests beautifulsoup4
-
-      - name: Agregar códigos de todas as fontes
+      - name: Atualizar códigos de todas as fontes
         run: python scripts/auto_update_codes_fixed.py
-
-      - name: Mostrar todos os códigos ativos no index
+      - name: Garantir todos os códigos visíveis
         run: |
           python - <<'PY'
           from pathlib import Path
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-          s = s.replace('var visibleCount=8;', 'var visibleCount=cards.length;')
-          s = s.replace('var visibleCount = 8;', 'var visibleCount = cards.length;')
-          p.write_text(s, encoding='utf-8')
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('var visibleCount=8;', 'var visibleCount=cards.length;')
+          s=s.replace('var visibleCount = 8;', 'var visibleCount=cards.length;')
+          s=s.replace('var visibleCount=4;', 'var visibleCount=cards.length;')
+          s=s.replace('var visibleCount = 4;', 'var visibleCount=cards.length;')
+          p.write_text(s,encoding='utf-8')
           PY
-
-      - name: Verificar códigos encontrados
+      - name: Confirmar códigos ativos no index
         run: |
-          echo '--- CÓDIGOS ATIVOS ENCONTRADOS ---'
-          grep -oE '[A-Z0-9]{8,24}' index.html | sort -u | head -100
-
-      - name: Publicar alterações no main
+          echo '--- CÓDIGOS ATIVOS NO INDEX ---'
+          grep -oE '[A-Z0-9]{8,24}' index.html | sort -u | grep -E '4READY4TDOT|AMPRELIMSLEGACYDRP|APAC26LEGASEA|AUGSW2026V7N|GLHF2026AMERICAS|LEGENDSWC2026HSL|PAI2026BANGKOK|SWC26X10LEGACYBND|SWXFRIEREN2026|YIQIZOUGUO10SWC' || true
+      - name: Publicar alterações sem rebase conflitante
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html data/code_history.json
           if git diff --cached --quiet; then
-            echo "Nenhuma alteração nos códigos."
+            echo "Nenhuma alteração necessária."
             exit 0
           fi
-          git commit -m "Atualizar todos os códigos ativos no site"
+          git commit -m "Atualizar automaticamente todos os códigos ativos"
           git push origin HEAD:main
