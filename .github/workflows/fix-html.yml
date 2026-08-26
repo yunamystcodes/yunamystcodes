@@ -10,34 +10,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Corrigir meta description e botão WhatsApp
+      - name: Atualizar botão WhatsApp diretamente no index.html
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          lines = s.splitlines()
-          for i, line in enumerate(lines):
-              if line.startswith('<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas'):
-                  lines[i] = '<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas, códigos de resgate e como usar os códigos no jogo." name="description"/>'
-                  break
-          s = '\n'.join(lines) + '\n'
-          old = '.whats{margin:25px auto 22px;max-width:760px;display:flex;align-items:center;gap:14px;text-align:left;padding:11px 17px;border-radius:18px;text-decoration:none;color:#fff;background:linear-gradient(90deg,rgba(20,8,40,.96),rgba(34,13,57,.96));border:1px solid #a85cff;box-shadow:0 0 28px rgba(168,92,255,.18)}.wicon{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:#25d366;color:#fff;font-size:28px;font-weight:900;flex:none}.wicon svg{width:32px;height:32px;display:block}'
-          new = '.whats{margin:25px auto 22px;max-width:760px;display:flex;align-items:center;gap:14px;text-align:left;padding:11px 17px;border-radius:18px;text-decoration:none;color:#fff;background:linear-gradient(90deg,rgba(8,7,22,.98),rgba(16,10,29,.98));border:1px solid #25d366;box-shadow:0 0 28px rgba(37,211,102,.18)}.wicon{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:transparent;color:#25d366;font-size:28px;font-weight:900;flex:none}.wicon svg{width:42px;height:42px;display:block;filter:drop-shadow(0 0 5px rgba(37,211,102,.35))}'
-          if old in s:
-              s = s.replace(old, new, 1)
+          s = re.sub(r'\.whats\{[^}]*\}\.wicon\{[^}]*\}\.wicon svg\{[^}]*\}', '.whats{margin:25px auto 22px;max-width:760px;display:flex;align-items:center;gap:14px;text-align:left;padding:11px 17px;border-radius:18px;text-decoration:none;color:#fff;background:linear-gradient(90deg,rgba(8,7,22,.98),rgba(16,10,29,.98));border:1px solid #25d366;box-shadow:0 0 28px rgba(37,211,102,.18)}.wicon{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:transparent;color:#25d366;font-size:28px;font-weight:900;flex:none}.wicon svg{width:42px;height:42px;display:block;filter:drop-shadow(0 0 5px rgba(37,211,102,.35))}', s, count=1)
           s = s.replace('.wicon{width:48px;height:48px;font-size:26px}', '.wicon{width:48px;height:48px;font-size:26px}.wicon svg{width:40px;height:40px}', 1)
           s = s.replace('.wicon{width:46px;height:46px;font-size:24px}', '.wicon{width:46px;height:46px;font-size:24px}.wicon svg{width:38px;height:38px}', 1)
           p.write_text(s, encoding='utf-8')
           PY
-      - name: Publicar correção
+      - name: Publicar alteração no index.html
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
           if git diff --cached --quiet; then
-            echo "HTML já está correto"
+            echo "index.html já está atualizado"
           else
-            git commit -m "Atualizar botão WhatsApp para PC e telemóvel"
+            git commit -m "Atualizar botão WhatsApp no index para PC e telemóvel"
             git push
           fi
