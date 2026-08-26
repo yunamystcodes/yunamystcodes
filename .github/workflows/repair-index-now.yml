@@ -14,8 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Corrigir meta e publicar
+      - name: Corrigir index diretamente e publicar
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -24,21 +26,24 @@ jobs:
             git reset --hard origin/main
             python - <<'PY'
             from pathlib import Path
-            import re
             p=Path('index.html')
             s=p.read_text(encoding='utf-8')
-            pattern=r'<meta\s+content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas\.\.\.\s*<style>'
-            replacement='<meta content="Códigos Summoners War Sky Arena 2026, códigos ativos, novos códigos, recompensas, códigos de resgate e como usar os códigos no jogo." name="description"/>\n<style>'
-            s2,n=re.subn(pattern,replacement,s,count=1,flags=re.S)
-            if n:
-                p.write_text(s2,encoding='utf-8')
-                print('HTML corrigido')
-            else:
-                print('HTML já corrigido')
+            replacements = {
+              'Aqui encontras os <b>códigos ativos e expirados</b> de Summoners War: Sky Arena.': 'Aqui encontras os <b>códigos ativos</b> de Summoners War: Sky Arena.',
+              'Aqui encontras os códigos ativos e expirados de Summoners War: Sky Arena.': 'Aqui encontras os códigos ativos de Summoners War: Sky Arena.',
+              'códigos ativos e expirados': 'códigos ativos',
+            }
+            changed=False
+            for old,new in replacements.items():
+              if old in s:
+                s=s.replace(old,new)
+                changed=True
+            p.write_text(s,encoding='utf-8')
+            print('INDEX ALTERADO' if changed else 'INDEX JA CORRETO')
             PY
             if git diff --quiet -- index.html; then exit 0; fi
             git add index.html
-            git commit -m "Corrigir HTML quebrado do index"
+            git commit -m "Atualizar texto do index sem expirados"
             if git push origin HEAD:main; then exit 0; fi
             git reset --hard origin/main
             sleep 2
