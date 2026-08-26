@@ -17,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Corrigir index diretamente e publicar
+      - name: Corrigir texto do index e publicar
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -26,24 +26,23 @@ jobs:
             git reset --hard origin/main
             python - <<'PY'
             from pathlib import Path
+            import re
             p=Path('index.html')
             s=p.read_text(encoding='utf-8')
-            replacements = {
-              'Aqui encontras os <b>códigos ativos e expirados</b> de Summoners War: Sky Arena.': 'Aqui encontras os <b>códigos ativos</b> de Summoners War: Sky Arena.',
-              'Aqui encontras os códigos ativos e expirados de Summoners War: Sky Arena.': 'Aqui encontras os códigos ativos de Summoners War: Sky Arena.',
-              'códigos ativos e expirados': 'códigos ativos',
-            }
-            changed=False
-            for old,new in replacements.items():
-              if old in s:
-                s=s.replace(old,new)
-                changed=True
-            p.write_text(s,encoding='utf-8')
-            print('INDEX ALTERADO' if changed else 'INDEX JA CORRETO')
+            old=s
+            # Corrige apenas os textos da secção SOBRE O SITE, tanto desktop como mobile.
+            s=re.sub(r'(Aqui encontras os\s*(?:<b>)?códigos ativos)(?:\s*(?:</b>)?\s*e\s*(?:<b>)?expirados(?:</b>)?)\s*(?:</b>)?\s*(de Summoners War: Sky Arena\.)', r'\1</b> \2', s, flags=re.I)
+            s=s.replace('Aqui encontras os <b>códigos ativos e expirados</b> de Summoners War: Sky Arena.', 'Aqui encontras os <b>códigos ativos</b> de Summoners War: Sky Arena.')
+            s=s.replace('Aqui encontras os códigos ativos e expirados de Summoners War: Sky Arena.', 'Aqui encontras os códigos ativos de Summoners War: Sky Arena.')
+            if s != old:
+              p.write_text(s,encoding='utf-8')
+              print('INDEX ALTERADO')
+            else:
+              print('INDEX SEM ALTERAÇÃO')
             PY
             if git diff --quiet -- index.html; then exit 0; fi
             git add index.html
-            git commit -m "Atualizar texto do index sem expirados"
+            git commit -m "Corrigir texto SOBRE O SITE no index"
             if git push origin HEAD:main; then exit 0; fi
             git reset --hard origin/main
             sleep 2
