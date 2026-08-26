@@ -50,6 +50,7 @@ jobs:
           s=p.read_text(encoding='utf-8')
           replacements={
               'Queres fazer uma parceria com o YunaMyst Codes?':'Queres fazer uma parceria com a YunaMyst?',
+              'Queres fazer uma parceria com o YunaMyst?':'Queres fazer uma parceria com a YunaMyst?',
               'Colabora com o YunaMyst Codes':'Colabora com a YunaMyst',
               'Colabora com a YunaMyst Codes':'Colabora com a YunaMyst',
               'redes sociais do YunaMyst':'redes sociais da YunaMyst',
@@ -71,4 +72,4 @@ jobs:
           git commit -m "Atualizar texto da parceria para a YunaMyst"
           git push origin HEAD:main
 
-# Força a correção do texto da parceria no index para desktop e mobile.
+# Correção forçada para desktop e mobile.
