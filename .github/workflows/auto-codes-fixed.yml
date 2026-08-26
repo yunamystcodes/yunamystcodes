@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: '15 * * * *'
   workflow_dispatch:
+  push:
+    branches: [main]
 
 concurrency:
   group: yuna-codes-updater
@@ -14,6 +16,9 @@ permissions:
 
 jobs:
   update-codes:
+    # Executa imediatamente após alterações manuais, mas não entra em loop
+    # quando o próprio bot publica a atualização dos códigos.
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,7 +34,7 @@ jobs:
       - name: Instalar dependências
         run: pip install requests beautifulsoup4
 
-      - name: Atualizar código sem limite de 8
+      - name: Atualizar código sem limite de quantidade
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -39,7 +44,7 @@ jobs:
           p.write_text(s, encoding='utf-8')
           PY
 
-      - name: Agregar códigos de 6 fontes
+      - name: Agregar códigos de todas as fontes
         run: python scripts/auto_update_codes_fixed.py
 
       - name: Mostrar todos os códigos ativos no index
