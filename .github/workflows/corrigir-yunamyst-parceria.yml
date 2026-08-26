@@ -42,13 +42,14 @@ jobs:
               active.insert(0,card)
           index.write_text(str(soup),encoding='utf-8')
           PY
-      - name: Corrigir textos da parceria no PC e telemóvel
+      - name: Corrigir textos do site no PC e telemóvel
         run: |
           python - <<'PY'
           from pathlib import Path
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
           replacements={
+              'Aqui encontras os códigos ativos e expirados de Summoners War: Sky Arena.':'Aqui encontras os códigos ativos de Summoners War: Sky Arena.',
               'Queres fazer uma parceria com o YunaMyst Codes?':'Queres fazer uma parceria com a YunaMyst?',
               'Queres fazer uma parceria com o YunaMyst?':'Queres fazer uma parceria com a YunaMyst?',
               'Colabora com o YunaMyst Codes':'Colabora com a YunaMyst',
@@ -69,7 +70,7 @@ jobs:
             echo "Nenhuma alteração necessária."
             exit 0
           fi
-          git commit -m "Atualizar texto da parceria para a YunaMyst"
+          git commit -m "Remover palavra expirados da apresentação do site"
           git push origin HEAD:main
 
 # Correção forçada para desktop e mobile.
