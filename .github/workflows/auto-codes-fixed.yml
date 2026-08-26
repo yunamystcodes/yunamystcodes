@@ -9,15 +9,13 @@ on:
 
 concurrency:
   group: yuna-codes-updater
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: write
 
 jobs:
   update-codes:
-    # Executa imediatamente após alterações manuais, mas não entra em loop
-    # quando o próprio bot publica a atualização dos códigos.
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -34,16 +32,6 @@ jobs:
       - name: Instalar dependências
         run: pip install requests beautifulsoup4
 
-      - name: Atualizar código sem limite de quantidade
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('scripts/auto_update_codes_fixed.py')
-          s = p.read_text(encoding='utf-8')
-          s = s.replace('[:8]', '[:]', 1)
-          p.write_text(s, encoding='utf-8')
-          PY
-
       - name: Agregar códigos de todas as fontes
         run: python scripts/auto_update_codes_fixed.py
 
@@ -58,16 +46,19 @@ jobs:
           p.write_text(s, encoding='utf-8')
           PY
 
-      - name: Publicar alterações
+      - name: Verificar códigos encontrados
+        run: |
+          echo '--- CÓDIGOS ATIVOS ENCONTRADOS ---'
+          grep -oE '[A-Z0-9]{8,24}' index.html | sort -u | head -100
+
+      - name: Publicar alterações no main
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html data/code_history.json scripts/auto_update_codes_fixed.py
+          git add index.html data/code_history.json
           if git diff --cached --quiet; then
             echo "Nenhuma alteração nos códigos."
-          else
-            git pull --rebase origin main
-            git add index.html data/code_history.json scripts/auto_update_codes_fixed.py
-            git commit -m "Atualizar todos os códigos ativos no site"
-            git push origin HEAD:main
+            exit 0
           fi
+          git commit -m "Atualizar todos os códigos ativos no site"
+          git push origin HEAD:main
