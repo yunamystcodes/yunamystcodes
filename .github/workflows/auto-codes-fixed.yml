@@ -2,7 +2,7 @@ name: Atualizar códigos automaticamente - YunaCodes
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '15 * * * *'
   workflow_dispatch:
   push:
     branches: [main]
@@ -35,26 +35,56 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-          s=s.replace('var visibleCount=8;', 'var visibleCount=cards.length;')
-          s=s.replace('var visibleCount = 8;', 'var visibleCount=cards.length;')
-          s=s.replace('var visibleCount=4;', 'var visibleCount=cards.length;')
-          s=s.replace('var visibleCount = 4;', 'var visibleCount=cards.length;')
-          p.write_text(s,encoding='utf-8')
+          from bs4 import BeautifulSoup
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('var visibleCount=8;', 'var visibleCount=cards.length;')
+          s = s.replace('var visibleCount = 8;', 'var visibleCount=cards.length;')
+          s = s.replace('var visibleCount=4;', 'var visibleCount=cards.length;')
+          s = s.replace('var visibleCount = 4;', 'var visibleCount=cards.length;')
+          soup = BeautifulSoup(s, 'html.parser')
+          block = soup.find(id='activeCodesList')
+          if block is None:
+              raise SystemExit('activeCodesList não encontrado')
+          print('Códigos ativos no index:', len(block.select('[data-code]')))
+          if not block.select('[data-code]'):
+              raise SystemExit('Nenhum código ativo foi gerado')
+          p.write_text(str(soup), encoding='utf-8')
           PY
-      - name: Confirmar códigos ativos no index
+      - name: Publicar alterações com retry seguro
+        shell: bash
         run: |
-          echo '--- CÓDIGOS ATIVOS NO INDEX ---'
-          grep -oE '[A-Z0-9]{8,24}' index.html | sort -u | grep -E '4READY4TDOT|AMPRELIMSLEGACYDRP|APAC26LEGASEA|AUGSW2026V7N|GLHF2026AMERICAS|LEGENDSWC2026HSL|PAI2026BANGKOK|SWC26X10LEGACYBND|SWXFRIEREN2026|YIQIZOUGUO10SWC' || true
-      - name: Publicar alterações sem rebase conflitante
-        run: |
+          set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html data/code_history.json
-          if git diff --cached --quiet; then
-            echo "Nenhuma alteração necessária."
-            exit 0
-          fi
-          git commit -m "Atualizar automaticamente todos os códigos ativos"
-          git push origin HEAD:main
+
+          for attempt in 1 2 3; do
+            git add index.html data/code_history.json
+            if git diff --cached --quiet; then
+              echo "Nenhuma alteração necessária."
+              exit 0
+            fi
+            git commit -m "Atualizar automaticamente todos os códigos ativos"
+            if git push origin HEAD:main; then
+              echo "Publicação concluída."
+              exit 0
+            fi
+
+            echo "Push falhou; sincronizando main e refazendo a coleta (tentativa $attempt/3)."
+            git fetch origin main
+            git reset --hard origin/main
+            python scripts/auto_update_codes_fixed.py
+            python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace('var visibleCount=8;', 'var visibleCount=cards.length;')
+          s = s.replace('var visibleCount = 8;', 'var visibleCount=cards.length;')
+          s = s.replace('var visibleCount=4;', 'var visibleCount=cards.length;')
+          s = s.replace('var visibleCount = 4;', 'var visibleCount=cards.length;')
+          p.write_text(s, encoding='utf-8')
+          PY
+          done
+
+          echo "Não foi possível publicar depois de 3 tentativas."
+          exit 1
