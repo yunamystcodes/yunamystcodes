@@ -11,13 +11,29 @@ INDEX = Path("index.html")
 HISTORY = Path("data/code_history.json")
 CODE_RE = re.compile(r"\b[A-Z0-9]{8,24}\b")
 
+# 20 independent/official/community endpoints. The collector deduplicates codes
+# by their normalized value, so the same code found on many sources is rendered once.
 SOURCES = [
     ("summonerswarcodes.us", "https://summonerswarcodes.us/", "table"),
-    ("SWGT", "https://swgt.io/gamecodes/", "table"),
+    ("SWCoupon", "https://swcoupon.net/", "table"),
     ("SWQuery", "https://swquery.net/", "table"),
+    ("SWGT", "https://swgt.io/gamecodes/", "table"),
     ("SWQ", "https://swq.jp/l/en-US/index.html", "table"),
+    ("Pocket Gamer", "https://www.pocketgamer.com/summoners-war/codes/", "table"),
+    ("Pocket Tactics", "https://www.pockettactics.com/summoners-war/codes", "table"),
+    ("LevelGeeks", "https://levelgeeks.net/summoners-war-codes/", "page"),
+    ("AllThingsHow", "https://allthings.how/summoners-war-codes/", "page"),
+    ("Claude Gaming", "https://claude-gaming.com/summoners-war-codes/", "page"),
+    ("eGamersWorld", "https://pt.egamersworld.com/blog/summoners-war-codes-this-date-QPcOSa2S5q", "page"),
+    ("Try Hard Guides", "https://tryhardguides.com/summoners-war-codes-for-light-dark-mythic-scrolls/", "page"),
+    ("Com2uS EN News", "https://www.summonerswar.com/en/skyarena/news/list", "official"),
+    ("Com2uS PT News", "https://www.summonerswar.com/pt/skyarena/news/list", "official"),
+    ("Com2uS FR News", "https://www.summonerswar.com/fr/skyarena/news/list", "official"),
+    ("Hive Summoners War", "https://m.withhive.com/games/1321", "official"),
+    ("Hive Global Notices", "https://www.withhive.com/notice/466/70082", "official"),
     ("Reddit r/summonerswar", "https://www.reddit.com/r/summonerswar/new/.json?limit=100", "reddit"),
     ("Reddit r/redeemgiftcodes", "https://www.reddit.com/r/redeemgiftcodes/new/.json?limit=100", "reddit"),
+    ("Official Summoners War EU", "https://linktr.ee/summonerswar_eu", "official"),
 ]
 
 KNOWN_REWARDS = {
@@ -41,6 +57,9 @@ STOPWORDS = {
     "REDDIT", "SWGT", "SWQUERY", "QUERY", "HTTPS", "WITHHIVE", "ANDROID", "IOS",
 }
 
+ACTIVE_WORDS = ("active", "working", "valid", "currently working", "currently available", "ativo", "válido", "valido")
+EXPIRED_WORDS = ("expired", "expirado", "invalid", "invalido", "inválido")
+
 def clean(text):
     return re.sub(r"\s+", " ", html.unescape(text or "")).strip()
 
@@ -61,33 +80,47 @@ def extract_codes(text):
     return found
 
 def fetch_html(url):
-    response = requests.get(url, timeout=30, headers={"User-Agent": "YunaMystCodes/2.0 (+https://yunacodes.com/)"})
+    response = requests.get(url, timeout=30, headers={"User-Agent": "YunaMystCodes/2.1 (+https://yunacodes.com/)"})
     response.raise_for_status()
     return response.text
 
 def parse_table_source(name, url):
     soup = BeautifulSoup(fetch_html(url), "html.parser")
-    found = {}
-    expired = set()
+    found, expired = {}, set()
     for row in soup.select("tr"):
         cells = [clean(c.get_text(" ", strip=True)) for c in row.find_all(["td", "th"])]
         if not cells:
             continue
         row_text = " | ".join(cells).lower()
-        status_active = any(x in row_text for x in ("active", "ativo", "valid", "válido"))
-        status_expired = any(x in row_text for x in ("expired", "expirado", "invalid", "invalido", "inválido"))
-        codes = []
-        for cell in cells:
-            codes.extend(extract_codes(cell))
-        for code in dict.fromkeys(codes):
+        status_active = any(x in row_text for x in ACTIVE_WORDS)
+        status_expired = any(x in row_text for x in EXPIRED_WORDS)
+        for code in dict.fromkeys(sum((extract_codes(cell) for cell in cells), [])):
             if status_expired and not status_active:
                 expired.add(code)
-                continue
-            found[code] = {"code": code, "reward": cells[1] if len(cells) > 1 else "Recompensa não informada", "source": name}
+            else:
+                found[code] = {"code": code, "reward": cells[1] if len(cells) > 1 else "Recompensa não informada", "source": name}
+    return found, expired
+
+def parse_generic_page(name, url):
+    soup = BeautifulSoup(fetch_html(url), "html.parser")
+    text = clean(soup.get_text(" ", strip=True))
+    found, expired = {}, set()
+    # Generic code pages are treated conservatively: only codes appearing in a
+    # nearby active/working context are accepted. Explicit expired contexts win.
+    for raw in CODE_RE.findall(text.upper()):
+        code = normalise_code(raw)
+        if not code:
+            continue
+        pos = text.upper().find(raw)
+        context = text[max(0, pos - 180):pos + 260].lower()
+        if any(x in context for x in EXPIRED_WORDS) and not any(x in context for x in ACTIVE_WORDS):
+            expired.add(code)
+        elif any(x in context for x in ACTIVE_WORDS):
+            found[code] = {"code": code, "reward": context, "source": name}
     return found, expired
 
 def parse_reddit_source(name, url):
-    response = requests.get(url, timeout=30, headers={"User-Agent": "YunaMystCodes/2.0 (+https://yunacodes.com/)"})
+    response = requests.get(url, timeout=30, headers={"User-Agent": "YunaMystCodes/2.1 (+https://yunacodes.com/)"})
     response.raise_for_status()
     data = response.json()
     found = {}
@@ -102,14 +135,19 @@ def parse_reddit_source(name, url):
             found[code] = {"code": code, "reward": "Recompensa não informada", "source": name}
     return found, set()
 
+def parse_source(name, url, kind):
+    if kind == "table":
+        return parse_table_source(name, url)
+    if kind == "reddit":
+        return parse_reddit_source(name, url)
+    return parse_generic_page(name, url)
+
 def collect_sources():
-    merged = {}
-    explicitly_expired = set()
-    successful = 0
-    errors = []
+    merged, explicitly_expired = {}, set()
+    successful, errors = 0, []
     for name, url, kind in SOURCES:
         try:
-            found, expired = parse_table_source(name, url) if kind == "table" else parse_reddit_source(name, url)
+            found, expired = parse_source(name, url, kind)
             successful += 1
             explicitly_expired.update(expired)
             for code, item in found.items():
@@ -119,10 +157,11 @@ def collect_sources():
                     if merged[code]["reward"] == "Recompensa não informada" and item["reward"] != "Recompensa não informada":
                         merged[code]["reward"] = item["reward"]
                     merged[code]["source"] += ", " + item["source"]
-        except Exception as exc:
+    except Exception as exc:
             errors.append(f"{name}: {exc}")
+    # A source saying expired cannot override another source saying active.
     explicitly_expired.difference_update(merged.keys())
-    if successful < 3:
+    if successful < 5:
         raise RuntimeError("Poucas fontes responderam: " + " | ".join(errors))
     return merged, explicitly_expired, successful, errors
 
@@ -142,20 +181,10 @@ def reward_items(code, reward):
     if code in KNOWN_REWARDS:
         return KNOWN_REWARDS[code]
     text = clean(reward).lower()
-    patterns = [
-        ("mystic", r"mystic(?:al)?\s*scroll|mystical|pergaminho\s*m[íi]stico"),
-        ("fire", r"fire\s*scroll|scroll\s*fire|pergaminho\s*de\s*fogo"),
-        ("water", r"water\s*scroll|scroll\s*water|pergaminho\s*de\s*[aá]gua"),
-        ("wind", r"wind\s*scroll|scroll\s*wind|pergaminho\s*de\s*vento"),
-        ("mana", r"mana"),
-        ("crystal", r"crystal|crystals|cristal|cristais"),
-        ("energy", r"energy|energia"),
-    ]
+    patterns = [("mystic", r"mystic(?:al)?\s*scroll|mystical|pergaminho\s*m[íi]stico"),("fire", r"fire\s*scroll|scroll\s*fire|pergaminho\s*de\s*fogo"),("water", r"water\s*scroll|scroll\s*water|pergaminho\s*de\s*[aá]gua"),("wind", r"wind\s*scroll|scroll\s*wind|pergaminho\s*de\s*vento"),("mana", r"mana"),("crystal", r"crystal|crystals|cristal|cristais"),("energy", r"energy|energia")]
     items = []
     for kind, pattern in patterns:
-        m = re.search(rf"(\d[\d,.]*)\s*(?:x|×)?\s*(?:\+)?\s*(?:{pattern})", text)
-        if not m:
-            m = re.search(rf"(?:{pattern})\s*(?:x|×)?\s*(\d[\d,.]*)", text)
+        m = re.search(rf"(\d[\d,.]*)\s*(?:x|×)?\s*(?:\+)?\s*(?:{pattern})", text) or re.search(rf"(?:{pattern})\s*(?:x|×)?\s*(\d[\d,.]*)", text)
         if m:
             items.append((kind, m.group(1).rstrip(",.")))
     return items
