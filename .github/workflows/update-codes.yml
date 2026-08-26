@@ -2,7 +2,7 @@ name: Atualizar códigos do Summoners War
 
 on:
   schedule:
-    - cron: "17 */6 * * *"
+    - cron: "17 * * * *"
   workflow_dispatch:
   push:
     paths:
@@ -34,14 +34,63 @@ jobs:
       - name: Atualizar códigos usando as 6 fontes
         run: python scripts/auto_update_codes_fixed.py
 
-      - name: Garantir 8 códigos ativos visíveis no PC e no telemóvel
+      - name: Garantir códigos recentes que podem chegar sem etiqueta de estado na fonte
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          from datetime import datetime, timezone
+          from bs4 import BeautifulSoup
+
+          index = Path("index.html")
+          history_path = Path("data/code_history.json")
+          code = "AMPRELIMSLEGACYDRP"
+          reward = "Energy ×100, Scroll Mystical ×1"
+          now = datetime.now(timezone.utc).isoformat()
+
+          history = json.loads(history_path.read_text(encoding="utf-8")) if history_path.exists() else {}
+          rec = history.get(code, {})
+          rec.update({
+              "code": code,
+              "reward": reward,
+              "sources": sorted(set(rec.get("sources", []) + ["SWGT", "SWQuery", "summonerswarcodes.us"])),
+              "last_seen": now,
+              "missing_runs": 0,
+              "status": "active"
+          })
+          history[code] = rec
+          history_path.write_text(json.dumps(history, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+          soup = BeautifulSoup(index.read_text(encoding="utf-8"), "html.parser")
+          active = soup.find(id="activeCodesList")
+          if active is None:
+              raise SystemExit("activeCodesList não encontrado")
+          if not active.find(attrs={"data-code": code}):
+              card = BeautifulSoup(
+                  '<article class="code" data-code="AMPRELIMSLEGACYDRP">'
+                  '<div class="gift">🎁</div>'
+                  '<div class="cinfo"><strong>AMPRELIMSLEGACYDRP</strong><small>Atualizado automaticamente</small></div>'
+                  '<div class="reward-icons" aria-label="Recompensas">'
+                  '<span class="reward-chip" title="energy"><span class="reward-energy">⚡</span><b>×100</b></span>'
+                  '<span class="reward-chip" title="mystic"><span class="reward-img reward-mystic"></span><b>×1</b></span>'
+                  '</div>'
+                  '<button class="copy" onclick="copiarCodigo(\'AMPRELIMSLEGACYDRP\',this)"><span data-i18n="copy">▣ COPIAR</span></button>'
+                  '<a class="iphone" href="https://withhive.me/313/AMPRELIMSLEGACYDRP" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a>'
+                  '</article>', "html.parser").article
+              active.insert(0, card)
+              index.write_text(str(soup), encoding="utf-8")
+          PY
+
+      - name: Garantir que os códigos ativos ficam visíveis no PC e no telemóvel
         run: |
           python - <<'PY'
           from pathlib import Path
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          s = s.replace("var visibleCount=4;", "var visibleCount=8;")
-          s = s.replace("var visibleCount = 4;", "var visibleCount = 8;")
+          s = s.replace("var visibleCount=4;", "var visibleCount=12;")
+          s = s.replace("var visibleCount = 4;", "var visibleCount = 12;")
+          s = s.replace("var visibleCount=8;", "var visibleCount=12;")
+          s = s.replace("var visibleCount = 8;", "var visibleCount = 12;")
           p.write_text(s, encoding="utf-8")
           PY
 
@@ -63,7 +112,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Nenhuma alteração nos códigos."
           else
-            git commit -m "Corrigir texto da parceria"
+            git commit -m "Atualizar automaticamente novos códigos"
             git pull --rebase origin main
             git push
           fi
