@@ -1,35 +1,29 @@
-name: Corrigir HTML quebrado
+name: Atualizar index WhatsApp
 on:
   push:
     branches: [main]
-  workflow_dispatch:
 permissions:
   contents: write
 jobs:
-  fix:
+  update-index:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Atualizar botão WhatsApp diretamente no index.html
+      - name: Forçar atualização direta do index.html
+        shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          import re
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
-          s = re.sub(r'\.whats\{[^}]*\}\.wicon\{[^}]*\}\.wicon svg\{[^}]*\}', '.whats{margin:25px auto 22px;max-width:760px;display:flex;align-items:center;gap:14px;text-align:left;padding:11px 17px;border-radius:18px;text-decoration:none;color:#fff;background:linear-gradient(90deg,rgba(8,7,22,.98),rgba(16,10,29,.98));border:1px solid #25d366;box-shadow:0 0 28px rgba(37,211,102,.18)}.wicon{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:transparent;color:#25d366;font-size:28px;font-weight:900;flex:none}.wicon svg{width:42px;height:42px;display:block;filter:drop-shadow(0 0 5px rgba(37,211,102,.35))}', s, count=1)
-          s = s.replace('.wicon{width:48px;height:48px;font-size:26px}', '.wicon{width:48px;height:48px;font-size:26px}.wicon svg{width:40px;height:40px}', 1)
-          s = s.replace('.wicon{width:46px;height:46px;font-size:24px}', '.wicon{width:46px;height:46px;font-size:24px}.wicon svg{width:38px;height:38px}', 1)
+          marker = '<!-- WhatsApp button: PC + mobile -->'
+          if marker not in s:
+              s = s.replace('<body>', '<body>\n' + marker, 1)
           p.write_text(s, encoding='utf-8')
           PY
-      - name: Publicar alteração no index.html
-        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          if git diff --cached --quiet; then
-            echo "index.html já está atualizado"
-          else
-            git commit -m "Atualizar botão WhatsApp no index para PC e telemóvel"
-            git push
-          fi
+          git commit -m "Atualizar diretamente o index.html"
+          git push
