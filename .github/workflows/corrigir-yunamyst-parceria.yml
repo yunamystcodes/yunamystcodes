@@ -9,32 +9,64 @@ permissions:
 
 jobs:
   corrigir:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Corrigir textos da parceria e redes sociais
+        with:
+          fetch-depth: 0
+      - name: Instalar dependências dos códigos
+        run: pip install requests beautifulsoup4
+      - name: Atualizar códigos automaticamente no index
+        run: python scripts/auto_update_codes_fixed.py
+      - name: Garantir todos os códigos ativos visíveis no index
         run: |
           python - <<'PY'
           from pathlib import Path
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-
-          substituicoes = {
-              'Queres fazer uma parceria com o YunaMyst Codes?': 'Queres fazer uma parceria com a YunaMyst?',
-              'Colabora com o YunaMyst Codes': 'Colabora com a YunaMyst',
-              'Colabora com a YunaMyst Codes': 'Colabora com a YunaMyst',
-              'redes sociais do YunaMyst': 'redes sociais da YunaMyst',
-              'redes sociais do YunaMyst.': 'redes sociais da YunaMyst.',
-          }
-
-          for old, new in substituicoes.items():
-              s = s.replace(old, new)
-
-          p.write_text(s, encoding='utf-8')
+          import json
+          from bs4 import BeautifulSoup
+          index=Path('index.html')
+          history_path=Path('data/code_history.json')
+          history=json.loads(history_path.read_text(encoding='utf-8')) if history_path.exists() else {}
+          soup=BeautifulSoup(index.read_text(encoding='utf-8'),'html.parser')
+          active=soup.find(id='activeCodesList')
+          if active is None:
+              raise SystemExit('activeCodesList não encontrado')
+          # A rotina principal já gera os cartões. Aqui apenas garante que nenhum ativo fica de fora.
+          existing={x.get('data-code') for x in active.find_all(attrs={'data-code':True})}
+          for rec in sorted([x for x in history.values() if x.get('status')=='active'], key=lambda x:x.get('last_seen',''), reverse=True):
+              code=rec['code']
+              if code in existing:
+                  continue
+              reward=rec.get('reward','Recompensa não informada')
+              card=BeautifulSoup(f'''<article class="code" data-code="{code}"><div class="gift">🎁</div><div class="cinfo"><strong>{code}</strong><small>Atualizado automaticamente</small></div><div class="reward-icons" aria-label="Recompensas"><span class="reward-chip"><span class="reward-unknown">🎁</span><b>{reward}</b></span></div><button class="copy" onclick="copiarCodigo('{code}',this)"><span data-i18n="copy">▣ COPIAR</span></button><a class="iphone" href="https://withhive.me/313/{code}" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>''','html.parser').article
+              active.insert(0,card)
+          index.write_text(str(soup),encoding='utf-8')
           PY
+      - name: Corrigir textos da parceria
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          for old,new in {
+              'Queres fazer uma parceria com o YunaMyst Codes?':'Queres fazer uma parceria com a YunaMyst?',
+              'Colabora com o YunaMyst Codes':'Colabora com a YunaMyst',
+              'Colabora com a YunaMyst Codes':'Colabora com a YunaMyst',
+              'redes sociais do YunaMyst':'redes sociais da YunaMyst',
+              'redes sociais do YunaMyst.':'redes sociais da YunaMyst.',
+          }.items():
+              s=s.replace(old,new)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Publicar index e histórico
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          git diff --cached --quiet && exit 0
-          git commit -m "Corrigir texto das redes sociais"
-          git push
+          git add index.html data/code_history.json
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteração necessária."
+            exit 0
+          fi
+          git commit -m "Atualizar automaticamente códigos ativos no index"
+          git push origin HEAD:main
