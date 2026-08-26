@@ -35,20 +35,6 @@ KNOWN_REWARDS = {
     "APAC26LEGASEA": [("mana", "200,000"), ("mystic", "1")],
 }
 
-# Fallback for currently verified active codes. Sources remain authoritative for future additions/removals.
-FALLBACK_ACTIVE = {
-    "4READY4TDOT": "Mana ×200,000, Mystical Scroll ×1",
-    "AMPRELIMSLEGACYDRP": "Energy ×100, Mystical Scroll ×1",
-    "APAC26LEGASEA": "Mana ×200,000, Mystical Scroll ×1",
-    "AUGSW2026V7N": "Energy ×100, Fire Scroll ×3",
-    "GLHF2026AMERICAS": "Mystical Scroll ×1",
-    "LEGENDSWC2026HSL": "Energy ×100, Mystical Scroll ×1",
-    "PAI2026BANGKOK": "Mystical Scroll ×1",
-    "SWC26X10LEGACYBND": "Energy ×100, Mana ×200,000",
-    "SWXFRIEREN2026": "Energy ×100, Mana ×300,000, Mystical Scroll ×3",
-    "YIQIZOUGUO10SWC": "Energy ×100, Mystical Scroll ×1",
-}
-
 STOPWORDS = {
     "SUMMONERS", "SUMMONERSWAR", "WAR", "CODES", "CODE", "ACTIVE", "PROMO",
     "REDEEM", "REWARDS", "NEW", "LATEST", "TODAY", "JULY", "AUGUST", "JUNE",
@@ -82,6 +68,7 @@ def fetch_html(url):
 def parse_table_source(name, url):
     soup = BeautifulSoup(fetch_html(url), "html.parser")
     found = {}
+    expired = set()
     for row in soup.select("tr"):
         cells = [clean(c.get_text(" ", strip=True)) for c in row.find_all(["td", "th"])]
         if not cells:
@@ -94,9 +81,10 @@ def parse_table_source(name, url):
             codes.extend(extract_codes(cell))
         for code in dict.fromkeys(codes):
             if status_expired and not status_active:
+                expired.add(code)
                 continue
             found[code] = {"code": code, "reward": cells[1] if len(cells) > 1 else "Recompensa não informada", "source": name}
-    return found
+    return found, expired
 
 def parse_reddit_source(name, url):
     response = requests.get(url, timeout=30, headers={"User-Agent": "YunaMystCodes/2.0 (+https://yunacodes.com/)"})
@@ -112,16 +100,18 @@ def parse_reddit_source(name, url):
         body = " ".join([post.get("title", ""), post.get("selftext", "")])
         for code in extract_codes(body):
             found[code] = {"code": code, "reward": "Recompensa não informada", "source": name}
-    return found
+    return found, set()
 
 def collect_sources():
     merged = {}
+    explicitly_expired = set()
     successful = 0
     errors = []
     for name, url, kind in SOURCES:
         try:
-            found = parse_table_source(name, url) if kind == "table" else parse_reddit_source(name, url)
+            found, expired = parse_table_source(name, url) if kind == "table" else parse_reddit_source(name, url)
             successful += 1
+            explicitly_expired.update(expired)
             for code, item in found.items():
                 if code not in merged:
                     merged[code] = item
@@ -129,15 +119,13 @@ def collect_sources():
                     if merged[code]["reward"] == "Recompensa não informada" and item["reward"] != "Recompensa não informada":
                         merged[code]["reward"] = item["reward"]
                     merged[code]["source"] += ", " + item["source"]
-        except Exception as exc:
+    except Exception as exc:
             errors.append(f"{name}: {exc}")
-    # Keep currently verified active codes present even when one source temporarily omits a code.
-    for code, reward in FALLBACK_ACTIVE.items():
-        if code not in merged:
-            merged[code] = {"code": code, "reward": reward, "source": "Fallback verificado"}
+    # If any source says a code is active, active wins over a stale expired listing elsewhere.
+    explicitly_expired.difference_update(merged.keys())
     if successful < 3:
         raise RuntimeError("Poucas fontes responderam: " + " | ".join(errors))
-    return merged, successful, errors
+    return merged, explicitly_expired, successful, errors
 
 def load_history():
     HISTORY.parent.mkdir(parents=True, exist_ok=True)
@@ -211,7 +199,7 @@ def update_index(active_items, expired_items):
     INDEX.write_text(str(soup), encoding="utf-8")
 
 def main():
-    merged, successful, errors = collect_sources()
+    merged, explicitly_expired, successful, errors = collect_sources()
     now = datetime.now(timezone.utc)
     history = load_history()
     active_codes = set(merged)
@@ -222,10 +210,18 @@ def main():
     for code, record in list(history.items()):
         if code in active_codes:
             continue
+        if code in explicitly_expired:
+            record["status"] = "expired"
+            record["expired_at"] = now.isoformat()
+            history[code] = record
+            continue
         if record.get("status") == "expired":
             continue
         record["missing_runs"] = int(record.get("missing_runs", 0)) + 1
-        record["status"] = "active" if record["missing_runs"] < 3 else "expired"
+        # A code must be absent for two consecutive hourly checks before being archived.
+        record["status"] = "active" if record["missing_runs"] < 2 else "expired"
+        if record["status"] == "expired":
+            record["expired_at"] = now.isoformat()
         history[code] = record
     save_history(history)
     active_items = sorted([v for v in history.values() if v.get("status") == "active"], key=lambda x: x.get("last_seen", ""), reverse=True)
