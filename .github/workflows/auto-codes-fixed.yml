@@ -57,7 +57,6 @@ jobs:
           set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
           for attempt in 1 2 3; do
             git add index.html data/code_history.json
             if git diff --cached --quiet; then
@@ -69,7 +68,6 @@ jobs:
               echo "Publicação concluída."
               exit 0
             fi
-
             echo "Push falhou; sincronizando main e refazendo a coleta (tentativa $attempt/3)."
             git fetch origin main
             git reset --hard origin/main
@@ -85,6 +83,5 @@ jobs:
           p.write_text(s, encoding='utf-8')
           PY
           done
-
           echo "Não foi possível publicar depois de 3 tentativas."
           exit 1
