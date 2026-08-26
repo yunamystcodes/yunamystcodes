@@ -1,0 +1,45 @@
+name: Atualizar AMPRELIMSLEGACYDRP agora
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  update:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Colocar AMPRELIMSLEGACYDRP nos ativos
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          code='AMPRELIMSLEGACYDRP'
+          card='<article class="code" data-code="AMPRELIMSLEGACYDRP"><div class="gift">🎁</div><div class="cinfo"><strong>AMPRELIMSLEGACYDRP</strong><small>Atualizado automaticamente</small></div><div aria-label="Recompensas" class="reward-icons"><span class="reward-chip" title="energy"><span class="reward-energy">⚡</span><b>×100</b></span><span class="reward-chip" title="mystic"><span class="reward-img reward-mystic"></span><b>×1</b></span></div><button class="copy" onclick="copiarCodigo(\'AMPRELIMSLEGACYDRP\',this)"><span data-i18n="copy">▣ COPIAR</span></button><a class="iphone" href="https://withhive.me/313/AMPRELIMSLEGACYDRP" rel="noopener" target="_blank"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>'
+          # Remove any existing active/expired card for this code.
+          import re
+          s = re.sub(r'<article class="code(?: expired)?" data-code="AMPRELIMSLEGACYDRP">.*?</article>', '', s, flags=re.S)
+          marker='</div>\n<div class="active-codes-tab" id="activeCodesTab">'
+          if marker not in s:
+              raise SystemExit('Active codes container marker not found')
+          s=s.replace(marker, card+marker, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+      - name: Publicar no main
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Adicionar AMPRELIMSLEGACYDRP aos codigos ativos'
+          git push origin HEAD:main
+      - name: Remover workflow temporario
+        if: always()
+        run: |
+          git rm -f .github/workflows/force-amprelims-update.yml || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Remover workflow temporario' || true
+          git push origin HEAD:main || true
