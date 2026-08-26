@@ -32,7 +32,6 @@ jobs:
           active=soup.find(id='activeCodesList')
           if active is None:
               raise SystemExit('activeCodesList não encontrado')
-          # A rotina principal já gera os cartões. Aqui apenas garante que nenhum ativo fica de fora.
           existing={x.get('data-code') for x in active.find_all(attrs={'data-code':True})}
           for rec in sorted([x for x in history.values() if x.get('status')=='active'], key=lambda x:x.get('last_seen',''), reverse=True):
               code=rec['code']
@@ -43,19 +42,20 @@ jobs:
               active.insert(0,card)
           index.write_text(str(soup),encoding='utf-8')
           PY
-      - name: Corrigir textos da parceria
+      - name: Corrigir textos da parceria no PC e telemóvel
         run: |
           python - <<'PY'
           from pathlib import Path
           p=Path('index.html')
           s=p.read_text(encoding='utf-8')
-          for old,new in {
+          replacements={
               'Queres fazer uma parceria com o YunaMyst Codes?':'Queres fazer uma parceria com a YunaMyst?',
               'Colabora com o YunaMyst Codes':'Colabora com a YunaMyst',
               'Colabora com a YunaMyst Codes':'Colabora com a YunaMyst',
               'redes sociais do YunaMyst':'redes sociais da YunaMyst',
               'redes sociais do YunaMyst.':'redes sociais da YunaMyst.',
-          }.items():
+          }
+          for old,new in replacements.items():
               s=s.replace(old,new)
           p.write_text(s,encoding='utf-8')
           PY
@@ -68,5 +68,7 @@ jobs:
             echo "Nenhuma alteração necessária."
             exit 0
           fi
-          git commit -m "Atualizar automaticamente códigos ativos no index"
+          git commit -m "Atualizar texto da parceria para a YunaMyst"
           git push origin HEAD:main
+
+# Força a correção do texto da parceria no index para desktop e mobile.
