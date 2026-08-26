@@ -119,9 +119,8 @@ def collect_sources():
                     if merged[code]["reward"] == "Recompensa não informada" and item["reward"] != "Recompensa não informada":
                         merged[code]["reward"] = item["reward"]
                     merged[code]["source"] += ", " + item["source"]
-    except Exception as exc:
+        except Exception as exc:
             errors.append(f"{name}: {exc}")
-    # If any source says a code is active, active wins over a stale expired listing elsewhere.
     explicitly_expired.difference_update(merged.keys())
     if successful < 3:
         raise RuntimeError("Poucas fontes responderam: " + " | ".join(errors))
@@ -218,7 +217,6 @@ def main():
         if record.get("status") == "expired":
             continue
         record["missing_runs"] = int(record.get("missing_runs", 0)) + 1
-        # A code must be absent for two consecutive hourly checks before being archived.
         record["status"] = "active" if record["missing_runs"] < 2 else "expired"
         if record["status"] == "expired":
             record["expired_at"] = now.isoformat()
