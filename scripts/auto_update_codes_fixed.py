@@ -23,8 +23,30 @@ SOURCES = [
 KNOWN_REWARDS = {
     "INVOCATEUREU26": [("mana", "100,000"), ("mystic", "2")],
     "SWCTICKET2HAMBURG": [("mystic", "1")],
-    "AUGSW2026V7N": [("energy", "100"), ("fire", "1")],
+    "AUGSW2026V7N": [("energy", "100"), ("fire", "3")],
     "SWXFRIEREN2026": [("energy", "100"), ("mana", "300,000"), ("mystic", "3")],
+    "AMPRELIMSLEGACYDRP": [("energy", "100"), ("mystic", "1")],
+    "4READY4TDOT": [("mana", "200,000"), ("mystic", "1")],
+    "LEGENDSWC2026HSL": [("energy", "100"), ("mystic", "1")],
+    "YIQIZOUGUO10SWC": [("energy", "100"), ("mystic", "1")],
+    "GLHF2026AMERICAS": [("mystic", "1")],
+    "SWC26X10LEGACYBND": [("energy", "100"), ("mana", "200,000")],
+    "PAI2026BANGKOK": [("mystic", "1")],
+    "APAC26LEGASEA": [("mana", "200,000"), ("mystic", "1")],
+}
+
+# Fallback for currently verified active codes. Sources remain authoritative for future additions/removals.
+FALLBACK_ACTIVE = {
+    "4READY4TDOT": "Mana ×200,000, Mystical Scroll ×1",
+    "AMPRELIMSLEGACYDRP": "Energy ×100, Mystical Scroll ×1",
+    "APAC26LEGASEA": "Mana ×200,000, Mystical Scroll ×1",
+    "AUGSW2026V7N": "Energy ×100, Fire Scroll ×3",
+    "GLHF2026AMERICAS": "Mystical Scroll ×1",
+    "LEGENDSWC2026HSL": "Energy ×100, Mystical Scroll ×1",
+    "PAI2026BANGKOK": "Mystical Scroll ×1",
+    "SWC26X10LEGACYBND": "Energy ×100, Mana ×200,000",
+    "SWXFRIEREN2026": "Energy ×100, Mana ×300,000, Mystical Scroll ×3",
+    "YIQIZOUGUO10SWC": "Energy ×100, Mystical Scroll ×1",
 }
 
 STOPWORDS = {
@@ -109,6 +131,10 @@ def collect_sources():
                     merged[code]["source"] += ", " + item["source"]
         except Exception as exc:
             errors.append(f"{name}: {exc}")
+    # Keep currently verified active codes present even when one source temporarily omits a code.
+    for code, reward in FALLBACK_ACTIVE.items():
+        if code not in merged:
+            merged[code] = {"code": code, "reward": reward, "source": "Fallback verificado"}
     if successful < 3:
         raise RuntimeError("Poucas fontes responderam: " + " | ".join(errors))
     return merged, successful, errors
