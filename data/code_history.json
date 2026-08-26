@@ -13,7 +13,7 @@
   },
   "4READY4TDOT": {
     "code": "4READY4TDOT",
-    "last_seen": "2026-08-26T11:33:19.917934+00:00",
+    "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Mana ×200,000, Scroll Mystical ×1",
     "sources": [
@@ -37,19 +37,20 @@
   },
   "AMPRELIMSLEGACYDRP": {
     "code": "AMPRELIMSLEGACYDRP",
+    "expired_at": "2026-08-26T11:33:40.560628+00:00",
     "last_seen": "2026-08-26T11:23:54.170352+00:00",
-    "missing_runs": 1,
+    "missing_runs": 2,
     "reward": "Energy ×100, Scroll Mystical ×1",
     "sources": [
       "SWGT",
       "SWQuery",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "APAC26LEGASEA": {
     "code": "APAC26LEGASEA",
-    "last_seen": "2026-08-26T11:33:19.917934+00:00",
+    "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Mana ×200,000, Scroll Mystical ×1",
     "sources": [
@@ -61,7 +62,7 @@
   },
   "AUGSW2026V7N": {
     "code": "AUGSW2026V7N",
-    "last_seen": "2026-08-26T11:33:19.917934+00:00",
+    "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Fire Scroll ×3",
     "sources": [
@@ -73,7 +74,7 @@
   },
   "GLHF2026AMERICAS": {
     "code": "GLHF2026AMERICAS",
-    "last_seen": "2026-08-26T11:33:19.917934+00:00",
+    "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Scroll Mystical ×1",
     "sources": [
@@ -109,7 +110,7 @@
   },
   "LEGENDSWC2026HSL": {
     "code": "LEGENDSWC2026HSL",
-    "last_seen": "2026-08-26T11:33:19.917934+00:00",
+    "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Scroll Mystical ×1",
     "sources": [
@@ -121,7 +122,7 @@
   },
   "PAI2026BANGKOK": {
     "code": "PAI2026BANGKOK",
-    "last_seen": "2026-08-26T11:33:19.917934+00:00",
+    "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Scroll Mystical ×1",
     "sources": [
@@ -145,7 +146,7 @@
   },
   "SWC26X10LEGACYBND": {
     "code": "SWC26X10LEGACYBND",
-    "last_seen": "2026-08-26T11:33:19.917934+00:00",
+    "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Mana ×200,000",
     "sources": [
@@ -169,7 +170,7 @@
   },
   "SWXFRIEREN2026": {
     "code": "SWXFRIEREN2026",
-    "last_seen": "2026-08-26T11:33:19.917934+00:00",
+    "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Mana ×300,000, Scroll Mystical ×3",
     "sources": [
@@ -181,7 +182,7 @@
   },
   "YIQIZOUGUO10SWC": {
     "code": "YIQIZOUGUO10SWC",
-    "last_seen": "2026-08-26T11:33:19.917934+00:00",
+    "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Scroll Mystical ×1",
     "sources": [
