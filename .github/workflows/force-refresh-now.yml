@@ -1,0 +1,46 @@
+name: Atualizar códigos agora
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  refresh:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Atualizar index com códigos ativos atuais
+        shell: python
+        run: |
+          from pathlib import Path
+          import re, html
+          p=Path('index.html'); s=p.read_text(encoding='utf-8')
+          codes=[
+            ('4READY4TDOT','200,000 Mana + 1 Mystical Scroll'),
+            ('AMPRELIMSLEGACYDRP','100 Energy + 1 Mystical Scroll'),
+            ('LEGENDSWC2026HSL','100 Energy + 1 Mystical Scroll'),
+            ('YIQIZOUGUO10SWC','100 Energy + 1 Mystical Scroll'),
+            ('GLHF2026AMERICAS','1 Mystical Scroll'),
+            ('SWC26X10LEGACYBND','100 Energy + 200,000 Mana'),
+            ('PAI2026BANGKOK','1 Mystical Scroll'),
+            ('APAC26LEGASEA','200,000 Mana + 1 Mystical Scroll'),
+            ('AUGSW2026V7N','100 Energy + 3 Fire Scrolls'),
+            ('SWXFRIEREN2026','100 Energy + 300,000 Mana + 3 Mystical Scrolls'),
+          ]
+          def card(c,r):
+            return f'''<article class="code" data-code="{c}"><div class="gift">🎁</div><div class="cinfo"><strong>{c}</strong><small>Atualizado automaticamente</small></div><div class="reward-icons" aria-label="Recompensas"><span class="reward-chip"><b>{html.escape(r)}</b></span></div><button class="copy" onclick="copiarCodigo('{c}',this)"><span data-i18n="copy">▣ COPIAR</span></button><a class="iphone" href="https://withhive.me/313/{c}" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>'''
+          block=''.join(card(c,r) for c,r in codes)
+          pattern=r'(<div[^>]*id=["\']activeCodesList["\'][^>]*>).*?(</div>)'
+          s2,n=re.subn(pattern,lambda m:m.group(1)+block+m.group(2),s,count=1,flags=re.S)
+          if n!=1: raise SystemExit('activeCodesList não encontrado')
+          p.write_text(s2,encoding='utf-8')
+      - name: Publicar e remover workflow temporário
+        shell: bash
+        run: |
+          rm -f .github/workflows/force-refresh-now.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html .github/workflows/force-refresh-now.yml
+          git commit -m 'Atualizar index com todos os códigos ativos atuais'
+          git push
