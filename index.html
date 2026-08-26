@@ -304,50 +304,6 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   #yunaDesktopPartnershipButton{display:none!important}
 }
 </style>
-<style id="mobile-button-size-final">
-@media (max-width:600px){
-  /* SOMENTE os botoes: nao altera os icones/recompensas */
-  .codes .code .copy,
-  .codes .code .iphone{
-    position:static!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    box-sizing:border-box!important;
-    width:120px!important;
-    min-width:120px!important;
-    max-width:120px!important;
-    height:44px!important;
-    min-height:44px!important;
-    max-height:44px!important;
-    margin:0!important;
-    padding:0 8px!important;
-    flex:none!important;
-    font-size:12px!important;
-    line-height:1!important;
-    border-radius:10px!important;
-    justify-self:center!important;
-    overflow:hidden!important;
-    white-space:nowrap!important;
-  }
-  .codes .code .copy{grid-column:1!important;grid-row:3!important}
-  .codes .code .iphone{grid-column:2!important;grid-row:3!important}
-  .codes .code{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:8px!important}
-}
-@media (max-width:380px){
-  .codes .code .copy,
-  .codes .code .iphone{
-    width:112px!important;
-    min-width:112px!important;
-    max-width:112px!important;
-    height:42px!important;
-    min-height:42px!important;
-    max-height:42px!important;
-    font-size:11px!important;
-  }
-  .codes .code{column-gap:6px!important}
-}
-</style>
 <style id="yunamyst-header-logo-final">
 /* CABECALHO FINAL: logo maior, sem SUMMONERS WAR */
 .logo{width:360px!important;max-width:42vw!important;height:64px!important;display:block!important;background-image:url("assets/yunamyst-header-small.webp?v=20260819-final")!important;background-size:100% auto!important;background-position:left top!important;background-repeat:no-repeat!important;color:transparent!important;font-size:0!important;line-height:0!important;text-indent:-9999px!important;overflow:hidden!important;clip-path:inset(0 0 13px 0)!important}
@@ -509,6 +465,51 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   .codes .code .reward-img,.codes .code .reward-energy{width:27px!important;height:27px!important;flex-basis:27px!important}
   .codes .code .reward-chip b{font-size:10px!important}
   .codes .code .copy,.codes .code .iphone{height:42px!important;font-size:11px!important}
+}
+</style>
+
+<style id="mobile-button-size-final">
+@media (max-width:600px){
+  /* SOMENTE os botoes: nao altera os icones/recompensas */
+  .codes .code .copy,
+  .codes .code .iphone{
+    position:static!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    box-sizing:border-box!important;
+    width:120px!important;
+    min-width:120px!important;
+    max-width:120px!important;
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+    margin:0!important;
+    padding:0 8px!important;
+    flex:none!important;
+    font-size:12px!important;
+    line-height:1!important;
+    border-radius:10px!important;
+    justify-self:center!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+  }
+  .codes .code .copy{grid-column:1!important;grid-row:3!important}
+  .codes .code .iphone{grid-column:2!important;grid-row:3!important}
+  .codes .code{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:8px!important}
+}
+@media (max-width:380px){
+  .codes .code .copy,
+  .codes .code .iphone{
+    width:112px!important;
+    min-width:112px!important;
+    max-width:112px!important;
+    height:42px!important;
+    min-height:42px!important;
+    max-height:42px!important;
+    font-size:11px!important;
+  }
+  .codes .code{column-gap:6px!important}
 }
 </style>
 </head>
