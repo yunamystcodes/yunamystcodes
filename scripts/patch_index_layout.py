@@ -56,4 +56,9 @@ if '</head>' in s:
     s = s.replace('</head>', css + '</head>', 1)
 else:
     s += css
-p.write_text(s, encoding='utf-8')
+
+script = '''\n<script id="feedback-date-position-final">\n(function(){\n  function fixFeedbackDates(){\n    var els=document.querySelectorAll('*');\n    els.forEach(function(el){\n      if(el.dataset.feedbackDateFixed==='1') return;\n      if(el.children.length>0) return;\n      var text=(el.textContent||'').trim();\n      var m=text.match(/^\\((\\d{2}\\/\\d{2}\\/\\d{4})\\)\\s*(.+)$/);\n      if(!m) return;\n      var name=m[2];\n      el.dataset.feedbackDateFixed='1';\n      el.innerHTML='<span class="feedback-player-name">'+name+'</span><span class="feedback-player-date">('+m[1]+')</span>';\n      el.style.display='flex';\n      el.style.alignItems='center';\n      el.style.gap='8px';\n      el.style.width='100%';\n      el.style.justifyContent='flex-start';\n      var d=el.querySelector('.feedback-player-date');\n      if(d){d.style.marginLeft='auto';d.style.whiteSpace='nowrap';d.style.fontSize='11px';d.style.color='#a99eb8';}\n    });\n  }\n  fixFeedbackDates();\n  new MutationObserver(fixFeedbackDates).observe(document.body,{childList:true,subtree:true});\n})();\n</script>\n'''
+if 'feedback-date-position-final' not in s:
+    s=s.replace('</body>',script+'</body>',1)
+
+p.write_text(s,encoding='utf-8')
