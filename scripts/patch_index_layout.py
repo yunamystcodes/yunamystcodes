@@ -61,4 +61,21 @@ script = '''\n<script id="feedback-date-position-final">\n(function(){\n  functi
 if 'feedback-date-position-final' not in s:
     s=s.replace('</body>',script+'</body>',1)
 
+# Remove visual duplication of the FAQ if more than one FAQ block exists.
+faq_fix = '''
+<script id="faq-single-block-final">
+(function(){
+  function keepOneFAQ(){
+    var faqs=document.querySelectorAll('.faq');
+    for(var i=1;i<faqs.length;i++) faqs[i].remove();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',keepOneFAQ);
+  else keepOneFAQ();
+  new MutationObserver(keepOneFAQ).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+'''
+if 'faq-single-block-final' not in s:
+    s=s.replace('</body>',faq_fix+'</body>',1)
+
 p.write_text(s,encoding='utf-8')
