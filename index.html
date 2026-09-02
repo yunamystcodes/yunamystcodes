@@ -360,6 +360,76 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 </style>
 
 
+
+<style id="yuna-partnership-final-position">
+/* YUNAMYST PARTNERSHIP FINAL POSITION */
+@media (min-width:851px){
+  #yunaPartnershipButton{display:none!important}
+  #yunaDesktopPartnershipButton{display:flex!important;margin:0 0 12px!important;width:100%!important;max-width:none!important}
+}
+@media (max-width:850px){
+  #yunaPartnershipButton{display:flex!important}
+  #yunaDesktopPartnershipButton{display:none!important}
+}
+</style>
+<style id="final-reward-layout">
+@media (min-width:851px){
+  .code{flex-wrap:nowrap!important;gap:7px!important}
+  .code .cinfo{flex:1 1 auto!important;min-width:120px!important}
+  .code .reward-icons{flex:0 0 auto!important;gap:5px!important;margin:0 2px 0 0!important;justify-content:flex-start!important}
+  .code .reward-chip{gap:4px!important}
+  .code .reward-img{width:30px!important;height:30px!important}
+  .code .reward-energy{width:30px!important;font-size:23px!important}
+  .code .reward-chip b{font-size:12px!important}
+  .code .copy,.code .iphone{flex:0 0 auto!important;width:auto!important;min-width:82px!important;margin:0!important}
+  .code .copy + .iphone{margin-left:0!important}
+}
+
+@media (max-width:600px){
+  /* Os icones/recompensas ficam intocados. Alteramos apenas os dois botoes. */
+  .codes .code .copy,
+  .codes .code .iphone{
+    position:static!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    box-sizing:border-box!important;
+    width:120px!important;
+    min-width:120px!important;
+    max-width:120px!important;
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+    margin:0!important;
+    padding:0 8px!important;
+    flex:none!important;
+    font-size:12px!important;
+    line-height:1!important;
+    border-radius:10px!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+    justify-self:center!important;
+  }
+  .codes .code .copy{grid-column:1!important;grid-row:3!important}
+  .codes .code .iphone{grid-column:2!important;grid-row:3!important}
+  .codes .code{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:8px!important}
+}
+
+@media (max-width:380px){
+  .codes .code .copy,
+  .codes .code .iphone{
+    width:112px!important;
+    min-width:112px!important;
+    max-width:112px!important;
+    height:42px!important;
+    min-height:42px!important;
+    max-height:42px!important;
+    font-size:11px!important;
+  }
+  .codes .code{column-gap:6px!important}
+}
+</style>
+
 <style id="mobile-button-final-fix">
 @media (max-width:600px){
   .codes .code{
@@ -445,75 +515,6 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   .codes .code .reward-img,.codes .code .reward-energy{width:27px!important;height:27px!important;flex-basis:27px!important}
   .codes .code .reward-chip b{font-size:10px!important}
   .codes .code .copy,.codes .code .iphone{height:42px!important;font-size:11px!important}
-}
-</style>
-
-<style id="yuna-partnership-final-position">
-/* YUNAMYST PARTNERSHIP FINAL POSITION */
-@media (min-width:851px){
-  #yunaPartnershipButton{display:none!important}
-  #yunaDesktopPartnershipButton{display:flex!important;margin:0 0 12px!important;width:100%!important;max-width:none!important}
-}
-@media (max-width:850px){
-  #yunaPartnershipButton{display:flex!important}
-  #yunaDesktopPartnershipButton{display:none!important}
-}
-</style>
-<style id="final-reward-layout">
-@media (min-width:851px){
-  .code{flex-wrap:nowrap!important;gap:7px!important}
-  .code .cinfo{flex:1 1 auto!important;min-width:120px!important}
-  .code .reward-icons{flex:0 0 auto!important;gap:5px!important;margin:0 2px 0 0!important;justify-content:flex-start!important}
-  .code .reward-chip{gap:4px!important}
-  .code .reward-img{width:30px!important;height:30px!important}
-  .code .reward-energy{width:30px!important;font-size:23px!important}
-  .code .reward-chip b{font-size:12px!important}
-  .code .copy,.code .iphone{flex:0 0 auto!important;width:auto!important;min-width:82px!important;margin:0!important}
-  .code .copy + .iphone{margin-left:0!important}
-}
-
-@media (max-width:600px){
-  /* Os icones/recompensas ficam intocados. Alteramos apenas os dois botoes. */
-  .codes .code .copy,
-  .codes .code .iphone{
-    position:static!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    box-sizing:border-box!important;
-    width:120px!important;
-    min-width:120px!important;
-    max-width:120px!important;
-    height:44px!important;
-    min-height:44px!important;
-    max-height:44px!important;
-    margin:0!important;
-    padding:0 8px!important;
-    flex:none!important;
-    font-size:12px!important;
-    line-height:1!important;
-    border-radius:10px!important;
-    overflow:hidden!important;
-    white-space:nowrap!important;
-    justify-self:center!important;
-  }
-  .codes .code .copy{grid-column:1!important;grid-row:3!important}
-  .codes .code .iphone{grid-column:2!important;grid-row:3!important}
-  .codes .code{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:8px!important}
-}
-
-@media (max-width:380px){
-  .codes .code .copy,
-  .codes .code .iphone{
-    width:112px!important;
-    min-width:112px!important;
-    max-width:112px!important;
-    height:42px!important;
-    min-height:42px!important;
-    max-height:42px!important;
-    font-size:11px!important;
-  }
-  .codes .code{column-gap:6px!important}
 }
 </style>
 </head>
