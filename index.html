@@ -304,50 +304,6 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
 @media(max-width:900px){.logo{width:300px!important;max-width:50vw!important;height:60px!important}}
 @media(max-width:600px){.logo{width:250px!important;max-width:62vw!important;height:56px!important;clip-path:inset(0 0 11px 0)!important}}
 </style>
-<style id="mobile-button-size-final">
-@media (max-width:600px){
-  /* SOMENTE os botoes: nao altera os icones/recompensas */
-  .codes .code .copy,
-  .codes .code .iphone{
-    position:static!important;
-    display:flex!important;
-    align-items:center!important;
-    justify-content:center!important;
-    box-sizing:border-box!important;
-    width:120px!important;
-    min-width:120px!important;
-    max-width:120px!important;
-    height:44px!important;
-    min-height:44px!important;
-    max-height:44px!important;
-    margin:0!important;
-    padding:0 8px!important;
-    flex:none!important;
-    font-size:12px!important;
-    line-height:1!important;
-    border-radius:10px!important;
-    justify-self:center!important;
-    overflow:hidden!important;
-    white-space:nowrap!important;
-  }
-  .codes .code .copy{grid-column:1!important;grid-row:3!important}
-  .codes .code .iphone{grid-column:2!important;grid-row:3!important}
-  .codes .code{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:8px!important}
-}
-@media (max-width:380px){
-  .codes .code .copy,
-  .codes .code .iphone{
-    width:112px!important;
-    min-width:112px!important;
-    max-width:112px!important;
-    height:42px!important;
-    min-height:42px!important;
-    max-height:42px!important;
-    font-size:11px!important;
-  }
-  .codes .code{column-gap:6px!important}
-}
-</style>
 <style id="yuna-partnership-final">
 @media (min-width:851px){
   #yunaPartnershipButton{display:none!important}
@@ -516,6 +472,51 @@ body{min-height:100vh;overflow-x:hidden;color:#fff;font-family:Inter,Arial,sans-
   .codes .code{column-gap:6px!important}
 }
 </style>
+
+<style id="mobile-button-size-final">
+@media (max-width:600px){
+  /* SOMENTE os botoes: nao altera os icones/recompensas */
+  .codes .code .copy,
+  .codes .code .iphone{
+    position:static!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    box-sizing:border-box!important;
+    width:120px!important;
+    min-width:120px!important;
+    max-width:120px!important;
+    height:44px!important;
+    min-height:44px!important;
+    max-height:44px!important;
+    margin:0!important;
+    padding:0 8px!important;
+    flex:none!important;
+    font-size:12px!important;
+    line-height:1!important;
+    border-radius:10px!important;
+    justify-self:center!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+  }
+  .codes .code .copy{grid-column:1!important;grid-row:3!important}
+  .codes .code .iphone{grid-column:2!important;grid-row:3!important}
+  .codes .code{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;column-gap:8px!important}
+}
+@media (max-width:380px){
+  .codes .code .copy,
+  .codes .code .iphone{
+    width:112px!important;
+    min-width:112px!important;
+    max-width:112px!important;
+    height:42px!important;
+    min-height:42px!important;
+    max-height:42px!important;
+    font-size:11px!important;
+  }
+  .codes .code{column-gap:6px!important}
+}
+</style>
 </head>
 <body>
 <!-- WhatsApp button: PC + mobile -->
@@ -614,4 +615,43 @@ const bgMusic=document.getElementById("yunaBgMusic"),audioMute=document.getEleme
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setupActiveCodesTab);else setupActiveCodesTab();
 })();
 </script>
-<script src="updates.js?v=20260818-1059"></script></body></html>
+<script src="updates.js?v=20260818-1059"></script>
+<script id="feedback-date-position-final">
+(function(){
+  function fixFeedbackDates(){
+    var els=document.querySelectorAll('*');
+    els.forEach(function(el){
+      if(el.dataset.feedbackDateFixed==='1') return;
+      if(el.children.length>0) return;
+      var text=(el.textContent||'').trim();
+      var m=text.match(/^\((\d{2}\/\d{2}\/\d{4})\)\s*(.+)$/);
+      if(!m) return;
+      var name=m[2];
+      el.dataset.feedbackDateFixed='1';
+      el.innerHTML='<span class="feedback-player-name">'+name+'</span><span class="feedback-player-date">('+m[1]+')</span>';
+      el.style.display='flex';
+      el.style.alignItems='center';
+      el.style.gap='8px';
+      el.style.width='100%';
+      el.style.justifyContent='flex-start';
+      var d=el.querySelector('.feedback-player-date');
+      if(d){d.style.marginLeft='auto';d.style.whiteSpace='nowrap';d.style.fontSize='11px';d.style.color='#a99eb8';}
+    });
+  }
+  fixFeedbackDates();
+  new MutationObserver(fixFeedbackDates).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+
+<script id="faq-single-block-final">
+(function(){
+  function keepOneFAQ(){
+    var faqs=document.querySelectorAll('.faq');
+    for(var i=1;i<faqs.length;i++) faqs[i].remove();
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',keepOneFAQ);
+  else keepOneFAQ();
+  new MutationObserver(keepOneFAQ).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+</body></html>
