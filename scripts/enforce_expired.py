@@ -8,6 +8,7 @@ HISTORY = Path("data/code_history.json")
 # Codes confirmed expired and never allowed back into the active list.
 KNOWN_EXPIRED = {
     "2SOREIKENIPPON6",
+    "AUGSW2026V7N",
 }
 
 
