@@ -4,11 +4,7 @@
     "last_seen": "2026-08-20T23:58:46.335170+00:00",
     "missing_runs": 3,
     "reward": "Energy ×100, Scroll Mystical ×1",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "expired"
   },
   "4READY4TDOT": {
@@ -16,11 +12,7 @@
     "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Mana ×200,000, Scroll Mystical ×1",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "active"
   },
   "912XUXIECHUANQI": {
@@ -28,11 +20,7 @@
     "last_seen": "2026-08-21T23:58:06.893704+00:00",
     "missing_runs": 3,
     "reward": "Mana ×200,000, Scroll Mystical ×1",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "expired"
   },
   "AMPRELIMSLEGACYDRP": {
@@ -41,11 +29,7 @@
     "last_seen": "2026-08-26T11:23:54.170352+00:00",
     "missing_runs": 2,
     "reward": "Energy ×100, Scroll Mystical ×1",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "expired"
   },
   "APAC26LEGASEA": {
@@ -53,35 +37,24 @@
     "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Mana ×200,000, Scroll Mystical ×1",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "active"
   },
   "AUGSW2026V7N": {
     "code": "AUGSW2026V7N",
+    "expired_at": "2026-09-04T00:55:00+00:00",
     "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Fire Scroll ×3",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
-    "status": "active"
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
+    "status": "expired"
   },
   "GLHF2026AMERICAS": {
     "code": "GLHF2026AMERICAS",
     "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Scroll Mystical ×1",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "active"
   },
   "H4MBURGISWAITING": {
@@ -89,11 +62,7 @@
     "last_seen": "2026-08-20T23:58:46.335170+00:00",
     "missing_runs": 3,
     "reward": "Mana ×100,000, Scroll Mystical ×1",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "expired"
   },
   "HURRASWC2026": {
@@ -101,11 +70,7 @@
     "last_seen": "2026-08-20T23:58:46.335170+00:00",
     "missing_runs": 3,
     "reward": "Scroll Mystical ×1",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "expired"
   },
   "LEGENDSWC2026HSL": {
@@ -113,11 +78,7 @@
     "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Scroll Mystical ×1",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "active"
   },
   "PAI2026BANGKOK": {
@@ -125,11 +86,7 @@
     "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Scroll Mystical ×1",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "active"
   },
   "SWC2026JUELEBA": {
@@ -137,11 +94,7 @@
     "last_seen": "2026-08-21T23:58:06.893704+00:00",
     "missing_runs": 3,
     "reward": "Energy ×100, Scroll Mystical ×1",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "expired"
   },
   "SWC26X10LEGACYBND": {
@@ -149,11 +102,7 @@
     "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Mana ×200,000",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "active"
   },
   "SWFR1ERENNOW": {
@@ -161,11 +110,7 @@
     "last_seen": "2026-08-18T15:51:20.118184+00:00",
     "missing_runs": 3,
     "reward": "Energy ×100, Scroll Mystical ×1",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "expired"
   },
   "SWXFRIEREN2026": {
@@ -173,11 +118,7 @@
     "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Mana ×300,000, Scroll Mystical ×3",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "active"
   },
   "YIQIZOUGUO10SWC": {
@@ -185,11 +126,7 @@
     "last_seen": "2026-08-26T11:33:40.560628+00:00",
     "missing_runs": 0,
     "reward": "Energy ×100, Scroll Mystical ×1",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "active"
   },
   "YYDSSWC26ZAN": {
@@ -197,11 +134,7 @@
     "last_seen": "2026-08-20T23:58:46.335170+00:00",
     "missing_runs": 3,
     "reward": "Mana ×200,000, Scroll Mystical ×1",
-    "sources": [
-      "SWGT",
-      "SWQuery",
-      "summonerswarcodes.us"
-    ],
+    "sources": ["SWGT", "SWQuery", "summonerswarcodes.us"],
     "status": "expired"
   }
 }
