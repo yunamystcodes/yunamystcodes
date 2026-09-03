@@ -31,6 +31,8 @@ jobs:
         run: pip install requests beautifulsoup4
       - name: Atualizar códigos de todas as fontes
         run: python scripts/auto_update_codes_fixed.py
+      - name: Remover códigos confirmados expirados
+        run: python scripts/enforce_expired.py
       - name: Garantir todos os códigos visíveis
         run: |
           python - <<'PY'
@@ -72,6 +74,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             python scripts/auto_update_codes_fixed.py
+            python scripts/enforce_expired.py
             python - <<'PY'
           from pathlib import Path
           p = Path('index.html')
