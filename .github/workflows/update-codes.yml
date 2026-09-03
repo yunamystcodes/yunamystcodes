@@ -35,6 +35,9 @@ jobs:
       - name: Atualizar códigos usando as 6 fontes
         run: python scripts/auto_update_codes_fixed.py
 
+      - name: Remover códigos confirmados expirados
+        run: python scripts/enforce_expired.py
+
       - name: Garantir códigos recentes e todos os ativos no index
         run: |
           python - <<'PY'
