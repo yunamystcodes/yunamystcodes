@@ -32,7 +32,24 @@ jobs:
       - name: Instalar dependências
         run: pip install requests beautifulsoup4
 
-      - name: Atualizar códigos usando as 6 fontes
+      # Guarda os códigos que já estavam expirados antes da atualização.
+      # Assim um código expirado nunca volta para a lista ativa só porque uma
+      # fonte externa continua a mostrá-lo.
+      - name: Bloquear códigos já expirados
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          history_path = Path("data/code_history.json")
+          lock_path = Path("data/expired_lock.json")
+          history = json.loads(history_path.read_text(encoding="utf-8")) if history_path.exists() else {}
+          locked = sorted(code for code, rec in history.items() if rec.get("status") == "expired")
+          lock_path.write_text(json.dumps(locked, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          print(f"Códigos expirados protegidos: {len(locked)}")
+          PY
+
+      - name: Atualizar códigos usando as fontes automáticas
         run: python scripts/auto_update_codes_fixed.py
 
       - name: Remover códigos confirmados expirados
@@ -63,12 +80,12 @@ jobs:
                   continue
               reward = rec.get("reward", "Recompensa não informada")
               import re
-              def qty(pattern, default="1"):
+              def qty(pattern, default=""):
                   m = re.search(pattern, reward, re.I)
                   return m.group(1) if m else default
-              energy = qty(r"Energy\s*[×x]\s*([\d,]+)", "")
-              mana = qty(r"Mana\s*[×x]\s*([\d,]+)", "")
-              mystic = qty(r"Mystical\s*(?:Scroll)?\s*[×x]\s*([\d,]+)", "")
+              energy = qty(r"Energy\s*[×x]\s*([\d,]+)")
+              mana = qty(r"Mana\s*[×x]\s*([\d,]+)")
+              mystic = qty(r"Mystical\s*(?:Scroll)?\s*[×x]\s*([\d,]+)")
               parts = []
               if energy: parts.append(f'<span class="reward-chip"><span class="reward-energy">⚡</span><b>×{energy}</b></span>')
               if mana: parts.append(f'<span class="reward-chip"><span class="reward-img reward-mana"></span><b>×{mana}</b></span>')
@@ -92,12 +109,50 @@ jobs:
           from pathlib import Path
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          s = s.replace("var visibleCount=4;", "var visibleCount=cards.length;")
-          s = s.replace("var visibleCount = 4;", "var visibleCount=cards.length;")
-          s = s.replace("var visibleCount=8;", "var visibleCount=cards.length;")
-          s = s.replace("var visibleCount = 8;", "var visibleCount=cards.length;")
+          for old in ("var visibleCount=4;", "var visibleCount = 4;", "var visibleCount=8;", "var visibleCount = 8;"):
+              s = s.replace(old, "var visibleCount=cards.length;")
           p.write_text(s, encoding="utf-8")
           PY
+
+      # Última barreira: qualquer código marcado como expirado no histórico
+      # é removido da área ativa depois de todas as inserções automáticas.
+      - name: Remover todos os expirados da lista ativa
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          from bs4 import BeautifulSoup
+
+          index = Path("index.html")
+          history_path = Path("data/code_history.json")
+          lock_path = Path("data/expired_lock.json")
+          history = json.loads(history_path.read_text(encoding="utf-8")) if history_path.exists() else {}
+          locked = set(json.loads(lock_path.read_text(encoding="utf-8"))) if lock_path.exists() else set()
+
+          # O updater pode ter reativado um código que já estava expirado.
+          # Restaura o estado expirado desses códigos.
+          for code in locked:
+              rec = history.get(code, {"code": code})
+              rec["code"] = code
+              rec["status"] = "expired"
+              history[code] = rec
+
+          history_path.write_text(json.dumps(history, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+          expired = {code.upper() for code, rec in history.items() if rec.get("status") == "expired"}
+          soup = BeautifulSoup(index.read_text(encoding="utf-8"), "html.parser")
+          active = soup.find(id="activeCodesList")
+          if active is not None:
+              for card in active.select("[data-code]"):
+                  if card.get("data-code", "").upper() in expired:
+                      card.decompose()
+
+          index.write_text(str(soup), encoding="utf-8")
+          print(f"Expirados removidos da área ativa: {len(expired)}")
+          PY
+
+      - name: Limpar ficheiro temporário
+        run: rm -f data/expired_lock.json
 
       - name: Publicar alterações
         run: |
@@ -108,5 +163,5 @@ jobs:
             echo "Nenhuma alteração nos códigos."
             exit 0
           fi
-          git commit -m "Atualizar automaticamente novos códigos"
+          git commit -m "Atualizar automaticamente códigos ativos e expirados"
           git push origin HEAD:main
