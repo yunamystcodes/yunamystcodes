@@ -1,8 +1,12 @@
 name: Corrigir texto da parceria
 
 on:
-  push:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - '.github/workflows/corrigir-yunamyst-parceria.yml'
 
 permissions:
   contents: write
@@ -13,64 +17,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Instalar dependências dos códigos
-        run: pip install requests beautifulsoup4
-      - name: Atualizar códigos automaticamente no index
-        run: python scripts/auto_update_codes_fixed.py
-      - name: Garantir todos os códigos ativos visíveis no index
+      - name: Corrigir apenas textos da parceria
         run: |
           python - <<'PY'
           from pathlib import Path
-          import json
-          from bs4 import BeautifulSoup
-          index=Path('index.html')
-          history_path=Path('data/code_history.json')
-          history=json.loads(history_path.read_text(encoding='utf-8')) if history_path.exists() else {}
-          soup=BeautifulSoup(index.read_text(encoding='utf-8'),'html.parser')
-          active=soup.find(id='activeCodesList')
-          if active is None:
-              raise SystemExit('activeCodesList não encontrado')
-          existing={x.get('data-code') for x in active.find_all(attrs={'data-code':True})}
-          for rec in sorted([x for x in history.values() if x.get('status')=='active'], key=lambda x:x.get('last_seen',''), reverse=True):
-              code=rec['code']
-              if code in existing:
-                  continue
-              reward=rec.get('reward','Recompensa não informada')
-              card=BeautifulSoup(f'''<article class="code" data-code="{code}"><div class="gift">🎁</div><div class="cinfo"><strong>{code}</strong><small>Atualizado automaticamente</small></div><div class="reward-icons" aria-label="Recompensas"><span class="reward-chip"><span class="reward-unknown">🎁</span><b>{reward}</b></span></div><button class="copy" onclick="copiarCodigo('{code}',this)"><span data-i18n="copy">▣ COPIAR</span></button><a class="iphone" href="https://withhive.me/313/{code}" target="_blank" rel="noopener"><span class="iphone-full"> LINK IPHONE</span><span class="iphone-short"> LINK</span></a></article>''','html.parser').article
-              active.insert(0,card)
-          index.write_text(str(soup),encoding='utf-8')
-          PY
-      - name: Corrigir textos do site no PC e telemóvel
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p=Path('index.html')
-          s=p.read_text(encoding='utf-8')
-          replacements={
-              'Aqui encontras os códigos ativos e expirados de Summoners War: Sky Arena.':'Aqui encontras os códigos ativos de Summoners War: Sky Arena.',
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          replacements = {
               'Queres fazer uma parceria com o YunaMyst Codes?':'Queres fazer uma parceria com a YunaMyst?',
-              'Queres fazer uma parceria com o YunaMyst?':'Queres fazer uma parceria com a YunaMyst?',
-              'Colabora com o YunaMyst Codes':'Colabora com a YunaMyst',
               'Colabora com a YunaMyst Codes':'Colabora com a YunaMyst',
+              'Colabora com o YunaMyst Codes':'Colabora com a YunaMyst',
               'redes sociais do YunaMyst':'redes sociais da YunaMyst',
               'redes sociais do YunaMyst.':'redes sociais da YunaMyst.',
           }
-          for old,new in replacements.items():
-              s=s.replace(old,new)
-          p.write_text(s,encoding='utf-8')
+          for old, new in replacements.items():
+              s = s.replace(old, new)
+          p.write_text(s, encoding='utf-8')
           PY
-      - name: Publicar index e histórico
+      - name: Publicar somente se houve alteração
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html data/code_history.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
           if git diff --cached --quiet; then
-            echo "Nenhuma alteração necessária."
+            echo 'Nenhuma alteração necessária.'
             exit 0
           fi
-          git commit -m "Remover palavra expirados da apresentação do site"
+          git commit -m 'Corrigir textos da parceria'
           git push origin HEAD:main
-
-# Correção forçada para desktop e mobile.
