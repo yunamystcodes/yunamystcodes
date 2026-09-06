@@ -11,8 +11,6 @@ INDEX = Path("index.html")
 HISTORY = Path("data/code_history.json")
 CODE_RE = re.compile(r"\b[A-Z0-9]{8,24}\b")
 
-# 20 independent/official/community endpoints. The collector deduplicates codes
-# by their normalized value, so the same code found on many sources is rendered once.
 SOURCES = [
     ("summonerswarcodes.us", "https://summonerswarcodes.us/", "table"),
     ("SWCoupon", "https://swcoupon.net/", "table"),
@@ -26,6 +24,8 @@ SOURCES = [
     ("Claude Gaming", "https://claude-gaming.com/summoners-war-codes/", "page"),
     ("eGamersWorld", "https://pt.egamersworld.com/blog/summoners-war-codes-this-date-QPcOSa2S5q", "page"),
     ("Try Hard Guides", "https://tryhardguides.com/summoners-war-codes-for-light-dark-mythic-scrolls/", "page"),
+    ("NerdsChalk", "https://nerdschalk.com/summoners-war-codes/", "page"),
+    ("Games.GG", "https://games.gg/news/summoners-war-codes-june-2026/", "page"),
     ("Com2uS EN News", "https://www.summonerswar.com/en/skyarena/news/list", "official"),
     ("Com2uS PT News", "https://www.summonerswar.com/pt/skyarena/news/list", "official"),
     ("Com2uS FR News", "https://www.summonerswar.com/fr/skyarena/news/list", "official"),
@@ -105,13 +105,12 @@ def parse_generic_page(name, url):
     soup = BeautifulSoup(fetch_html(url), "html.parser")
     text = clean(soup.get_text(" ", strip=True))
     found, expired = {}, set()
-    # Generic code pages are treated conservatively: only codes appearing in a
-    # nearby active/working context are accepted. Explicit expired contexts win.
-    for raw in CODE_RE.findall(text.upper()):
+    upper = text.upper()
+    for raw in CODE_RE.findall(upper):
         code = normalise_code(raw)
         if not code:
             continue
-        pos = text.upper().find(raw)
+        pos = upper.find(raw)
         context = text[max(0, pos - 180):pos + 260].lower()
         if any(x in context for x in EXPIRED_WORDS) and not any(x in context for x in ACTIVE_WORDS):
             expired.add(code)
@@ -157,12 +156,11 @@ def collect_sources():
                     if merged[code]["reward"] == "Recompensa não informada" and item["reward"] != "Recompensa não informada":
                         merged[code]["reward"] = item["reward"]
                     merged[code]["source"] += ", " + item["source"]
-    except Exception as exc:
+        except Exception as exc:
             errors.append(f"{name}: {exc}")
-    # A source saying expired cannot override another source saying active.
+    if successful == 0:
+        raise RuntimeError("Nenhuma fonte respondeu: " + " | ".join(errors))
     explicitly_expired.difference_update(merged.keys())
-    if successful < 5:
-        raise RuntimeError("Poucas fontes responderam: " + " | ".join(errors))
     return merged, explicitly_expired, successful, errors
 
 def load_history():
@@ -233,32 +231,42 @@ def main():
     active_codes = set(merged)
     for code, item in merged.items():
         record = history.get(code, {})
-        record.update({"code": code, "reward": item.get("reward", record.get("reward", "Recompensa não informada")), "sources": sorted(set(record.get("sources", []) + [s.strip() for s in item.get("source", "").split(",") if s.strip()])), "last_seen": now.isoformat(), "missing_runs": 0, "status": "active"})
-        history[code] = record
-    for code, record in list(history.items()):
-        if code in active_codes:
-            continue
-        if code in explicitly_expired:
+        if record.get("status") == "expired" or record.get("expired_at"):
+            record["code"] = code
             record["status"] = "expired"
-            record["expired_at"] = now.isoformat()
             history[code] = record
             continue
-        if record.get("status") == "expired":
+        record.update({"code": code, "reward": item.get("reward", record.get("reward", "Recompensa não informada")), "sources": sorted(set(record.get("sources", []) + [s.strip() for s in item.get("source", "").split(",") if s.strip()])), "last_seen": now.isoformat(), "missing_runs": 0, "status": "active"})
+        history[code] = record
+
+    reliable_for_expiry = successful >= 3
+    for code, record in list(history.items()):
+        if code in explicitly_expired:
+            record["status"] = "expired"
+            record["expired_at"] = record.get("expired_at", now.isoformat())
+            history[code] = record
+            continue
+        if code in active_codes or record.get("status") == "expired":
+            continue
+        if not reliable_for_expiry:
             continue
         record["missing_runs"] = int(record.get("missing_runs", 0)) + 1
         record["status"] = "active" if record["missing_runs"] < 2 else "expired"
         if record["status"] == "expired":
             record["expired_at"] = now.isoformat()
         history[code] = record
+
     save_history(history)
     active_items = sorted([v for v in history.values() if v.get("status") == "active"], key=lambda x: x.get("last_seen", ""), reverse=True)
     expired_items = sorted([v for v in history.values() if v.get("status") == "expired"], key=lambda x: x.get("last_seen", ""), reverse=True)
     update_index(active_items, expired_items)
     print(f"Fontes OK: {successful}/{len(SOURCES)}")
     print("Códigos ativos únicos:", ", ".join(x["code"] for x in active_items))
-    print("Códigos expirados arquivados:", len(expired_items))
     if errors:
-        print("Avisos:", " | ".join(errors))
+        print("Fontes indisponíveis:")
+        for error in errors:
+            print(" -", error)
+    print(f"Expiração automática por ausência: {'ATIVA' if reliable_for_expiry else 'PAUSADA (fontes insuficientes)'}")
 
 if __name__ == "__main__":
     main()
