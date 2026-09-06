@@ -6,6 +6,9 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+    paths:
+      - 'scripts/**'
+      - '.github/workflows/auto-codes-fixed.yml'
 
 concurrency:
   group: yuna-codes-updater
@@ -18,6 +21,7 @@ jobs:
   update-codes:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,30 +32,25 @@ jobs:
         with:
           python-version: '3.x'
       - name: Instalar dependências
-        run: pip install requests beautifulsoup4
-      - name: Atualizar códigos de todas as fontes
+        run: pip install --disable-pip-version-check requests beautifulsoup4
+      - name: Atualizar códigos automaticamente
         run: python scripts/auto_update_codes_fixed.py
       - name: Remover códigos confirmados expirados
         run: python scripts/enforce_expired.py
-      - name: Garantir todos os códigos visíveis
+      - name: Validar lista de códigos sem reescrever o site
         run: |
           python - <<'PY'
           from pathlib import Path
           from bs4 import BeautifulSoup
           p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-          s = s.replace('var visibleCount=8;', 'var visibleCount=cards.length;')
-          s = s.replace('var visibleCount = 8;', 'var visibleCount=cards.length;')
-          s = s.replace('var visibleCount=4;', 'var visibleCount=cards.length;')
-          s = s.replace('var visibleCount = 4;', 'var visibleCount=cards.length;')
-          soup = BeautifulSoup(s, 'html.parser')
+          soup = BeautifulSoup(p.read_text(encoding='utf-8'), 'html.parser')
           block = soup.find(id='activeCodesList')
           if block is None:
               raise SystemExit('activeCodesList não encontrado')
-          print('Códigos ativos no index:', len(block.select('[data-code]')))
-          if not block.select('[data-code]'):
+          count = len(block.select('[data-code]'))
+          print(f'Códigos ativos no index: {count}')
+          if count == 0:
               raise SystemExit('Nenhum código ativo foi gerado')
-          p.write_text(str(soup), encoding='utf-8')
           PY
       - name: Publicar alterações com retry seguro
         shell: bash
@@ -75,16 +74,6 @@ jobs:
             git reset --hard origin/main
             python scripts/auto_update_codes_fixed.py
             python scripts/enforce_expired.py
-            python - <<'PY'
-          from pathlib import Path
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-          s = s.replace('var visibleCount=8;', 'var visibleCount=cards.length;')
-          s = s.replace('var visibleCount = 8;', 'var visibleCount=cards.length;')
-          s = s.replace('var visibleCount=4;', 'var visibleCount=cards.length;')
-          s = s.replace('var visibleCount = 4;', 'var visibleCount=cards.length;')
-          p.write_text(s, encoding='utf-8')
-          PY
           done
           echo "Não foi possível publicar depois de 3 tentativas."
           exit 1
