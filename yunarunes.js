@@ -11,8 +11,14 @@
   const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const art=(m,stage)=>`<div class="yuna-monster-portrait ${stage==='2a'?'is-2a':''}"><div class="yuna-portrait-glow"></div><span>${m.emoji}</span></div>`;
 
+  // Remove the old stray awakening marker if the original site inserts it dynamically.
+  function cleanAwakeningMarker(root=document){
+    root.querySelectorAll('#despertar_direita, .despertar_direita, [id*="despertar_direita"], [class*="despertar_direita"]').forEach(el=>el.remove());
+  }
+
   function mount(){
     if(document.querySelector('.yuna-runes-shell'))return;
+    cleanAwakeningMarker();
     const anchor=document.querySelector('main')||document.querySelector('.container')||document.body;
     const shell=document.createElement('section');shell.className='yuna-runes-shell';shell.id='yunarunes';
     shell.innerHTML=`
@@ -62,4 +68,8 @@
     search.oninput=render;render();
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount);else mount();
+
+  // Keep the old marker from returning after another script updates the page.
+  const observer=new MutationObserver(()=>cleanAwakeningMarker());
+  observer.observe(document.documentElement,{childList:true,subtree:true});
 })();
