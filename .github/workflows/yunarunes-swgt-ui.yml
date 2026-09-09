@@ -1,0 +1,104 @@
+name: Add YunaRunes SWGT-style UI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/yunarunes-swgt-ui.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inject YunaRunes interface
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          marker = '<!-- YUNARUNES-SWGT-UI -->'
+          if marker in s:
+              print('YunaRunes UI already installed')
+              raise SystemExit(0)
+          css = r'''<style id="yunarunes-swgt-css">
+          /* YunaRunes — SWGT-inspired monster/rune interface */
+          .yr-app{margin:34px auto 0;width:min(1280px,calc(100% - 28px));color:#eee}
+          .yr-shell{display:grid;grid-template-columns:235px minmax(0,1fr);gap:16px;align-items:start}
+          .yr-side,.yr-main{background:rgba(8,7,20,.94);border:1px solid rgba(180,112,255,.28);box-shadow:0 18px 55px rgba(0,0,0,.38)}
+          .yr-side{border-radius:14px;overflow:hidden;position:sticky;top:92px}
+          .yr-brand{padding:18px;border-bottom:1px solid rgba(255,255,255,.08);font:900 21px Georgia,serif;color:#f1cc72}.yr-brand span{display:block;color:#a963ff;font:800 10px Arial;letter-spacing:3px;margin-top:3px}
+          .yr-side button{width:100%;border:0;background:transparent;color:#bdb6cb;text-align:left;padding:12px 17px;font-weight:800;cursor:pointer}.yr-side button:hover,.yr-side button.active{background:linear-gradient(90deg,rgba(142,70,224,.28),transparent);color:#fff;border-left:3px solid #a85cff}.yr-side .yr-group{padding:12px 17px 6px;color:#8e879d;font-size:10px;font-weight:900;letter-spacing:2px;text-transform:uppercase}
+          .yr-main{border-radius:14px;overflow:hidden}.yr-head{padding:18px;border-bottom:1px solid rgba(255,255,255,.08);background:linear-gradient(180deg,rgba(24,14,43,.9),rgba(8,7,20,.7))}.yr-title{font-size:24px;font-weight:900}.yr-sub{color:#9992a8;font-size:12px;margin-top:5px}.yr-tools{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}.yr-search{flex:1;min-width:220px;background:#0b0916;border:1px solid #4b3861;color:#fff;border-radius:8px;padding:11px 13px;outline:none}.yr-search:focus{border-color:#a85cff;box-shadow:0 0 0 2px rgba(168,92,255,.12)}.yr-filter{background:#0b0916;border:1px solid #4b3861;color:#ddd;border-radius:8px;padding:10px 12px;font-weight:700}.yr-monsters{padding:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.yr-card{position:relative;background:linear-gradient(145deg,#171027,#0b0915);border:1px solid rgba(185,124,255,.24);border-radius:10px;padding:10px;cursor:pointer;transition:.18s;overflow:hidden}.yr-card:hover{transform:translateY(-2px);border-color:#a85cff;box-shadow:0 10px 28px rgba(0,0,0,.35)}.yr-portrait{height:92px;border-radius:8px;display:grid;place-items:center;font-size:43px;background:radial-gradient(circle at 50% 30%,#55317f,#171027 65%);border:1px solid rgba(255,255,255,.08);margin-bottom:9px}.yr-name{font-weight:900;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.yr-meta{font-size:10px;color:#91899e;margin-top:3px}.yr-tag{position:absolute;top:8px;right:8px;font-size:9px;font-weight:900;padding:3px 6px;border-radius:5px;background:#25173c;color:#d9b5ff}.yr-detail{display:none;padding:14px;border-top:1px solid rgba(255,255,255,.08);background:#070611}.yr-detail.open{display:block}.yr-detail-head{display:grid;grid-template-columns:105px 1fr;gap:14px}.yr-bigportrait{height:125px;border-radius:9px;display:grid;place-items:center;font-size:58px;background:radial-gradient(circle,#5b3488,#130d22);border:1px solid #6d3ea0}.yr-detail h3{font-size:25px}.yr-badges{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0}.yr-badge{font-size:10px;padding:4px 7px;border-radius:5px;background:#19132a;border:1px solid #403154;color:#cfc6da}.yr-tabs{display:flex;gap:4px;margin:14px 0 10px;border-bottom:1px solid rgba(255,255,255,.08)}.yr-tab{border:0;background:transparent;color:#9991a5;padding:9px 11px;font-weight:800;cursor:pointer}.yr-tab.active{color:#d69cff;border-bottom:2px solid #a85cff}.yr-panel{display:none}.yr-panel.active{display:block}.yr-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.yr-stat{background:#0e0c18;border:1px solid #272034;border-radius:7px;padding:9px}.yr-stat b{display:block;font-size:15px}.yr-stat span{color:#8f879b;font-size:9px}.yr-runes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.yr-rune{background:#0e0c18;border:1px solid #2e2440;border-radius:8px;padding:10px}.yr-rune strong{display:block;color:#f0c56b;font-size:12px}.yr-rune span{display:block;color:#b7aec1;font-size:10px;margin-top:3px}.yr-skills{display:grid;gap:7px}.yr-skill{padding:9px;background:#0e0c18;border:1px solid #2e2440;border-radius:8px;font-size:11px;color:#c7bfce}.yr-skill b{color:#e4b2ff}.yr-empty{padding:30px;text-align:center;color:#827a8f;grid-column:1/-1}.yr-footnote{padding:12px 14px;color:#756d81;font-size:10px;border-top:1px solid rgba(255,255,255,.07)}
+          @media(max-width:900px){.yr-shell{grid-template-columns:1fr}.yr-side{position:static;display:flex;overflow:auto}.yr-brand,.yr-group{display:none}.yr-side button{min-width:145px;text-align:center;border-left:0!important;border-bottom:3px solid transparent}.yr-side button.active{border-bottom-color:#a85cff}.yr-monsters{grid-template-columns:repeat(3,minmax(0,1fr))}}
+          @media(max-width:600px){.yr-app{width:calc(100% - 18px)}.yr-head{padding:14px}.yr-title{font-size:20px}.yr-tools{display:grid;grid-template-columns:1fr 1fr}.yr-search{grid-column:1/-1;min-width:0}.yr-monsters{grid-template-columns:repeat(2,minmax(0,1fr));padding:10px;gap:8px}.yr-portrait{height:82px}.yr-detail-head{grid-template-columns:78px 1fr}.yr-bigportrait{height:95px;font-size:44px}.yr-detail h3{font-size:20px}.yr-stats{grid-template-columns:repeat(2,1fr)}.yr-runes{grid-template-columns:1fr}.yr-card{padding:8px}.yr-name{font-size:13px}}
+          </style>'''
+          html = r'''<!-- YUNARUNES-SWGT-UI -->
+          <section class="yr-app" id="yunarunes">
+            <div class="yr-shell">
+              <aside class="yr-side">
+                <div class="yr-brand">YunaRunes<span>SUMMONERS WAR</span></div>
+                <div class="yr-group">Monstros</div>
+                <button class="active" data-yr-nav="monsters">⚔️ Monster Search</button>
+                <button data-yr-nav="runes">💎 Builds & Runes</button>
+                <button data-yr-nav="teams">👥 Teams</button>
+                <div class="yr-group">Ferramentas</div>
+                <button data-yr-nav="favorites">★ Favoritos</button>
+                <button data-yr-nav="stats">📊 Estatísticas</button>
+              </aside>
+              <main class="yr-main">
+                <div class="yr-head">
+                  <div class="yr-title">Monster Search</div>
+                  <div class="yr-sub">Pesquisa um mob e vê a build, sets de runas e stats recomendados.</div>
+                  <div class="yr-tools">
+                    <input id="yr-search" class="yr-search" placeholder="Nome do mob, família ou elemento..." autocomplete="off">
+                    <select id="yr-element" class="yr-filter"><option value="all">Todos</option><option>Fire</option><option>Water</option><option>Wind</option><option>Light</option><option>Dark</option></select>
+                    <select id="yr-role" class="yr-filter"><option value="all">Todas as funções</option><option>Attack</option><option>Support</option><option>HP</option><option>Defense</option></select>
+                  </div>
+                </div>
+                <div id="yr-grid" class="yr-monsters"></div>
+                <div id="yr-detail" class="yr-detail"></div>
+                <div class="yr-footnote">YunaRunes é uma interface da comunidade. As builds são recomendações e podem variar conforme conteúdo, runas e qualidade da conta.</div>
+              </main>
+            </div>
+          </section>
+          <script>
+          (function(){
+            const mobs=[
+              {n:'Veromos',e:'Dark',r:'Support',f:'Ifrit',i:'🌑',s:'SPD / HP / ACC',sets:'Swift + Focus',stats:'SPD  |  HP%  |  HP%  |  ACC',skill:'Remove debuffs, stuns and supports long fights.'},
+              {n:'Verdehile',e:'Fire',r:'Attack',f:'Vampire',i:'🦇',s:'SPD / CR / ATK',sets:'Violent + Revenge',stats:'SPD  |  CR%  |  ATK%  |  ATK%',skill:'Attack Bar control through critical hits.'},
+              {n:'Loren',e:'Light',r:'Support',f:'Cow Girl',i:'🏹',s:'SPD / HP / ACC',sets:'Swift + Focus',stats:'SPD  |  HP%  |  HP%  |  ACC',skill:'Defense break and Attack Bar control.'},
+              {n:'Fran',e:'Light',r:'Support',f:'Fairy Queen',i:'✨',s:'SPD / HP / HP',sets:'Swift + Energy',stats:'SPD  |  HP%  |  HP%  |  HP%',skill:'Immunity, healing and Attack Bar boost.'},
+              {n:'Kro',e:'Dark',r:'Attack',f:'Inugami',i:'🐺',s:'SPD / CD / ATK',sets:'Violent + Blade',stats:'SPD  |  CRIT DMG  |  ATK%',skill:'Single-target damage and defense break.'},
+              {n:'Naomi',e:'Wind',r:'Attack',f:'Amazon',i:'🌪️',s:'SPD / CD / ATK',sets:'Fatal + Blade',stats:'SPD  |  CRIT DMG  |  ATK%',skill:'Critical damage scaling against debuffed enemies.'},
+              {n:'Sigmarus',e:'Water',r:'Attack',f:'Phoenix',i:'❄️',s:'SPD / CD / ATK',sets:'Fatal + Blade',stats:'SPD  |  CRIT DMG  |  ATK%',skill:'AoE control and boss damage.'},
+              {n:'Lapis',e:'Water',r:'Attack',f:'Magic Knight',i:'💧',s:'SPD / CR / ATK',sets:'Fatal + Blade',stats:'SPD  |  CR%  |  ATK%',skill:'AoE damage and self sustain.'},
+              {n:'Mav',e:'Wind',r:'HP',f:'Penguin Knight',i:'🟢',s:'SPD / HP / HP',sets:'Energy + Guard',stats:'SPD  |  HP%  |  HP%',skill:'Cooldown support and team utility.'},
+              {n:'Belladeon',e:'Light',r:'Support',f:'Inugami',i:'🦁',s:'SPD / HP / ACC',sets:'Swift + Focus',stats:'SPD  |  HP%  |  HP%  |  ACC',skill:'Heal, defense break and Attack Bar boost.'},
+              {n:'Raoq',e:'Fire',r:'Attack',f:'Inugami',i:'🔥',s:'SPD / CD / ATK',sets:'Violent + Blade',stats:'SPD  |  CRIT DMG  |  ATK%',skill:'Team-up attacks and clean PvE damage.'},
+              {n:'Baretta',e:'Fire',r:'Support',f:'Sylph',i:'🌋',s:'SPD / HP / ACC',sets:'Despair + Focus',stats:'SPD  |  HP%  |  HP%  |  ACC',skill:'AoE DoTs and turn control.'}
+            ];
+            const grid=document.getElementById('yr-grid'), detail=document.getElementById('yr-detail'), search=document.getElementById('yr-search'), el=document.getElementById('yr-element'), role=document.getElementById('yr-role');
+            function render(){const q=(search.value||'').toLowerCase(), ev=el.value, rv=role.value; const list=mobs.filter(m=>(!q||[m.n,m.e,m.r,m.f].join(' ').toLowerCase().includes(q))&&(ev==='all'||m.e===ev)&&(rv==='all'||m.r===rv)); grid.innerHTML=list.length?list.map((m,i)=>`<article class="yr-card" data-i="${mobs.indexOf(m)}"><span class="yr-tag">${m.e}</span><div class="yr-portrait">${m.i}</div><div class="yr-name">${m.n}</div><div class="yr-meta">${m.r} · ${m.f}</div></article>`).join(''):'<div class="yr-empty">Nenhum mob encontrado.</div>'; grid.querySelectorAll('.yr-card').forEach(c=>c.onclick=()=>open(+c.dataset.i));}
+            function open(i){const m=mobs[i];detail.classList.add('open');detail.innerHTML=`<div class="yr-detail-head"><div class="yr-bigportrait">${m.i}</div><div><h3>${m.n}</h3><div class="yr-badges"><span class="yr-badge">${m.e}</span><span class="yr-badge">${m.r}</span><span class="yr-badge">${m.f}</span></div><div class="yr-meta">Build principal: ${m.s}</div></div></div><div class="yr-tabs"><button class="yr-tab active" data-tab="overview">Overview</button><button class="yr-tab" data-tab="runes">Runes</button><button class="yr-tab" data-tab="skills">Skills</button></div><div class="yr-panel active" data-panel="overview"><div class="yr-stats">${m.stats.split('|').map(x=>`<div class="yr-stat"><b>${x.trim()}</b><span>MAIN STAT</span></div>`).join('')}</div></div><div class="yr-panel" data-panel="runes"><div class="yr-runes">${m.sets.split('+').map((x,j)=>`<div class="yr-rune"><strong>Set ${j+1}</strong><span>${x.trim()}</span></div>`).join('')}<div class="yr-rune"><strong>Build</strong><span>${m.s}</span></div></div></div><div class="yr-panel" data-panel="skills"><div class="yr-skills"><div class="yr-skill"><b>Build note:</b> ${m.skill}</div><div class="yr-skill"><b>Prioridade:</b> SPD → sobrevivência → eficiência de stats</div></div></div>`; detail.querySelectorAll('.yr-tab').forEach(t=>t.onclick=()=>{detail.querySelectorAll('.yr-tab').forEach(x=>x.classList.remove('active'));detail.querySelectorAll('.yr-panel').forEach(x=>x.classList.remove('active'));t.classList.add('active');detail.querySelector(`[data-panel="${t.dataset.tab}"]`).classList.add('active')}); detail.scrollIntoView({behavior:'smooth',block:'nearest'});}
+            [search,el,role].forEach(x=>x.addEventListener('input',render)); render();
+          })();
+          </script>'''
+          insert = css + html
+          if '</body>' in s:
+              s=s.replace('</body>',insert+'\n</body>',1)
+          else:
+              s += insert
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit generated site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Add YunaRunes SWGT-style monster search and rune builds"
+          git push
