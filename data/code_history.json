@@ -498,9 +498,9 @@
   },
   "SEPSW2026I8B": {
     "code": "SEPSW2026I8B",
-    "last_seen": "2026-09-10T22:23:34.002456+00:00",
+    "last_seen": "2026-09-10T23:22:30.362904+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×300,000, Water Scroll ×3 | 8 minutes ago | Active",
+    "reward": "Mana ×300,000, Water Scroll ×3 | 7 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery",
@@ -711,9 +711,9 @@
   },
   "TOURNEY10SEP2026PUN": {
     "code": "TOURNEY10SEP2026PUN",
-    "last_seen": "2026-09-10T22:23:34.002456+00:00",
+    "last_seen": "2026-09-10T23:22:30.362904+00:00",
     "missing_runs": 0,
-    "reward": "Scroll Mystical ×2 | 8 minutes ago | Active",
+    "reward": "Scroll Mystical ×2 | 7 minutes ago | Active",
     "sources": [
       "SWCoupon",
       "SWGT",
