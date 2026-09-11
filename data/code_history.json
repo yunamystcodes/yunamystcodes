@@ -498,9 +498,9 @@
   },
   "SEPSW2026I8B": {
     "code": "SEPSW2026I8B",
-    "last_seen": "2026-09-10T23:22:30.362904+00:00",
+    "last_seen": "2026-09-11T00:32:52.757710+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×300,000, Water Scroll ×3 | 7 minutes ago | Active",
+    "reward": "Mana ×300,000, Water Scroll ×3 | 3 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery",
@@ -711,8 +711,9 @@
   },
   "TOURNEY10SEP2026PUN": {
     "code": "TOURNEY10SEP2026PUN",
+    "expired_at": "2026-09-11T00:32:52.757710+00:00",
     "last_seen": "2026-09-10T23:22:30.362904+00:00",
-    "missing_runs": 0,
+    "missing_runs": 1,
     "reward": "Scroll Mystical ×2 | 7 minutes ago | Active",
     "sources": [
       "SWCoupon",
@@ -720,7 +721,7 @@
       "SWQuery",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "TRYHARD33": {
     "code": "TRYHARD33",
