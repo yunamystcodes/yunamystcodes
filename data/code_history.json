@@ -10,6 +10,19 @@
     ],
     "status": "expired"
   },
+  "11DINGSHANGJIAN14": {
+    "code": "11DINGSHANGJIAN14",
+    "last_seen": "2026-09-12T10:44:24.400970+00:00",
+    "missing_runs": 0,
+    "reward": "Energy ×200, Scroll Mystical ×5, Rune ×30 | 14 minutes ago | Active",
+    "sources": [
+      "SWCoupon",
+      "SWGT",
+      "SWQuery",
+      "summonerswarcodes.us"
+    ],
+    "status": "active"
+  },
   "1SURPR1SEG1FT": {
     "code": "1SURPR1SEG1FT",
     "expired_at": "2026-09-06T16:29:34.934516+00:00",
@@ -126,6 +139,19 @@
       "summonerswarcodes.us"
     ],
     "status": "expired"
+  },
+  "9CHONGYASWC12": {
+    "code": "9CHONGYASWC12",
+    "last_seen": "2026-09-12T10:44:24.400970+00:00",
+    "missing_runs": 0,
+    "reward": "Summon Exclusive ×40 | 14 minutes ago | Active",
+    "sources": [
+      "SWCoupon",
+      "SWGT",
+      "SWQuery",
+      "summonerswarcodes.us"
+    ],
+    "status": "active"
   },
   "AGAIN11TYU": {
     "code": "AGAIN11TYU",
@@ -498,9 +524,9 @@
   },
   "SEPSW2026I8B": {
     "code": "SEPSW2026I8B",
-    "last_seen": "2026-09-12T05:46:18.071040+00:00",
+    "last_seen": "2026-09-12T10:44:24.400970+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×300,000, Water Scroll ×3 | 1 minute ago | Active",
+    "reward": "Mana ×300,000, Water Scroll ×3 | 14 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery",
@@ -744,6 +770,19 @@
       "LevelGeeks"
     ],
     "status": "expired"
+  },
+  "XI4NHUANYINGN1": {
+    "code": "XI4NHUANYINGN1",
+    "last_seen": "2026-09-12T10:44:24.400970+00:00",
+    "missing_runs": 0,
+    "reward": "Mana ×500,000 | 14 minutes ago | Active",
+    "sources": [
+      "SWCoupon",
+      "SWGT",
+      "SWQuery",
+      "summonerswarcodes.us"
+    ],
+    "status": "active"
   },
   "YIQIZOUGUO10SWC": {
     "code": "YIQIZOUGUO10SWC",
