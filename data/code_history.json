@@ -540,8 +540,9 @@
   },
   "S38L3GENDLEGGO": {
     "code": "S38L3GENDLEGGO",
+    "expired_at": "2026-09-20T18:47:03.054794+00:00",
     "last_seen": "2026-09-20T16:04:53.670787+00:00",
-    "missing_runs": 0,
+    "missing_runs": 1,
     "reward": "Energy ×100, Scroll Mystical ×5 | 4 minutes ago | Active",
     "sources": [
       "SWCoupon",
@@ -549,13 +550,13 @@
       "SWQuery",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "SEPSW2026I8B": {
     "code": "SEPSW2026I8B",
-    "last_seen": "2026-09-20T16:04:53.670787+00:00",
+    "last_seen": "2026-09-20T18:47:03.054794+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×300,000, Water Scroll ×3 | 4 minutes ago | Active",
+    "reward": "Mana ×300,000, Water Scroll ×3 | 2 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery",
