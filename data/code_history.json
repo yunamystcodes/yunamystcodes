@@ -540,9 +540,9 @@
   },
   "S38L3GENDLEGGO": {
     "code": "S38L3GENDLEGGO",
-    "last_seen": "2026-09-20T06:15:11.717289+00:00",
+    "last_seen": "2026-09-20T11:31:13.088509+00:00",
     "missing_runs": 0,
-    "reward": "Energy ×100, Scroll Mystical ×5 | 1 second ago | Active",
+    "reward": "Energy ×100, Scroll Mystical ×5 | 1 minute ago | Active",
     "sources": [
       "SWCoupon",
       "SWGT",
@@ -553,9 +553,9 @@
   },
   "SEPSW2026I8B": {
     "code": "SEPSW2026I8B",
-    "last_seen": "2026-09-20T06:15:11.717289+00:00",
+    "last_seen": "2026-09-20T11:31:13.088509+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×300,000, Water Scroll ×3 | 1 second ago | Active",
+    "reward": "Mana ×300,000, Water Scroll ×3 | 1 minute ago | Active",
     "sources": [
       "SWGT",
       "SWQuery",
