@@ -12,8 +12,9 @@
   },
   "11DINGSHANGJIAN14": {
     "code": "11DINGSHANGJIAN14",
+    "expired_at": "2026-09-20T01:07:22.069660+00:00",
     "last_seen": "2026-09-19T23:03:10.362549+00:00",
-    "missing_runs": 0,
+    "missing_runs": 1,
     "reward": "Energy ×200, Scroll Mystical ×5, Rune ×30 | 3 minutes ago | Active",
     "sources": [
       "SWCoupon",
@@ -21,7 +22,7 @@
       "SWQuery",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "1SURPR1SEG1FT": {
     "code": "1SURPR1SEG1FT",
@@ -142,8 +143,9 @@
   },
   "9CHONGYASWC12": {
     "code": "9CHONGYASWC12",
+    "expired_at": "2026-09-20T01:07:22.069660+00:00",
     "last_seen": "2026-09-19T23:03:10.362549+00:00",
-    "missing_runs": 0,
+    "missing_runs": 1,
     "reward": "Summon Exclusive ×40 | 3 minutes ago | Active",
     "sources": [
       "SWCoupon",
@@ -151,7 +153,7 @@
       "SWQuery",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "AGAIN11TYU": {
     "code": "AGAIN11TYU",
@@ -538,9 +540,9 @@
   },
   "S38L3GENDLEGGO": {
     "code": "S38L3GENDLEGGO",
-    "last_seen": "2026-09-19T23:03:10.362549+00:00",
+    "last_seen": "2026-09-20T01:07:22.069660+00:00",
     "missing_runs": 0,
-    "reward": "Energy ×100, Scroll Mystical ×5 | 3 minutes ago | Active",
+    "reward": "Energy ×100, Scroll Mystical ×5 | 7 minutes ago | Active",
     "sources": [
       "SWCoupon",
       "SWGT",
@@ -551,9 +553,9 @@
   },
   "SEPSW2026I8B": {
     "code": "SEPSW2026I8B",
-    "last_seen": "2026-09-19T23:03:10.362549+00:00",
+    "last_seen": "2026-09-20T01:07:22.069660+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×300,000, Water Scroll ×3 | 3 minutes ago | Active",
+    "reward": "Mana ×300,000, Water Scroll ×3 | 7 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery",
@@ -828,8 +830,9 @@
   },
   "XI4NHUANYINGN1": {
     "code": "XI4NHUANYINGN1",
+    "expired_at": "2026-09-20T01:07:22.069660+00:00",
     "last_seen": "2026-09-19T23:03:10.362549+00:00",
-    "missing_runs": 0,
+    "missing_runs": 1,
     "reward": "Mana ×500,000 | 3 minutes ago | Active",
     "sources": [
       "SWCoupon",
@@ -837,7 +840,7 @@
       "SWQuery",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "YIQIZOUGUO10SWC": {
     "code": "YIQIZOUGUO10SWC",
