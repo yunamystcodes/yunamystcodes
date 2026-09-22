@@ -302,9 +302,9 @@
   },
   "DNL22SKYFEVER": {
     "code": "DNL22SKYFEVER",
-    "last_seen": "2026-09-22T18:53:51.833225+00:00",
+    "last_seen": "2026-09-22T22:07:59.924608+00:00",
     "missing_runs": 0,
-    "reward": "Energy ×100 | 9 minutes ago | Active",
+    "reward": "Energy ×100 | 8 minutes ago | Active",
     "sources": [
       "SWCoupon",
       "SWGT",
@@ -567,9 +567,9 @@
   },
   "SEPSW2026I8B": {
     "code": "SEPSW2026I8B",
-    "last_seen": "2026-09-22T18:53:51.833225+00:00",
+    "last_seen": "2026-09-22T22:07:59.924608+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×300,000, Water Scroll ×3 | 9 minutes ago | Active",
+    "reward": "Mana ×300,000, Water Scroll ×3 | 8 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery",
@@ -737,9 +737,9 @@
   },
   "SWCSKYFEVER26": {
     "code": "SWCSKYFEVER26",
-    "last_seen": "2026-09-22T18:53:51.833225+00:00",
+    "last_seen": "2026-09-22T22:07:59.924608+00:00",
     "missing_runs": 0,
-    "reward": "Energy ×100 | 9 minutes ago | Active",
+    "reward": "Energy ×100 | 8 minutes ago | Active",
     "sources": [
       "SWCoupon",
       "SWGT",
