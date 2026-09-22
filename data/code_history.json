@@ -300,6 +300,19 @@
     ],
     "status": "expired"
   },
+  "DNL22SKYFEVER": {
+    "code": "DNL22SKYFEVER",
+    "last_seen": "2026-09-22T18:53:51.833225+00:00",
+    "missing_runs": 0,
+    "reward": "Energy ×100 | 9 minutes ago | Active",
+    "sources": [
+      "SWCoupon",
+      "SWGT",
+      "SWQuery",
+      "summonerswarcodes.us"
+    ],
+    "status": "active"
+  },
   "ENGSCR10Y11": {
     "code": "ENGSCR10Y11",
     "expired_at": "2026-09-06T16:29:34.934516+00:00",
@@ -554,9 +567,9 @@
   },
   "SEPSW2026I8B": {
     "code": "SEPSW2026I8B",
-    "last_seen": "2026-09-22T14:53:16.933746+00:00",
+    "last_seen": "2026-09-22T18:53:51.833225+00:00",
     "missing_runs": 0,
-    "reward": "09/02/2026 01:22 PM UTC | x 300,000 x 3 | 231 8",
+    "reward": "Mana ×300,000, Water Scroll ×3 | 9 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery",
@@ -721,6 +734,19 @@
     "reward": "Recompensa não informada",
     "sources": [],
     "status": "expired"
+  },
+  "SWCSKYFEVER26": {
+    "code": "SWCSKYFEVER26",
+    "last_seen": "2026-09-22T18:53:51.833225+00:00",
+    "missing_runs": 0,
+    "reward": "Energy ×100 | 9 minutes ago | Active",
+    "sources": [
+      "SWCoupon",
+      "SWGT",
+      "SWQuery",
+      "summonerswarcodes.us"
+    ],
+    "status": "active"
   },
   "SWCTICKET2HAMBURG": {
     "code": "SWCTICKET2HAMBURG",
