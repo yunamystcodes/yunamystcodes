@@ -554,14 +554,15 @@
   },
   "R3ADY439": {
     "code": "R3ADY439",
+    "expired_at": "2026-09-24T19:09:01.982812+00:00",
     "last_seen": "2026-09-24T15:05:23.399801+00:00",
-    "missing_runs": 0,
+    "missing_runs": 1,
     "reward": "09/24/2026 01:25 PM UTC | x 100 x 1 | 3 34",
     "sources": [
       "SWGT",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "S38L3GENDLEGGO": {
     "code": "S38L3GENDLEGGO",
@@ -579,9 +580,9 @@
   },
   "SEPSW2026I8B": {
     "code": "SEPSW2026I8B",
-    "last_seen": "2026-09-24T15:05:23.399801+00:00",
+    "last_seen": "2026-09-24T19:09:01.982812+00:00",
     "missing_runs": 0,
-    "reward": "09/02/2026 01:22 PM UTC | x 300,000 x 3 | 248 14",
+    "reward": "Mana ×300,000, Water Scroll ×3 | 9 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery",
@@ -619,14 +620,15 @@
   },
   "ST4RS381D": {
     "code": "ST4RS381D",
+    "expired_at": "2026-09-24T19:09:01.982812+00:00",
     "last_seen": "2026-09-24T15:05:23.399801+00:00",
-    "missing_runs": 0,
+    "missing_runs": 1,
     "reward": "09/24/2026 01:04 PM UTC | x 100,000 x 1 | 0 47",
     "sources": [
       "SWGT",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "SW11YABDAYGIFT": {
     "code": "SW11YABDAYGIFT",
@@ -881,15 +883,16 @@
   },
   "WEEK2SKYFEVER26": {
     "code": "WEEK2SKYFEVER26",
+    "expired_at": "2026-09-24T19:09:01.982812+00:00",
     "last_seen": "2026-09-24T15:05:23.399801+00:00",
-    "missing_runs": 0,
+    "missing_runs": 1,
     "reward": "09/24/2026 01:49 AM UTC | x 100 x 100,000 x 2 | 27 17",
     "sources": [
       "SWGT",
       "SWQuery",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "XI4NHUANYINGN1": {
     "code": "XI4NHUANYINGN1",
