@@ -568,9 +568,9 @@
   },
   "SEPSW2026I8B": {
     "code": "SEPSW2026I8B",
-    "last_seen": "2026-09-24T04:48:29.722213+00:00",
+    "last_seen": "2026-09-24T10:00:05.470652+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×300,000, Water Scroll ×3 | 3 minutes ago | Active",
+    "reward": "09/02/2026 01:22 PM UTC | x 300,000 x 3 | 245 12",
     "sources": [
       "SWGT",
       "SWQuery",
@@ -859,9 +859,9 @@
   },
   "WEEK2SKYFEVER26": {
     "code": "WEEK2SKYFEVER26",
-    "last_seen": "2026-09-24T04:48:29.722213+00:00",
+    "last_seen": "2026-09-24T10:00:05.470652+00:00",
     "missing_runs": 0,
-    "reward": "Energy ×100, Mana ×100,000, Scroll Mystical ×2 | 3 minutes ago | Active",
+    "reward": "09/24/2026 01:49 AM UTC | x 100 x 100,000 x 2 | 19 0",
     "sources": [
       "SWGT",
       "SWQuery",
