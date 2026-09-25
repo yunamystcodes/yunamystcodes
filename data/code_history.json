@@ -580,9 +580,9 @@
   },
   "SEPSW2026I8B": {
     "code": "SEPSW2026I8B",
-    "last_seen": "2026-09-25T07:47:24.088327+00:00",
+    "last_seen": "2026-09-25T13:46:15.179405+00:00",
     "missing_runs": 0,
-    "reward": "09/02/2026 01:22 PM UTC | x 300,000 x 3 | 253 14",
+    "reward": "09/02/2026 01:22 PM UTC | x 300,000 x 3 | 257 13",
     "sources": [
       "SWGT",
       "SWQuery",
