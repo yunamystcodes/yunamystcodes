@@ -223,15 +223,16 @@
   },
   "AUF20NACH26SEOUL": {
     "code": "AUF20NACH26SEOUL",
+    "expired_at": "2026-09-26T21:38:24.399834+00:00",
     "last_seen": "2026-09-26T20:05:55.258880+00:00",
-    "missing_runs": 0,
+    "missing_runs": 1,
     "reward": "Water Scroll ×10 | 6 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "AUGSW2026V7N": {
     "code": "AUGSW2026V7N",
@@ -487,15 +488,16 @@
   },
   "LOS20GEHTS26EU": {
     "code": "LOS20GEHTS26EU",
+    "expired_at": "2026-09-26T21:38:24.399834+00:00",
     "last_seen": "2026-09-26T20:05:55.258880+00:00",
-    "missing_runs": 0,
+    "missing_runs": 1,
     "reward": "Crystal ×1 | 6 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "LTS31GAMESTART": {
     "code": "LTS31GAMESTART",
@@ -590,15 +592,16 @@
   },
   "REGARDEZ20LE26SWC": {
     "code": "REGARDEZ20LE26SWC",
+    "expired_at": "2026-09-26T21:38:24.399834+00:00",
     "last_seen": "2026-09-26T20:05:55.258880+00:00",
-    "missing_runs": 0,
+    "missing_runs": 1,
     "reward": "Energy ×200 | 6 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "S38L3GENDLEGGO": {
     "code": "S38L3GENDLEGGO",
@@ -616,9 +619,9 @@
   },
   "SEPSW2026I8B": {
     "code": "SEPSW2026I8B",
-    "last_seen": "2026-09-26T20:05:55.258880+00:00",
+    "last_seen": "2026-09-26T21:38:24.399834+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×300,000, Water Scroll ×3 | 6 minutes ago | Active",
+    "reward": "Mana ×300,000, Water Scroll ×3 | 8 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery",
