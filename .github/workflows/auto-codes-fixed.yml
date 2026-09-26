@@ -4,11 +4,7 @@ on:
   schedule:
     - cron: '15 * * * *'
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'scripts/**'
-      - '.github/workflows/auto-codes-fixed.yml'
+  # Automatic updates run only on the hourly schedule or manually.
 
 concurrency:
   group: yuna-codes-updater
