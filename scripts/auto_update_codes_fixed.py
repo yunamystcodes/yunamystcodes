@@ -222,11 +222,11 @@ def update_index(active_items, expired_items):
     for item in active_items:
         active.append(BeautifulSoup(card(item), "html.parser"))
 
+    # Códigos expirados nunca são exibidos publicamente.
+    # O histórico continua guardado em data/code_history.json para a automação.
     expired_panel = soup.find(class_="expired-panel")
     if expired_panel is not None:
         expired_panel.clear()
-        for item in expired_items:
-            expired_panel.append(BeautifulSoup(card(item, expired=True), "html.parser"))
 
     INDEX.write_text(str(soup), encoding="utf-8")
 
