@@ -46,6 +46,13 @@ STOPWORDS = {
 
 EXPIRED_WORDS = ("expired", "expirado", "invalid", "invalido", "inválido")
 
+# Codes permanently confirmed expired. Never re-add them even if a source keeps a stale copy.
+KNOWN_EXPIRED = {
+    "AUF20NACH26SEOUL", "LOS20GEHTS26EU", "REGARDEZ20LE26SWC",
+    "2SOREIKENIPPON6", "2SWCTORONTOTHE6IX", "APAC1K0UB4NGK0K",
+    "AUGSW2026V7N", "LAST4PUNCHIN", "SWCJOAAAKR26", "SWGAJA2BKK",
+}
+
 
 def clean(text):
     return re.sub(r"\s+", " ", html.unescape(text or "")).strip()
@@ -235,6 +242,10 @@ def main():
     merged, explicitly_expired, successful, errors = collect_sources()
     now = datetime.now(timezone.utc)
     history = load_history()
+    # Filter permanent expirations before writing the active list.
+    for code in list(merged):
+        if code in KNOWN_EXPIRED or history.get(code, {}).get("status") == "expired" or history.get(code, {}).get("expired_at"):
+            merged.pop(code, None)
     active_codes = set(merged)
 
     # Existing codes are updated only from trusted structured sources.
