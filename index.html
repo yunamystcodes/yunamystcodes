@@ -569,6 +569,35 @@ function updateExpiredCodes(){const expiredList=document.getElementById('expired
 updateExpiredCodes();setInterval(updateExpiredCodes,60000);
 
 const bgMusic=document.getElementById("yunaBgMusic"),audioMute=document.getElementById("audioMute");if(bgMusic&&audioMute){const userMuted=()=>localStorage.getItem("yunamyst-music-muted")==="1";bgMusic.volume=0.08;bgMusic.autoplay=true;bgMusic.playsInline=true;const syncAudio=()=>{const muted=userMuted();audioMute.textContent=muted?"🔇":"🔊";audioMute.title=muted?"Ativar música":"Mutar música";audioMute.setAttribute("aria-label",audioMute.title)};const playAudio=()=>{if(userMuted())return Promise.resolve(false);bgMusic.muted=false;bgMusic.volume=0.08;return Promise.resolve(bgMusic.play()).then(()=>true).catch(()=>false)};const attemptAutoplay=()=>{if(userMuted())return;bgMusic.muted=false;bgMusic.volume=0.08;bgMusic.load();playAudio().then(ok=>{if(ok)syncAudio()})};audioMute.addEventListener("click",e=>{e.stopPropagation();if(bgMusic.paused){localStorage.setItem("yunamyst-music-muted","0");playAudio().then(ok=>{if(ok)syncAudio()});return}const nextMuted=!userMuted();localStorage.setItem("yunamyst-music-muted",nextMuted?"1":"0");bgMusic.muted=nextMuted;syncAudio();if(!nextMuted)playAudio()});syncAudio();if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",attemptAutoplay,{once:true})}else{attemptAutoplay()}window.addEventListener("load",attemptAutoplay,{once:true});bgMusic.addEventListener("canplay",attemptAutoplay,{once:true});window.addEventListener("pageshow",attemptAutoplay,{once:true});const unlockOnce=()=>{if(userMuted()||!bgMusic.paused)return;playAudio().then(ok=>{if(ok)syncAudio()})};["pointerdown","touchstart","keydown"].forEach(evt=>{document.addEventListener(evt,unlockOnce,{capture:true,passive:true})})}
+<script id="expired-codes-runtime-filter">
+(function(){
+  var knownExpired = new Set([
+    "2SOREIKENIPPON6","2SWCTORONTOTHE6IX","APAC1K0UB4NGK0K","AUGSW2026V7N",
+    "LAST4PUNCHIN","SWCJOAAAKR26","SWGAJA2BKK6","APAC26LEGASEA",
+    "AUGSW2026V7N","GLHF2026AMERICAS","LEGENDSWC2026HSL","PAI2026BANGKOK",
+    "SWC26X10LEGACYBND","SWXFRIEREN2026","YIQIZOUGUO10SWC"
+  ]);
+  function cleanExpired(){
+    document.querySelectorAll('#activeCodesList [data-code]').forEach(function(card){
+      var code=(card.getAttribute('data-code')||'').toUpperCase();
+      if(knownExpired.has(code)) card.remove();
+    });
+    var panel=document.querySelector('#expiredPanel');
+    if(panel){
+      panel.querySelectorAll('[data-code]').forEach(function(card){
+        var code=(card.getAttribute('data-code')||'').toUpperCase();
+        if(knownExpired.has(code)) card.remove();
+      });
+    }
+    var count=document.getElementById('expiredCount');
+    if(count && panel) count.textContent='('+panel.querySelectorAll('[data-code]').length+')';
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',cleanExpired);
+  else cleanExpired();
+  setInterval(cleanExpired,1000);
+  new MutationObserver(cleanExpired).observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
 </script>
 <div aria-hidden="true" class="yuna-partnership-modal" id="yunaPartnershipModal">
 <div aria-labelledby="yunaPartnershipTitle" aria-modal="true" class="yuna-partnership-box" role="dialog">
