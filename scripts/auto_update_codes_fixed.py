@@ -49,6 +49,7 @@ EXPIRED_WORDS = ("expired", "expirado", "invalid", "invalido", "inválido")
 # Codes permanently confirmed expired. Never re-add them even if a source keeps a stale copy.
 KNOWN_EXPIRED = {
     "AUF20NACH26SEOUL", "LOS20GEHTS26EU", "REGARDEZ20LE26SWC",
+    "11DINGSHANGJIAN14", "9CHONGYASWC12", "XI4NHUANYINGN1",
     "2SOREIKENIPPON6", "2SWCTORONTOTHE6IX", "APAC1K0UB4NGK0K",
     "AUGSW2026V7N", "LAST4PUNCHIN", "SWCJOAAAKR26", "SWGAJA2BKK",
 }
