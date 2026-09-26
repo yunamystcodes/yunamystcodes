@@ -662,65 +662,19 @@ const bgMusic=document.getElementById("yunaBgMusic"),audioMute=document.getEleme
 <script defer="" src="yunarunes.js"></script>
 <script id="expiredCodeGuard">
 (function(){
-  /* Proteção em duas camadas:
-     1) lista de segurança para HTML antigo/cacheado;
-     2) data/code_history.json para acompanhar automaticamente os expirados. */
-  const FALLBACK_EXPIRED=new Set([
-    "AUF20NACH26SEOUL","LOS20GEHTS26EU","REGARDEZ20LE26SWC",
-    "2SOREIKENIPPON6","2SWCTORONTOTHE6IX","APAC1K0UB4NGK0K",
-    "AUGSW2026V7N","LAST4PUNCHIN","SWCJOAAAKR26","SWGAJA2BKK",
-    "11DINGSHANGJIAN14","9CHONGYASWC12","XI4NHUANYINGN1",
-    "4READY4TDOT","AMPRELIMSLEGACYDRP","LEGENDSWC2026HSL",
-    "YIQIZOUGUO10SWC","GLHF2026AMERICAS","SWC26X10LEGACYBND",
-    "PAI2026BANGKOK","APAC26LEGASEA","912XUXIECHUANQI",
-    "SWC2026JUELEBA","H4MBURGISWAITING","HURRASWC2026",
-    "4MINGYIDAOXIAN","YYDSSWC26ZAN","WASWIRDSWC2026",
-    "INVOCATEUREU26","SWCTICKET2HAMBURG","ENTERTHESWCERA",
-    "IGYEORA4WF2026","SWC2026ROADTOWF","OQKR1STWFNUGU",
-    "M4ST3R37F1N4L","S37GLORY4HOME","JULSW2026Y1O",
-    "SIGNUPSWC26NOW","37THLGND1SWHO","JUNSW2026W6C"
-  ]);
-
-  function codeFromCard(card){
-    return (card.getAttribute("data-code") ||
-      card.querySelector(".cinfo strong")?.textContent || "")
-      .replace(/[^A-Z0-9]/gi,"").toUpperCase();
+  const EXPIRED=["09SWCNACHBERLIN21","11DINGSHANGJIAN14","1SURPR1SEG1FT","20ALLEZBLEUSWC25","20SWC25BEGINS2","2SOREIKENIPPON6","2SWCTORONTOTHE6IX","4MINGYIDAOXIAN","4P4C15H3R3","4READY4TDOT","4THLESSON4SWC","815YOUSWC","912XUXIECHUANQI","9CHONGYASWC12","AGAIN11TYU","ALLTHEBESTIN2025","AMCUPWAIT4USWC","AMPRELIMSLEGACYDRP","APAC1K0UB4NGK0K","APAC26LEGASEA","AUF20NACH26SEOUL","AUGSW2026V7N","BEREADYFORSS32","CHAMPIONS2026SWES","COMINGUP34LGND","CUINAPAC18OCT","DAEHWANGGODSWC24","DEVNOTE2025DSCOLLAB","DNL22SKYFEVER","ENGSCR10Y11","ENROUTEPOURSWC24","F3V3RNEWB1E","GETUR5STAR","GLHF2026AMERICAS","GOODBY3LT2024","GOODBYE2024","H1TO33CHAMP","H4MBURGISWAITING","HURRASWC2026","INVOCATEUREU26","JUNSW2026W6C","LAST4PUNCHIN","LEGENDSWC2026HSL","LOS20GEHTS26EU","LTS31GAMESTART","LTWH0SNEXT33","MAHSWCJAS1NITNA","MAINEVENTSWES2026","MAYSW2026Z2Q","NEXTWF25PARISA1GA","PAI2026BANGKOK","R3ADY439","REGARDEZ20LE26SWC","S38L3GENDLEGGO","SKYF3V3RW1NN3R","SKYFEVER26WEEK1","ST4RS381D","SW11YABDAYGIFT","SW2025AUGR5Q","SW2025FEB3D9","SW2025JAN6A8","SW2025JUL9UA","SW2025JUNY5C","SW2025MAYA5Q","SW2025OCTP3T","SW2025SEPJ6Z","SWC2026JUELEBA","SWC26X10LEGACYBND","SWCJOAAAKR26","SWCSKYFEVER26","SWCTICKET2HAMBURG","SWFR1ERENNOW","SWGAJA2BKK","SWSA100RUSH","SWXDSHAPPY25","SWXFRIEREN2026","TOURNEY10SEP2026PUN","TRYHARD33","TY4SW11TH","WEEK2SKYFEVER26","XI4NHUANYINGN1","YIQIZOUGUO10SWC","YYDSSWC26ZAN","WASWIRDSWC2026","ENTERTHESWCERA","IGYEORA4WF2026","OQKR1STWFNUGU","M4ST3R37F1N4L","S37GLORY4HOME","JULSW2026Y1O","SIGNUPSWC26NOW","37THLGND1SWHO"];
+  const blocked=new Set(EXPIRED.map(function(x){return String(x).replace(/[^A-Z0-9]/gi,"").toUpperCase();}));
+  function codeOf(card){
+    return String(card.getAttribute("data-code")||card.querySelector(".cinfo strong")?.textContent||"").replace(/[^A-Z0-9]/gi,"").toUpperCase();
   }
-
-  function removeExpired(expired){
-    document.querySelectorAll("[data-code], .code").forEach(function(card){
-      const code=codeFromCard(card);
-      if(code && expired.has(code)) card.remove();
-    });
+  function purge(){
+    document.querySelectorAll(".code[data-code],article.code").forEach(function(card){if(blocked.has(codeOf(card)))card.remove();});
   }
-
-  function refresh(){
-    removeExpired(FALLBACK_EXPIRED);
-    fetch("data/code_history.json?expiredGuard="+Date.now(),{
-      cache:"no-store",
-      credentials:"same-origin"
-    })
-    .then(function(response){ return response.ok ? response.json() : null; })
-    .then(function(history){
-      if(!history || typeof history!=="object") return;
-      const expired=new Set(FALLBACK_EXPIRED);
-      Object.keys(history).forEach(function(code){
-        const item=history[code]||{};
-        if(item.status==="expired" || item.expired_at) expired.add(code.toUpperCase());
-      });
-      removeExpired(expired);
-    })
-    .catch(function(){});
-  }
-
-  if(document.readyState==="loading"){
-    document.addEventListener("DOMContentLoaded",refresh,{once:true});
-  }else{
-    refresh();
-  }
-  window.addEventListener("pageshow",refresh);
-  setTimeout(refresh,1500);
+  function run(){purge();setTimeout(purge,100);setTimeout(purge,1000);}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",run,{once:true});else run();
+  new MutationObserver(purge).observe(document.documentElement,{childList:true,subtree:true});
+  window.addEventListener("pageshow",run);
 })();
 </script>
 <script defer="" src="yunarunes.js"></script>
-<script src="updates.js?v=20260818-1059"></script></body></html>
+<script src="updates.js?v=20260926-expiredfix"></script></body></html>
