@@ -662,21 +662,64 @@ const bgMusic=document.getElementById("yunaBgMusic"),audioMute=document.getEleme
 <script defer="" src="yunarunes.js"></script>
 <script src="updates.js?v=20260818-1059"></script><script id="expiredCodeGuard">
 (function(){
-  const EXPIRED=new Set([
+  /* Proteção em duas camadas:
+     1) lista de segurança para HTML antigo/cacheado;
+     2) data/code_history.json para acompanhar automaticamente os expirados. */
+  const FALLBACK_EXPIRED=new Set([
     "AUF20NACH26SEOUL","LOS20GEHTS26EU","REGARDEZ20LE26SWC",
     "2SOREIKENIPPON6","2SWCTORONTOTHE6IX","APAC1K0UB4NGK0K",
     "AUGSW2026V7N","LAST4PUNCHIN","SWCJOAAAKR26","SWGAJA2BKK",
-    "11DINGSHANGJIAN14","9CHONGYASWC12","XI4NHUANYINGN1"
+    "11DINGSHANGJIAN14","9CHONGYASWC12","XI4NHUANYINGN1",
+    "4READY4TDOT","AMPRELIMSLEGACYDRP","LEGENDSWC2026HSL",
+    "YIQIZOUGUO10SWC","GLHF2026AMERICAS","SWC26X10LEGACYBND",
+    "PAI2026BANGKOK","APAC26LEGASEA","912XUXIECHUANQI",
+    "SWC2026JUELEBA","H4MBURGISWAITING","HURRASWC2026",
+    "4MINGYIDAOXIAN","YYDSSWC26ZAN","WASWIRDSWC2026",
+    "INVOCATEUREU26","SWCTICKET2HAMBURG","ENTERTHESWCERA",
+    "IGYEORA4WF2026","SWC2026ROADTOWF","OQKR1STWFNUGU",
+    "M4ST3R37F1N4L","S37GLORY4HOME","JULSW2026Y1O",
+    "SIGNUPSWC26NOW","37THLGND1SWHO","JUNSW2026W6C"
   ]);
-  function removeExpired(){
-    document.querySelectorAll("#activeCodesList [data-code], #activeCodesList .code").forEach(function(card){
-      const code=(card.getAttribute("data-code")||card.querySelector(".cinfo strong")?.textContent||"").replace(/[^A-Z0-9]/gi,"").toUpperCase();
-      if(EXPIRED.has(code)) card.remove();
+
+  function codeFromCard(card){
+    return (card.getAttribute("data-code") ||
+      card.querySelector(".cinfo strong")?.textContent || "")
+      .replace(/[^A-Z0-9]/gi,"").toUpperCase();
+  }
+
+  function removeExpired(expired){
+    document.querySelectorAll("[data-code], .code").forEach(function(card){
+      const code=codeFromCard(card);
+      if(code && expired.has(code)) card.remove();
     });
   }
-  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",removeExpired,{once:true});
-  else removeExpired();
-  window.addEventListener("pageshow",removeExpired);
+
+  function refresh(){
+    removeExpired(FALLBACK_EXPIRED);
+    fetch("data/code_history.json?expiredGuard="+Date.now(),{
+      cache:"no-store",
+      credentials:"same-origin"
+    })
+    .then(function(response){ return response.ok ? response.json() : null; })
+    .then(function(history){
+      if(!history || typeof history!=="object") return;
+      const expired=new Set(FALLBACK_EXPIRED);
+      Object.keys(history).forEach(function(code){
+        const item=history[code]||{};
+        if(item.status==="expired" || item.expired_at) expired.add(code.toUpperCase());
+      });
+      removeExpired(expired);
+    })
+    .catch(function(){});
+  }
+
+  if(document.readyState==="loading"){
+    document.addEventListener("DOMContentLoaded",refresh,{once:true});
+  }else{
+    refresh();
+  }
+  window.addEventListener("pageshow",refresh);
+  setTimeout(refresh,1500);
 })();
 </script>
 <script src="yunarunes.js" defer></script>
