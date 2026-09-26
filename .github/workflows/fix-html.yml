@@ -4,26 +4,44 @@ on:
     branches: [main]
 permissions:
   contents: write
+
 jobs:
   update-index:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Forçar atualização direta do index.html
+
+      - name: Garantir marcador do WhatsApp sem falhar quando já existir
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          p = Path('index.html')
-          s = p.read_text(encoding='utf-8')
-          marker = '<!-- WhatsApp button: PC + mobile -->'
+
+          p = Path("index.html")
+          s = p.read_text(encoding="utf-8")
+          marker = "<!-- WhatsApp button: PC + mobile -->"
+
           if marker not in s:
-              s = s.replace('<body>', '<body>\n' + marker, 1)
-          p.write_text(s, encoding='utf-8')
+              s = s.replace("<body>", "<body>\n" + marker, 1)
+              p.write_text(s, encoding="utf-8")
+              print("Marcador adicionado.")
+          else:
+              print("Marcador já existe; nenhuma alteração necessária.")
           PY
+
+      - name: Publicar apenas se houver alteração
+        shell: bash
+        run: |
+          set -e
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
+
+          if git diff --cached --quiet; then
+            echo "Nenhuma alteração necessária. Actions concluído com sucesso."
+            exit 0
+          fi
+
           git commit -m "Atualizar diretamente o index.html"
           git push
