@@ -1,7 +1,5 @@
 name: Corrigir cabeçalho e contador de expirados
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 permissions:
   contents: write
