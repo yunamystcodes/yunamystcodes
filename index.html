@@ -678,7 +678,7 @@ const bgMusic=document.getElementById("yunaBgMusic"),audioMute=document.getEleme
       var code=String(card.getAttribute("data-code")||"").trim().toUpperCase();
       var expiry=card.getAttribute("data-expires");
       var expiredByDate=expiry && !isNaN(Date.parse(expiry)) && Date.parse(expiry)<=now;
-      var expiredByCode=code && code!=="SEPSW2026I8B";
+      var expiredByCode=false;
       if(expiredByDate || expiredByCode) card.remove();
     });
   }
