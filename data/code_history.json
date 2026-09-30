@@ -595,6 +595,17 @@
     ],
     "status": "expired"
   },
+  "OCTSW2026O7J": {
+    "code": "OCTSW2026O7J",
+    "last_seen": "2026-09-30T23:47:50.502700+00:00",
+    "missing_runs": 0,
+    "reward": "Wind Scroll ×3 | 3 minutes ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
+  },
   "OQKR1STWFNUGU": {
     "code": "OQKR1STWFNUGU",
     "reward": "Recompensa não informada",
@@ -661,15 +672,16 @@
   },
   "SEPSW2026I8B": {
     "code": "SEPSW2026I8B",
+    "expired_at": "2026-09-30T23:47:50.502700+00:00",
     "last_seen": "2026-09-30T13:41:50.896595+00:00",
-    "missing_runs": 0,
+    "missing_runs": 1,
     "reward": "Mana ×300,000, Water Scroll ×3 | 12 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery",
       "summonerswarcodes.us"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "SIGNUPSWC26NOW": {
     "code": "SIGNUPSWC26NOW",
@@ -690,6 +702,17 @@
       "summonerswarcodes.us"
     ],
     "status": "expired"
+  },
+  "SKYFEVER26US": {
+    "code": "SKYFEVER26US",
+    "last_seen": "2026-09-30T23:47:50.502700+00:00",
+    "missing_runs": 0,
+    "reward": "Mana ×100,000, Scroll Mystical ×2 | 3 minutes ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
   },
   "SKYFEVER26WEEK1": {
     "code": "SKYFEVER26WEEK1",
