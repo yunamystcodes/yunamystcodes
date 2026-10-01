@@ -512,14 +512,15 @@
   },
   "LETSGOSKYFEVER26": {
     "code": "LETSGOSKYFEVER26",
+    "expired_at": "2026-10-01T13:11:40.660199+00:00",
     "last_seen": "2026-10-01T05:51:00.545937+00:00",
-    "missing_runs": 0,
+    "missing_runs": 1,
     "reward": "Energy ×100, Scroll Mystical ×3 | 5 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "LOS20GEHTS26EU": {
     "code": "LOS20GEHTS26EU",
@@ -608,9 +609,9 @@
   },
   "OCTSW2026O7J": {
     "code": "OCTSW2026O7J",
-    "last_seen": "2026-10-01T05:51:00.545937+00:00",
+    "last_seen": "2026-10-01T13:11:40.660199+00:00",
     "missing_runs": 0,
-    "reward": "Wind Scroll ×3 | 5 minutes ago | Active",
+    "reward": "Wind Scroll ×3 | 11 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -716,14 +717,15 @@
   },
   "SKYFEVER26US": {
     "code": "SKYFEVER26US",
+    "expired_at": "2026-10-01T13:11:40.660199+00:00",
     "last_seen": "2026-10-01T05:51:00.545937+00:00",
-    "missing_runs": 0,
+    "missing_runs": 1,
     "reward": "Mana ×100,000, Scroll Mystical ×2 | 5 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "SKYFEVER26WEEK1": {
     "code": "SKYFEVER26WEEK1",
