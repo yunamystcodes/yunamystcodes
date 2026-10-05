@@ -37,6 +37,20 @@ jobs:
         run: python scripts/auto_update_codes_fixed.py
       - name: Remover códigos confirmados expirados
         run: python scripts/enforce_expired.py
+      - name: Bloquear qualquer código expirado na publicação
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from bs4 import BeautifulSoup
+          history=json.loads(Path('data/code_history.json').read_text(encoding='utf-8'))
+          expired={str(k).upper() for k,v in history.items() if v.get('status')=='expired' or v.get('expired_at')}
+          soup=BeautifulSoup(Path('index.html').read_text(encoding='utf-8'),'html.parser')
+          bad=[el.get('data-code','').upper() for el in soup.select('#activeCodesList [data-code]') if el.get('data-code','').upper() in expired]
+          if bad:
+              raise SystemExit('Códigos expirados encontrados na lista pública: '+', '.join(bad))
+          print('OK: nenhum código expirado na lista pública.')
+          PY
       - name: Validar lista de códigos sem reescrever o site
         run: |
           python - <<'PY'
