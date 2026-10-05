@@ -67,13 +67,11 @@ def main():
                 removed.append(code)
                 card.decompose()
 
-    # Remove duplicate copies from the expired panel; the main updater will
-    # rebuild the panel from history on its next run.
-    expired_panel = soup.find(class_="expired-panel")
-    if expired_panel is not None:
-        for card in list(expired_panel.select("[data-code]")):
-            if card.get("data-code", "").upper() in expired_codes:
-                card.decompose()
+    # YunaCodes mostra apenas códigos ativos. A área de expirados é removida
+    # completamente para que códigos antigos não permaneçam visíveis.
+    for selector in [".expired-tab", ".expired-panel", "#expiredCodesList"]:
+        for node in list(soup.select(selector)):
+            node.decompose()
 
     INDEX.write_text(str(soup), encoding="utf-8")
     print("Códigos expirados removidos:", ", ".join(sorted(set(removed))))
