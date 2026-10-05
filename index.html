@@ -691,4 +691,14 @@ const bgMusic=document.getElementById("yunaBgMusic"),audioMute=document.getEleme
 </script>
 <script defer="" src="yunarunes.js"></script>
 <script defer="" src="yunarunes.js"></script>
-<script src="updates.js?v=20260818-1059"></script></body></html>
+<script src="updates.js?v=20260818-1059"></script><script id="yunacodes-expiry-guard">
+(async()=>{try{
+ const r=await fetch("https://raw.githubusercontent.com/yunamystcodes/yunamystcodes/main/data/code_history.json?v="+Date.now(),{cache:"no-store"});
+ if(!r.ok)return;
+ const h=await r.json();
+ const expired=new Set(Object.values(h).filter(x=>x.status==="expired"||x.expired_at).map(x=>String(x.code||"").toUpperCase()));
+ document.querySelectorAll("[data-code]").forEach(el=>{if(expired.has(String(el.dataset.code||"").toUpperCase()))el.remove()});
+ document.querySelectorAll(".expired-tab,.expired-panel,#expiredCodesList").forEach(el=>el.remove());
+}catch(e){console.warn("YunaCodes expiry guard:",e)}})();
+</script>
+</body></html>
