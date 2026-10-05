@@ -2,6 +2,7 @@ import html
 import json
 import re
 from datetime import datetime, timezone
+from dateutil import parser as date_parser
 from pathlib import Path
 
 import requests
@@ -45,6 +46,34 @@ STOPWORDS = {
 }
 
 EXPIRED_WORDS = ("expired", "expirado", "invalid", "invalido", "inválido")
+EXPIRY_HINTS = (
+    "valid till", "valid until", "expires", "expiry", "expiration",
+    "expira em", "válido até", "valido ate", "validade"
+)
+
+def row_has_expired_date(text, now):
+    """Return True when a row contains an explicit expiry date already passed."""
+    lower = clean(text).lower()
+    if not any(hint in lower for hint in EXPIRY_HINTS):
+        return False
+    # Keep only the text after an expiry/validity hint to avoid parsing unrelated dates.
+    parts = re.split(
+        r"valid till|valid until|expires(?: on)?|expiry|expiration|expira em|válido até|valido ate|validade",
+        lower,
+        maxsplit=1,
+    )
+    tail = parts[1] if len(parts) == 2 else lower
+    try:
+        parsed = date_parser.parse(
+            tail,
+            default=now.replace(tzinfo=None),
+            fuzzy=True,
+        )
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed.astimezone(timezone.utc) <= now
+    except (ValueError, OverflowError, TypeError):
+        return False
 
 # Codes permanently confirmed expired. Never re-add them even if a source keeps a stale copy.
 KNOWN_EXPIRED = {
@@ -130,8 +159,9 @@ def parse_table_source(name, url):
         for cell in cells:
             codes.extend(extract_codes(cell))
 
+        row_expired = any(word in lower for word in EXPIRED_WORDS) or row_has_expired_date(row_text, datetime.now(timezone.utc))
         for code in dict.fromkeys(codes):
-            if any(word in lower for word in EXPIRED_WORDS):
+            if row_expired:
                 expired.add(code)
                 continue
             reward = " | ".join(cells[1:]) if len(cells) > 1 else "Recompensa não informada"
