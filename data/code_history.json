@@ -421,6 +421,17 @@
     ],
     "status": "expired"
   },
+  "GUARDIAN26TOURNEYOCT": {
+    "code": "GUARDIAN26TOURNEYOCT",
+    "last_seen": "2026-10-07T21:58:37.385962+00:00",
+    "missing_runs": 0,
+    "reward": "Energy ×100 | 14 minutes ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
+  },
   "H1TO33CHAMP": {
     "code": "H1TO33CHAMP",
     "expired_at": "2026-09-06T16:29:34.934516+00:00",
@@ -609,9 +620,9 @@
   },
   "OCTSW2026O7J": {
     "code": "OCTSW2026O7J",
-    "last_seen": "2026-10-07T16:27:27.744064+00:00",
+    "last_seen": "2026-10-07T21:58:37.385962+00:00",
     "missing_runs": 0,
-    "reward": "Wind Scroll ×3 | 12 minutes ago | Active",
+    "reward": "Wind Scroll ×3 | 14 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
