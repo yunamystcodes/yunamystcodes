@@ -375,6 +375,17 @@
     ],
     "status": "expired"
   },
+  "FOR3TICKETS2SEOUL": {
+    "code": "FOR3TICKETS2SEOUL",
+    "last_seen": "2026-10-10T22:30:39.830219+00:00",
+    "missing_runs": 0,
+    "reward": "Crystal ×100, Fire Scroll ×3 | 29 seconds ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
+  },
   "GETUR5STAR": {
     "code": "GETUR5STAR",
     "expired_at": "2026-09-06T16:29:34.934516+00:00",
@@ -621,9 +632,9 @@
   },
   "OCTSW2026O7J": {
     "code": "OCTSW2026O7J",
-    "last_seen": "2026-10-10T18:34:20.521448+00:00",
+    "last_seen": "2026-10-10T22:30:39.830219+00:00",
     "missing_runs": 0,
-    "reward": "Wind Scroll ×3 | 4 minutes ago | Active",
+    "reward": "Wind Scroll ×3 | 29 seconds ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -874,6 +885,17 @@
       "LevelGeeks"
     ],
     "status": "expired"
+  },
+  "SWC1SHERETORONTO": {
+    "code": "SWC1SHERETORONTO",
+    "last_seen": "2026-10-10T22:30:39.830219+00:00",
+    "missing_runs": 0,
+    "reward": "Mana ×500,000, Fire Scroll ×2 | 29 seconds ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
   },
   "SWC2026JUELEBA": {
     "code": "SWC2026JUELEBA",
