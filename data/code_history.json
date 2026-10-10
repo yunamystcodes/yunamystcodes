@@ -621,9 +621,9 @@
   },
   "OCTSW2026O7J": {
     "code": "OCTSW2026O7J",
-    "last_seen": "2026-10-10T07:05:19.911153+00:00",
+    "last_seen": "2026-10-10T13:40:00.321153+00:00",
     "missing_runs": 0,
-    "reward": "Wind Scroll ×3 | 5 minutes ago | Active",
+    "reward": "Wind Scroll ×3 | 10 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -673,6 +673,16 @@
       "summonerswarcodes.us"
     ],
     "status": "expired"
+  },
+  "RISINGSTARS2026": {
+    "code": "RISINGSTARS2026",
+    "last_seen": "2026-10-10T13:40:00.321153+00:00",
+    "missing_runs": 0,
+    "reward": "10/10/2026 01:35 PM UTC | x 1 | 0 0",
+    "sources": [
+      "SWGT"
+    ],
+    "status": "active"
   },
   "S37GLORY4HOME": {
     "code": "S37GLORY4HOME",
