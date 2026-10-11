@@ -377,9 +377,9 @@
   },
   "FOR3TICKETS2SEOUL": {
     "code": "FOR3TICKETS2SEOUL",
-    "last_seen": "2026-10-10T22:30:39.830219+00:00",
+    "last_seen": "2026-10-11T01:52:13.192019+00:00",
     "missing_runs": 0,
-    "reward": "Crystal ×100, Fire Scroll ×3 | 29 seconds ago | Active",
+    "reward": "Crystal ×100, Fire Scroll ×3 | 7 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -632,9 +632,9 @@
   },
   "OCTSW2026O7J": {
     "code": "OCTSW2026O7J",
-    "last_seen": "2026-10-10T22:30:39.830219+00:00",
+    "last_seen": "2026-10-11T01:52:13.192019+00:00",
     "missing_runs": 0,
-    "reward": "Wind Scroll ×3 | 29 seconds ago | Active",
+    "reward": "Wind Scroll ×3 | 7 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -888,9 +888,9 @@
   },
   "SWC1SHERETORONTO": {
     "code": "SWC1SHERETORONTO",
-    "last_seen": "2026-10-10T22:30:39.830219+00:00",
+    "last_seen": "2026-10-11T01:52:13.192019+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×500,000, Fire Scroll ×2 | 29 seconds ago | Active",
+    "reward": "Mana ×500,000, Fire Scroll ×2 | 7 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
