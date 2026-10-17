@@ -377,9 +377,9 @@
   },
   "FOR3TICKETS2SEOUL": {
     "code": "FOR3TICKETS2SEOUL",
-    "last_seen": "2026-10-17T09:19:49.288111+00:00",
+    "last_seen": "2026-10-17T13:42:30.420541+00:00",
     "missing_runs": 0,
-    "reward": "Crystal ×100, Fire Scroll ×3 | 5 minutes ago | Active",
+    "reward": "Crystal ×100, Fire Scroll ×3 | 12 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -388,9 +388,9 @@
   },
   "GAOTO10THSWC2026": {
     "code": "GAOTO10THSWC2026",
-    "last_seen": "2026-10-17T09:19:49.288111+00:00",
+    "last_seen": "2026-10-17T13:42:30.420541+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×500,000 | 5 minutes ago | Active",
+    "reward": "Mana ×500,000 | 12 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -525,6 +525,17 @@
     ],
     "status": "expired"
   },
+  "L3TSGO2SEOUL14NOV": {
+    "code": "L3TSGO2SEOUL14NOV",
+    "last_seen": "2026-10-17T13:42:30.420541+00:00",
+    "missing_runs": 0,
+    "reward": "Wind Scroll ×10 | 12 minutes ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
+  },
   "LAST4PUNCHIN": {
     "code": "LAST4PUNCHIN",
     "reward": "Recompensa não informada",
@@ -643,9 +654,9 @@
   },
   "OCTSW2026O7J": {
     "code": "OCTSW2026O7J",
-    "last_seen": "2026-10-17T09:19:49.288111+00:00",
+    "last_seen": "2026-10-17T13:42:30.420541+00:00",
     "missing_runs": 0,
-    "reward": "Wind Scroll ×3 | 5 minutes ago | Active",
+    "reward": "Wind Scroll ×3 | 12 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -899,9 +910,9 @@
   },
   "SWC1SHERETORONTO": {
     "code": "SWC1SHERETORONTO",
-    "last_seen": "2026-10-17T09:19:49.288111+00:00",
+    "last_seen": "2026-10-17T13:42:30.420541+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×500,000, Fire Scroll ×2 | 5 minutes ago | Active",
+    "reward": "Mana ×500,000, Fire Scroll ×2 | 12 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -1087,9 +1098,9 @@
   },
   "WELCOME2KRNGTHP": {
     "code": "WELCOME2KRNGTHP",
-    "last_seen": "2026-10-17T09:19:49.288111+00:00",
+    "last_seen": "2026-10-17T13:42:30.420541+00:00",
     "missing_runs": 0,
-    "reward": "Energy ×200, Crystal ×100 | 5 minutes ago | Active",
+    "reward": "Energy ×200, Crystal ×100 | 12 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
