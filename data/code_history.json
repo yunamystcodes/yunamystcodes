@@ -655,8 +655,20 @@
     ],
     "status": "expired"
   },
+  "NOVSW2026T3V": {
+    "code": "NOVSW2026T3V",
+    "last_seen": "2026-10-31T17:42:39.326842+00:00",
+    "missing_runs": 0,
+    "reward": "Mana ×300,000 Summon Exclusive ×3 | 13 minutes ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
+  },
   "OCTSW2026O7J": {
     "code": "OCTSW2026O7J",
+    "expired_at": "2026-10-31T17:42:39.326842+00:00",
     "last_seen": "2026-10-31T12:25:20.614024+00:00",
     "missing_runs": 0,
     "reward": "Wind Scroll ×3 | 10 minutes ago | Active",
@@ -664,7 +676,7 @@
       "SWGT",
       "SWQuery"
     ],
-    "status": "active"
+    "status": "expired"
   },
   "OQKR1STWFNUGU": {
     "code": "OQKR1STWFNUGU",
