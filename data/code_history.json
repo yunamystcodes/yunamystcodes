@@ -10,6 +10,17 @@
     ],
     "status": "expired"
   },
+  "1101S11GOFINALS": {
+    "code": "1101S11GOFINALS",
+    "last_seen": "2026-11-01T15:05:38.925906+00:00",
+    "missing_runs": 0,
+    "reward": "Energy ×100 Scroll Mystical ×1 | 5 minutes ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
+  },
   "11DINGSHANGJIAN14": {
     "code": "11DINGSHANGJIAN14",
     "expired_at": "2026-09-20T01:07:22.069660+00:00",
@@ -657,9 +668,9 @@
   },
   "NOVSW2026T3V": {
     "code": "NOVSW2026T3V",
-    "last_seen": "2026-11-01T07:30:18.496690+00:00",
+    "last_seen": "2026-11-01T15:05:38.925906+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×300,000 Summon Exclusive ×3 | 8 seconds ago | Active",
+    "reward": "Mana ×300,000 Summon Exclusive ×3 | 5 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
