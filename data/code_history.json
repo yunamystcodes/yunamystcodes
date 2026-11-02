@@ -36,6 +36,17 @@
     ],
     "status": "expired"
   },
+  "11WHOWILLRISE26": {
+    "code": "11WHOWILLRISE26",
+    "last_seen": "2026-11-02T23:29:15.649960+00:00",
+    "missing_runs": 0,
+    "reward": "Energy ×100 | 14 minutes ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
+  },
   "1SURPR1SEG1FT": {
     "code": "1SURPR1SEG1FT",
     "expired_at": "2026-09-06T16:29:34.934516+00:00",
@@ -669,9 +680,9 @@
   },
   "NOVSW2026T3V": {
     "code": "NOVSW2026T3V",
-    "last_seen": "2026-11-02T15:47:45.639157+00:00",
+    "last_seen": "2026-11-02T23:29:15.649960+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×300,000 Summon Exclusive ×3 | 3 minutes ago | Active",
+    "reward": "Mana ×300,000 Summon Exclusive ×3 | 14 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
