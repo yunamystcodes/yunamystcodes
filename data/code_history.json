@@ -81,6 +81,17 @@
     ],
     "status": "expired"
   },
+  "2611RTABATTLE08": {
+    "code": "2611RTABATTLE08",
+    "last_seen": "2026-11-08T15:10:43.828191+00:00",
+    "missing_runs": 0,
+    "reward": "Mana ×100,000 Scroll Mystical ×1 | 11 minutes ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
+  },
   "2SOREIKENIPPON6": {
     "code": "2SOREIKENIPPON6",
     "expired_at": "2026-09-06T16:27:07.093545+00:00",
@@ -681,9 +692,9 @@
   },
   "NOVSW2026T3V": {
     "code": "NOVSW2026T3V",
-    "last_seen": "2026-11-08T07:17:36.329112+00:00",
+    "last_seen": "2026-11-08T15:10:43.828191+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×300,000 Summon Exclusive ×3 | 2 minutes ago | Active",
+    "reward": "Mana ×300,000 Summon Exclusive ×3 | 11 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -756,6 +767,17 @@
       "SWGT"
     ],
     "status": "expired"
+  },
+  "S11GOWINNERGO": {
+    "code": "S11GOWINNERGO",
+    "last_seen": "2026-11-08T15:10:43.828191+00:00",
+    "missing_runs": 0,
+    "reward": "Energy ×100 Scroll Mystical ×2 | 11 minutes ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
   },
   "S37GLORY4HOME": {
     "code": "S37GLORY4HOME",
