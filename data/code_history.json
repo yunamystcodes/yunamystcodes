@@ -10,6 +10,17 @@
     ],
     "status": "expired"
   },
+  "10THCHAMPCOMEUP": {
+    "code": "10THCHAMPCOMEUP",
+    "last_seen": "2026-11-14T10:29:47.353692+00:00",
+    "missing_runs": 0,
+    "reward": "Scroll Mystical ×5 Summon Exclusive ×50 | 15 minutes ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
+  },
   "1101S11GOFINALS": {
     "code": "1101S11GOFINALS",
     "expired_at": "2026-11-01T19:38:39.687846+00:00",
@@ -69,6 +80,17 @@
       "LevelGeeks"
     ],
     "status": "expired"
+  },
+  "20EOSEOOSEYOSWC26": {
+    "code": "20EOSEOOSEYOSWC26",
+    "last_seen": "2026-11-14T10:29:47.353692+00:00",
+    "missing_runs": 0,
+    "reward": "Energy ×100 Scroll Mystical ×5 Summon Exclusive ×20 | 15 minutes ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
   },
   "20SWC25BEGINS2": {
     "code": "20SWC25BEGINS2",
@@ -693,9 +715,9 @@
   },
   "NOVSW2026T3V": {
     "code": "NOVSW2026T3V",
-    "last_seen": "2026-11-14T03:13:15.626671+00:00",
+    "last_seen": "2026-11-14T10:29:47.353692+00:00",
     "missing_runs": 0,
-    "reward": "Mana ×300,000 Summon Exclusive ×3 | 13 minutes ago | Active",
+    "reward": "Mana ×300,000 Summon Exclusive ×3 | 15 minutes ago | Active",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -971,6 +993,17 @@
     ],
     "status": "expired"
   },
+  "SWC1NTOTHELEG4CY": {
+    "code": "SWC1NTOTHELEG4CY",
+    "last_seen": "2026-11-14T10:29:47.353692+00:00",
+    "missing_runs": 0,
+    "reward": "Scroll Mystical ×10 | 15 minutes ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
+  },
   "SWC1SHERETORONTO": {
     "code": "SWC1SHERETORONTO",
     "expired_at": "2026-10-18T11:02:16.898678+00:00",
@@ -1019,6 +1052,17 @@
     "reward": "Recompensa não informada",
     "sources": [],
     "status": "expired"
+  },
+  "SWCLEGACYC0NTINUES": {
+    "code": "SWCLEGACYC0NTINUES",
+    "last_seen": "2026-11-14T10:29:47.353692+00:00",
+    "missing_runs": 0,
+    "reward": "Summon Exclusive ×150 | 15 minutes ago | Active",
+    "sources": [
+      "SWGT",
+      "SWQuery"
+    ],
+    "status": "active"
   },
   "SWCSKYFEVER26": {
     "code": "SWCSKYFEVER26",
