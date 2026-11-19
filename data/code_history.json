@@ -12,9 +12,9 @@
   },
   "10THCHAMPCOMEUP": {
     "code": "10THCHAMPCOMEUP",
-    "last_seen": "2026-11-19T13:01:39.830346+00:00",
+    "last_seen": "2026-11-19T21:30:20.985629+00:00",
     "missing_runs": 0,
-    "reward": "11/14/2026 08:35 AM UTC | x 5 x 50 | 134 14",
+    "reward": "11/14/2026 08:35 AM UTC | x 5 x 50 | 137 14",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -83,9 +83,9 @@
   },
   "20EOSEOOSEYOSWC26": {
     "code": "20EOSEOOSEYOSWC26",
-    "last_seen": "2026-11-19T13:01:39.830346+00:00",
+    "last_seen": "2026-11-19T21:30:20.985629+00:00",
     "missing_runs": 0,
-    "reward": "11/14/2026 05:32 AM UTC | x 100 x 5 x 20 | 137 4",
+    "reward": "11/14/2026 05:32 AM UTC | x 100 x 5 x 20 | 138 4",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -715,9 +715,9 @@
   },
   "NOVSW2026T3V": {
     "code": "NOVSW2026T3V",
-    "last_seen": "2026-11-19T13:01:39.830346+00:00",
+    "last_seen": "2026-11-19T21:30:20.985629+00:00",
     "missing_runs": 0,
-    "reward": "10/31/2026 03:02 PM UTC | x 300,000 x 3 | 192 16",
+    "reward": "10/31/2026 03:02 PM UTC | x 300,000 x 3 | 194 16",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -995,9 +995,9 @@
   },
   "SWC1NTOTHELEG4CY": {
     "code": "SWC1NTOTHELEG4CY",
-    "last_seen": "2026-11-19T13:01:39.830346+00:00",
+    "last_seen": "2026-11-19T21:30:20.985629+00:00",
     "missing_runs": 0,
-    "reward": "11/14/2026 07:31 AM UTC | x 10 | 138 6",
+    "reward": "11/14/2026 07:31 AM UTC | x 10 | 140 6",
     "sources": [
       "SWGT",
       "SWQuery"
@@ -1055,9 +1055,9 @@
   },
   "SWCLEGACYC0NTINUES": {
     "code": "SWCLEGACYC0NTINUES",
-    "last_seen": "2026-11-19T13:01:39.830346+00:00",
+    "last_seen": "2026-11-19T21:30:20.985629+00:00",
     "missing_runs": 0,
-    "reward": "11/14/2026 09:08 AM UTC | x 150 | 134 14",
+    "reward": "11/14/2026 09:08 AM UTC | x 150 | 137 15",
     "sources": [
       "SWGT",
       "SWQuery"
