@@ -12,7 +12,7 @@
   },
   "10THCHAMPCOMEUP": {
     "code": "10THCHAMPCOMEUP",
-    "last_seen": "2026-11-21T01:33:35.322499+00:00",
+    "last_seen": "2026-11-21T09:47:28.253039+00:00",
     "missing_runs": 0,
     "reward": "11/14/2026 08:35 AM UTC | x 5 x 50 | 139 14",
     "sources": [
@@ -70,6 +70,16 @@
     ],
     "status": "expired"
   },
+  "2026SWLAISHENZHEN": {
+    "code": "2026SWLAISHENZHEN",
+    "last_seen": "2026-11-21T09:47:28.253039+00:00",
+    "missing_runs": 0,
+    "reward": "11/21/2026 09:44 AM UTC | x 200,000 x 2 | 1 0",
+    "sources": [
+      "SWGT"
+    ],
+    "status": "active"
+  },
   "20ALLEZBLEUSWC25": {
     "code": "20ALLEZBLEUSWC25",
     "expired_at": "2026-09-06T16:29:34.934516+00:00",
@@ -83,7 +93,7 @@
   },
   "20EOSEOOSEYOSWC26": {
     "code": "20EOSEOOSEYOSWC26",
-    "last_seen": "2026-11-21T01:33:35.322499+00:00",
+    "last_seen": "2026-11-21T09:47:28.253039+00:00",
     "missing_runs": 0,
     "reward": "11/14/2026 05:32 AM UTC | x 100 x 5 x 20 | 140 4",
     "sources": [
@@ -715,7 +725,7 @@
   },
   "NOVSW2026T3V": {
     "code": "NOVSW2026T3V",
-    "last_seen": "2026-11-21T01:33:35.322499+00:00",
+    "last_seen": "2026-11-21T09:47:28.253039+00:00",
     "missing_runs": 0,
     "reward": "10/31/2026 03:02 PM UTC | x 300,000 x 3 | 197 16",
     "sources": [
@@ -995,7 +1005,7 @@
   },
   "SWC1NTOTHELEG4CY": {
     "code": "SWC1NTOTHELEG4CY",
-    "last_seen": "2026-11-21T01:33:35.322499+00:00",
+    "last_seen": "2026-11-21T09:47:28.253039+00:00",
     "missing_runs": 0,
     "reward": "11/14/2026 07:31 AM UTC | x 10 | 143 7",
     "sources": [
@@ -1055,7 +1065,7 @@
   },
   "SWCLEGACYC0NTINUES": {
     "code": "SWCLEGACYC0NTINUES",
-    "last_seen": "2026-11-21T01:33:35.322499+00:00",
+    "last_seen": "2026-11-21T09:47:28.253039+00:00",
     "missing_runs": 0,
     "reward": "11/14/2026 09:08 AM UTC | x 150 | 140 15",
     "sources": [
