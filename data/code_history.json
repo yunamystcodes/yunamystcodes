@@ -728,9 +728,9 @@
   },
   "NOVSW2026T3V": {
     "code": "NOVSW2026T3V",
-    "last_seen": "2026-11-23T09:01:05.769778+00:00",
+    "last_seen": "2026-11-23T21:20:05.691468+00:00",
     "missing_runs": 0,
-    "reward": "10/31/2026 03:02 PM UTC | x 300,000 x 3 | 199 19",
+    "reward": "10/31/2026 03:02 PM UTC | x 300,000 x 3 | 201 19",
     "sources": [
       "SWGT",
       "SWQuery"
